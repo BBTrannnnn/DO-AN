@@ -10,8 +10,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const exitBtns = document.querySelectorAll(".exit-btn");
     const confirmBtn = document.querySelector(".confirm-btn");
     const addAccountBtn = document.querySelector(".add-account");
+    const searchInput = document.getElementById("searchInput"); 
+    
 
     let selectedUser = null;
+    let allUsers = [];
 
     // Load danh sách account từ Flask
     async function loadAccounts() {
@@ -22,25 +25,27 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         const users = await res.json();
 
+        allUsers = users;
+        renderAccounts(users);
+    }
+    function renderAccounts(users) {
         const tableBody = document.querySelector(".account-table tbody");
         tableBody.innerHTML = "";
-
+    
         users.forEach(user => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <tr>
-                    <td>${user.username}</td>
-                    <td>${user.password}</td>
-                    <td>${user.role}</td>
-                    <td>
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </td>
-                </tr>
+                <td>${user.username}</td>
+                <td>${user.password}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
+                </td>
             `;
             tableBody.appendChild(tr);
         });
-
+    
         document.querySelectorAll(".edit-btn").forEach((btn, index) => {
             btn.addEventListener("click", function () {
                 const user = users[index];
@@ -52,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 overlay.style.display = "block";
             });
         });
-
+    
         document.querySelectorAll(".delete-btn").forEach((btn, index) => {
             btn.addEventListener("click", function () {
                 selectedUser = users[index].username;
@@ -174,6 +179,15 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.display = "none";
     });
 
+    searchInput.addEventListener("input", function () {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = allUsers.filter(user =>
+            user.username.toLowerCase().includes(keyword) ||
+            user.password.toLowerCase().includes(keyword) ||
+            user.role.toLowerCase().includes(keyword)
+        );
+        renderAccounts(filtered);
+    });
     // Tải dữ liệu ban đầu
     loadAccounts();
 });
