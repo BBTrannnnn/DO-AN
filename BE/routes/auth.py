@@ -3,7 +3,17 @@ from models.user import User, db
 from werkzeug.security import check_password_hash
 auth = Blueprint('auth', __name__)
 
+
+@auth.route('/get_users', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    return jsonify([{
+        "username": u.username,
+        "password": u.password,
+        "role": u.role
+    } for u in users])
 @auth.route('/login', methods=['POST'])
+
 def login():
     data = request.get_json()
     username = data.get('username')
