@@ -1,121 +1,177 @@
-document.addEventListener("DOMContentLoaded", function () {  
-    const editBtns = document.querySelectorAll(".edit-btn");  
-    const deleteBtns = document.querySelectorAll(".delete-btn"); // Thêm nút xóa  
-    const accountModal = document.getElementById("accountModal");  
-    const deleteAccountModal = document.getElementById("deleteAccountModal"); // Modal xác nhận xóa  
-    const notificationModal = document.getElementById("notificationModal");  
-    const overlay = document.getElementById("overlay");  
-    const closeBtn = document.getElementById("closeBtn");  
-    const okBtn = document.querySelector(".ok-btn");  
-    const exitBtns = document.querySelectorAll(".exit-btn"); // Thay đổi để lấy tất cả các nút Exit  
-    const confirmBtn = document.querySelector(".confirm-btn"); // Lấy nút xác nhận trong modal xóa  
+document.addEventListener("DOMContentLoaded", function () {
+    const editBtns = document.querySelectorAll(".edit-btn");
+    const deleteBtns = document.querySelectorAll(".delete-btn");
+    const accountModal = document.getElementById("accountModal");
+    const deleteAccountModal = document.getElementById("deleteAccountModal");
+    const notificationModal = document.getElementById("notificationModal");
+    const overlay = document.getElementById("overlay");
+    const closeBtn = document.getElementById("closeBtn");
+    const okBtn = document.querySelector(".ok-btn");
+    const exitBtns = document.querySelectorAll(".exit-btn");
+    const confirmBtn = document.querySelector(".confirm-btn");
+    const addAccountBtn = document.querySelector(".add-account");
 
-    editBtns.forEach(button => {  
-        button.addEventListener("click", function () {  
-            accountModal.style.display = "block";  
-            overlay.style.display = "block";  
-        });  
-    });  
+    let selectedUser = null;
 
-    // Xử lý sự kiện cho nút Xóa  
-    deleteBtns.forEach(button => {  
-        button.addEventListener("click", function () {  
-            deleteAccountModal.style.display = "block";  
-            overlay.style.display = "block";  
-        });  
-    });  
+    // Load danh sách account từ Flask
+    async function loadAccounts() {
+        const res = await fetch("http://localhost:5000/api/get_users", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+         
+        });
+        const users = await res.json();
 
-    closeBtn.addEventListener("click", function () {  
-        accountModal.style.display = "none";  
-        overlay.style.display = "none";  
-    });  
+        const tableBody = document.querySelector(".account-table tbody");
+        tableBody.innerHTML = "";
 
-    overlay.addEventListener("click", function () {  
-        accountModal.style.display = "none";  
-        deleteAccountModal.style.display = "none"; // Đóng modal xác nhận xóa  
-        notificationModal.style.display = "none";  
-        overlay.style.display = "none";  
-    });  
+        users.forEach(user => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${user.username}</td>
+                <td>${user.password}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
 
-    okBtn.addEventListener("click", function () {  
-        // Đóng modal thông tin và hiển thị thông báo  
-        accountModal.style.display = "none";  
-        notificationModal.style.display = "block";  
-        overlay.style.display = "block"; // Mở overlay khi thông báo hiển thị  
-    });  
+        document.querySelectorAll(".edit-btn").forEach((btn, index) => {
+            btn.addEventListener("click", function () {
+                const user = users[index];
+                selectedUser = user.user;
+                document.getElementById("userInput").value = user.username;
+                document.getElementById("passwordInput").value = user.password;
+                document.getElementById("departmentSelect").value = user.role;
+                accountModal.style.display = "block";
+                overlay.style.display = "block";
+            });
+        });
 
-    exitBtns.forEach(button => {  
-        button.addEventListener("click", function () {  
-            // Đóng modal thông báo  
-            if (this.closest('#notificationModal')) {  
-                notificationModal.style.display = "none";  
-            }  
-            if (this.closest('#deleteAccountModal')) {  
-                deleteAccountModal.style.display = "none";  
-            }  
-            overlay.style.display = "none";  
-        });  
-    });  
+        document.querySelectorAll(".delete-btn").forEach((btn, index) => {
+            btn.addEventListener("click", function () {
+                selectedUser = users[index].username;
+                deleteAccountModal.style.display = "block";
+                overlay.style.display = "block";
+            });
+        });
+    }
 
-    // Hàm xác nhận xóa tài khoản  
-    confirmBtn.addEventListener("click", function () {  
-        deleteAccount(); // Gọi hàm deleteAccount khi nhấn nút xác nhận  
-    });  
+    // Thêm tài khoản
+    async function addAccount() {
+        const username = document.getElementById("userInput").value;  
+        const password = document.getElementById("passwordInput").value;
+        const role = document.getElementById("departmentSelect").value || "Employee";  // Mặc định là "Employee"
 
-    function deleteAccount() {  
-        deleteAccountModal.style.display = 'none'; // Đóng modal xác nhận xóa  
-        notificationModal.querySelector("p").textContent = "Account deleted successfully!"; // Thay đổi thông báo  
-        notificationModal.style.display = 'block'; // Hiển thị modal thông báo  
-        overlay.style.display = "block"; // Mở overlay khi thông báo hiển thị  
-    }  
-});  
+        const res = await fetch("http://localhost:5000/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, role })  
+        });
 
-document.addEventListener("DOMContentLoaded", function () {  
-    // Lấy các modal  
-    const accountModal = document.getElementById("accountModal"); // Modal thông tin tài khoản  
-    const notificationModal = document.getElementById("notificationModal"); // Modal thông báo  
-    const overlay = document.getElementById("overlay"); // Overlay nếu bạn có sử dụng  
+        if (res.ok) {
+            showNotification("Added successfully!");
+            loadAccounts();
+        } else {
+            showNotification("Failed to add account.");
+        }
+    }
 
-    // Lấy các nút  
-    const addAccountBtn = document.querySelector(".add-account"); // Nút thêm tài khoản  
-    const closeBtn = document.getElementById("closeBtn"); // Nút thoát trong modal thêm tài khoản  
-    const okBtn = document.querySelector(".ok-btn"); // Nút OK trong modal thêm tài khoản  
-    const exitBtns = document.querySelectorAll(".exit-btn"); // Nút thoát trong modal thông báo  
+    // Cập nhật tài khoản
+    async function updateAccount() {
+        const password = document.getElementById("passwordInput").value;
+        const role = document.getElementById("departmentSelect").value;
 
-    // Hiển thị modal thêm tài khoản khi nhấn nút "Add Account"  
-    addAccountBtn.addEventListener("click", function () {  
-        accountModal.style.display = "block"; // Mở modal thông tin tài khoản  
-        overlay.style.display = "block"; // Mở overlay nếu cần  
-    });  
+        const res = await fetch("http://localhost:5000/api/update", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: selectedUser, password, role })
+        });
 
-    // Đóng modal thêm tài khoản  
-    closeBtn.addEventListener("click", function () {  
-        accountModal.style.display = "none"; // Đóng modal thông tin tài khoản  
-        overlay.style.display = "none"; // Đóng overlay  
-    });  
+        if (res.ok) {
+            showNotification("Updated successfully!");
+            loadAccounts();
+        } else {
+            showNotification("Failed to update.");
+        }
+    }
 
-    // Xử lý sự kiện nút "OK" trong modal thêm tài khoản  
-    okBtn.addEventListener("click", function () {  
-        accountModal.style.display = "none"; // Đóng modal thông tin tài khoản  
-        notificationModal.querySelector("p").textContent = "Added successfully!"; // Thay đổi nội dung thông báo  
-        notificationModal.style.display = "block"; // Mở modal thông báo  
-        overlay.style.display = "block"; // Mở overlay nếu cần  
-    });  
+    // Xóa tài khoản
+    async function deleteAccount() {
+        deleteAccountModal.style.display = "none";
+        const res = await fetch("http://localhost:5000/api/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: selectedUser })
+        });
 
-    // Đóng modal thông báo  
-    exitBtns.forEach(function(button) {  
-        button.addEventListener("click", function () {  
-            if (button.closest('#notificationModal')) {  
-                notificationModal.style.display = "none"; // Đóng modal thông báo  
-                overlay.style.display = "none"; // Đóng overlay  
-            }  
-        });  
-    });  
+        if (res.ok) {
+            showNotification("Deleted successfully!");
+            loadAccounts();
+        } else {
+            showNotification("Delete failed.");
+        }
+    }
 
-    // Đóng tất cả các modal khi nhấp vào overlay  
-    overlay.addEventListener("click", function () {  
-        accountModal.style.display = "none"; // Đóng modal thông tin tài khoản  
-        notificationModal.style.display = "none"; // Đóng modal thông báo  
-        overlay.style.display = "none"; // Đóng overlay  
-    });  
-});  
+    function showNotification(message) {
+        notificationModal.querySelector("p").textContent = message;
+        notificationModal.style.display = "block";
+        overlay.style.display = "block";
+        accountModal.style.display = "none";
+    }
+
+    // Sự kiện nút Add Account
+    addAccountBtn.addEventListener("click", function () {
+        selectedUser = null;
+        document.getElementById("userInput").value = "";
+        document.getElementById("passwordInput").value = "";
+        document.getElementById("departmentSelect").value = "Employee"; // Mặc định là "employee"
+        accountModal.style.display = "block";
+        overlay.style.display = "block";
+    });
+
+    // Sự kiện nút OK trong form
+    okBtn.addEventListener("click", function () {
+        const username = document.getElementById("userInput").value;
+        const password = document.getElementById("passwordInput").value;
+        const role = document.getElementById("departmentSelect").value || "employee"; // Mặc định là "employee"
+    
+        if (document.getElementById("userInput").disabled) {
+            updateAccount(username, password, role); // Cập nhật tài khoản
+        } else {
+            addAccount(username, password, role); // Thêm tài khoản mới
+        }
+    });
+
+    closeBtn.addEventListener("click", () => {
+        accountModal.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    confirmBtn.addEventListener("click", deleteAccount);
+
+    exitBtns.forEach(btn => {
+        btn.addEventListener("click", function () {
+            if (this.closest('#notificationModal')) {
+                notificationModal.style.display = "none";
+            }
+            if (this.closest('#deleteAccountModal')) {
+                deleteAccountModal.style.display = "none";
+            }
+            overlay.style.display = "none";
+        });
+    });
+
+    overlay.addEventListener("click", function () {
+        accountModal.style.display = "none";
+        deleteAccountModal.style.display = "none";
+        notificationModal.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    // Tải dữ liệu ban đầu
+    loadAccounts();
+});
