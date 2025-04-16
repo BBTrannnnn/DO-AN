@@ -28,13 +28,15 @@ document.addEventListener("DOMContentLoaded", function () {
         users.forEach(user => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td>${user.username}</td>
-                <td>${user.password}</td>
-                <td>${user.role}</td>
-                <td>
-                    <button class="edit-btn">Edit</button>
-                    <button class="delete-btn">Delete</button>
-                </td>
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.password}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </td>
+                </tr>
             `;
             tableBody.appendChild(tr);
         });
@@ -42,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".edit-btn").forEach((btn, index) => {
             btn.addEventListener("click", function () {
                 const user = users[index];
-                selectedUser = user.user;
+                selectedUser = user.username;
                 document.getElementById("userInput").value = user.username;
                 document.getElementById("passwordInput").value = user.password;
                 document.getElementById("departmentSelect").value = user.role;
@@ -139,8 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value || "employee"; // Mặc định là "employee"
     
-        if (document.getElementById("userInput").disabled) {
-            updateAccount(username, password, role); // Cập nhật tài khoản
+        if (selectedUser) {
+            updateAccount(); // Cập nhật tài khoản
         } else {
             addAccount(username, password, role); // Thêm tài khoản mới
         }
