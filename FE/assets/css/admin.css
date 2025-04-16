@@ -1,0 +1,330 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFF;
+    color: white;
+    padding: 15px 20px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.settings img {
+    cursor: pointer;
+}
+
+/* Phần tiêu đề tách biệt */
+.title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 20px auto;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+.add-account {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+/* Bố cục bảng tách riêng */
+main {
+    width: 90%;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-box {
+    margin: 20px 0;
+}
+
+.search-box input {
+    width: 30%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.account-info p {
+    font-size: 24px; 
+    font-weight: bold; 
+    color: #000;    
+    text-align: left;
+    margin-bottom: 12px;      
+}
+
+table {  
+    width: 100%;  
+    border-collapse: collapse;  
+}  
+
+th, td {  
+    padding: 12px;  
+    text-align: left;  
+    border-bottom: 1px solid #ddd;  
+}  
+
+th {  
+    background-color: #f4f4f4;  
+}  
+
+button {  
+    padding: 8px 12px;  
+    margin: 0 5px;  
+    border: none;  
+    border-radius: 5px;  
+    cursor: pointer;  
+}  
+
+.edit-btn {  
+    background-color: #007bff;  
+    color: white;  
+}  
+
+.delete-btn {  
+    background-color: #dc3545;  
+    color: white;  
+}  
+
+.edit-btn:hover {  
+    background-color: #0056b3;  
+}  
+
+.delete-btn:hover {  
+    background-color: #c82333;  
+}  
+
+.pagination {  
+    text-align: center;  
+    margin-top: 20px;  
+}  
+
+.prev-btn, .next-btn {  
+    padding: 10px 15px;  
+    border: 1px solid #007bff;  
+    background-color: #fff;  
+    color: #007bff;  
+    border-radius: 5px;  
+}  
+
+.prev-btn:hover, .next-btn:hover {  
+    background-color: #007bff;  
+    color: white;  
+}  
+
+.overlay {  
+    display: none;  
+    position: fixed;  
+    top: 0;  
+    left: 0;  
+    width: 100%;  
+    height: 100%;  
+    background: rgba(0, 0, 0, 0.7); /* Đậm hơn một chút để rõ ràng hơn */  
+    z-index: 99;  
+}  
+
+.modal {  
+    display: none;  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: white;  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 400px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+#notificationModal {  
+    display: none; /* Ẩn modal mặc định */  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: #ffffff; /* Màu nền trắng */  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 300px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+/* Định dạng cho nội dung modal thông báo */  
+#notificationModal .notification-content { /* Sử dụng selector cụ thể */  
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#notificationModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#notificationModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+#notificationModal .modal-buttons {  
+    display: flex;  
+    justify-content: center; /* Canh giữa nút */  
+    margin-top: 20px; /* Khoảng cách trên nút */  
+}  
+
+#notificationModal .exit-btn {  
+    background-color: #007bff; /* Màu nền nút */  
+    color: white; /* Màu chữ */  
+    padding: 10px 20px; /* Khoảng cách bên trong */  
+    border: none; /* Bỏ viền */  
+    border-radius: 5px; /* Bo tròn viền */  
+    cursor: pointer; /* Chỉ tay khi hover */  
+}  
+
+#notificationModal .exit-btn:hover {  
+    background-color: #0056b3; /* Màu nền khi hover */  
+}  
+
+label {  
+    font-weight: bold; /* In đậm cho nhãn */  
+}  
+
+.modal-input {  
+    width: 95%; /* Độ rộng cho input */  
+    padding: 10px; /* Khoảng cách bên trong */  
+    margin: 10px 0; /* Khoảng cách giữa các input */  
+    border: 1px solid #ddd; /* Viền cho input */  
+    border-radius: 5px; /* Bo tròn viền input */  
+}   
+
+
+
+.modal-buttons {  
+    display: flex;  
+    justify-content: space-around;  
+    margin-top: 20px;  
+}  
+
+.close-btn, .ok-btn {  
+    background-color: white;
+    color: black;  
+    padding: 10px 50px;  
+    border: 1px solid black; 
+    border-radius: 5px;  
+    cursor: pointer;  
+}  
+
+.close-btn:hover, .ok-btn:hover {  
+    background-color: #4B5668;  
+}  
+
+/* CSS cho hộp thoại thông báo */  
+.notification-modal {  
+    display: none;  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: white;  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 300px; /* Kích thước của modal thông báo */  
+}  
+
+.notification-modal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+}  
+
+.notificationModal .modal-content p{
+    text-align: center;
+}
+
+#deleteAccountModal {  
+    display: none; /* Ẩn modal mặc định */  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: #ffffff; /* Màu nền trắng */  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 400px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+/* Định dạng cho nội dung modal xác nhận xóa */  
+#deleteAccountModal .notification-content {   
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#deleteAccountModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#deleteAccountModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+#notificationModal .notification-content {   
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#notificationModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#notificationModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+/* Phần button */  
+.modal-buttons {  
+    display: flex;  
+    justify-content: center; /* Canh giữa nút */  
+    margin-top: 20px; /* Khoảng cách trên nút */  
+}  
+
+#deleteAccountModal .exit-btn, .confirm-btn {  
+    background-color: red; /* Màu nền nút */  
+    color: white; /* Màu chữ */  
+    padding: 10px 20px; /* Khoảng cách bên trong */  
+    border: none; /* Bỏ viền */  
+    border-radius: 5px; /* Bo tròn viền */  
+    cursor: pointer; /* Chỉ tay khi hover */  
+}  
+
+
+.exit-btn:hover {  
+    background-color: #0056b3; /* Màu nền khi hover */  
+}  

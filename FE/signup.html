@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="assets/css/signup.css">
+</head>
+<body>
+    <div class="container">
+        <div class="weblogo-container">
+            <img src="assets/img/Main logo.png" alt="" class="web-logo">
+        </div>
+        <div class="solid-line"></div>
+        <form>
+            <div class="input-container">
+                <p class="text-description">Tên đăng nhập</p>
+                <input class="input-user" type="text" placeholder="Nhập tên đăng nhập" required>
+            </div>
+
+            <div class="input-container">
+                <p class="text-description">Email</p>
+                <input class="input-email" type="email" placeholder="Nhập email" required>
+            </div>
+
+            <div class="input-container">
+                <p class="text-description">Mật khẩu</p>
+                <input class="input-password" type="password" placeholder="Nhập mật khẩu" required>
+            </div>
+
+            <div class="input-container">
+                <p class="text-description">Xác nhận mật khẩu</p>
+                <input class="input-confirmPass" type="password" placeholder="Nhập lại mật khẩu" required>
+            </div>
+            
+            <div class="solid-line"></div>
+
+            <button class="btn-dangki" type="submit">Đăng ký</button>
+            <button class="btn-login pd-left-10" type="button" onclick="goToLoginPage()">Đã có tài khoản? Đăng nhập</button>
+        </form>
+    </div>
+
+    <script src="script/signup.js"></script>
+</body>
+</html>

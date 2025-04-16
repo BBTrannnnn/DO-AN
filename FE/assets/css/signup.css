@@ -1,0 +1,95 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body {
+    background-color: #1B2431;
+    color: #fff;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.solid-line {
+    width: 100%;
+    height: 1px;
+    background-color: #fff;
+    opacity: 0.2;
+    margin-top: 20px;
+}
+
+.container {
+    background-color: #273142;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.weblogo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.text-description{
+    color: #6091FF;
+    margin-top: 12px;
+}
+
+
+.input-user,
+.input-email,
+.input-password,
+.input-confirmPass {
+    margin-top: 8px;
+    width: 100%;
+    padding: 11px 0;
+    margin-bottom: 10px;
+    border: 1px solid #555;
+    border-radius: 10px;
+    background-color: #444;
+    color: #fff;
+}
+
+
+.btn-dangki {
+    margin-top: 24px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 19px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-login{
+    margin-top: 24px;
+    background-color: #3B4352;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 19px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-dangki:hover {
+    opacity: 0.8;
+}
+
+.btn-login:hover {
+    background-color: #007bff;
+}
+
+.input-user,
+.input-email,
+.input-password,
+.input-confirmPass {
+    padding-left: 10px;
+}

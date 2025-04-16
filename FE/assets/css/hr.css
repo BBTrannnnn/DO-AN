@@ -1,0 +1,76 @@
+/* Reset mặc định */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFF;
+    color: white;
+    padding: 15px 20px;
+}
+
+/* Bố cục chính */
+.container {
+    display: flex;
+    height: calc(100vh - 50px); /* Chiều cao trừ phần header */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #F5F5F5;
+    padding: 20px;
+}
+
+.slidebar__list{
+    list-style: none;
+    margin-top: 20px;
+}
+
+.slidebar__item {
+    padding: 15px;
+    padding-left: 20%;
+    cursor: pointer;
+    border-radius: 5px;
+    color: black;
+    font-size: 14px;
+    
+}
+
+.slidebar__item:hover{
+    background-color: #4880FF;
+    border-left: 4px solid #4880FF;
+}
+
+/* Nội dung chính */
+.content {
+    flex: 1; /* Chiếm phần còn lại */
+    background: #fff;
+}
+
+/* Phần tiêu đề tách biệt */
+.title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 10px auto;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+.add-account {
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+}
