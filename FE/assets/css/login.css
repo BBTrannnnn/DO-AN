@@ -31,9 +31,10 @@ body {
 }  
 
 .solid-line {  
-    height: 2px; /* Độ cao của đường ngang */  
+    height: 1px; /* Độ cao của đường ngang */  
     background-color: black; /* Màu đen cho đường ngang */  
     margin-bottom: 20px; /* Khoảng cách dưới đường ngang */  
+    opacity: 0.5;
 }  
 
 .input-container {  
@@ -67,7 +68,7 @@ input {
     width: 100%; /* Độ rộng 100% cho ô nhập */  
     padding: 10px; /* Khoảng cách bên trong */  
     border: 1px solid #ccc; /* Đường viền màu xám nhạt */  
-    border-radius: 4px; /* Bo góc ô nhập */  
+    border-radius: 7px; /* Bo góc ô nhập */  
     font-size: 14px; /* Kích thước chữ */  
     transition: border 0.3s; /* Hiệu ứng chuyển tiếp */  
 }  
