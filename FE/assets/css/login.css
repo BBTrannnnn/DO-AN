@@ -1,113 +1,55 @@
-*{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
-body {
-    background-color: #1B2431;
-    color: #fff;
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
+* {  
+    box-sizing: border-box;  
+    margin: 0;  
+    padding: 0;  
+}  
 
-.solid-line {
-    width: 100%;
-    height: 1px;
-    background-color: #fff;
-    opacity: 0.2;
-    margin-top: 20px;
-}
+body {  
+    font-family: Arial, sans-serif;  
+    background-color: #eaeaea; /* Màu nền nhẹ cho toàn trang */  
+    display: flex;  
+    justify-content: center;  
+    align-items: center;  
+    height: 100vh; /* Chiều cao toàn bộ cửa sổ */  
+}  
 
-.container {
-    background-color: #273142;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
+.container {  
+    background-color: white; /* B background trắng */  
+    border-radius: 8px; /* Bo góc */  
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng với độ mờ cao hơn */  
+    padding: 30px; /* Khoảng cách bên trong */  
+    width: 320px; /* Chiều rộng của hộp đăng nhập */  
+}  
 
-.weblogo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+.weblogo-container {  
+    text-align: center; /* Căn giữa logo */  
+    margin-bottom: 20px; /* Khoảng cách dưới logo */  
+}  
 
+.web-logo {  
+    max-width: 100px; /* Giới hạn chiều rộng tối đa của logo */  
+}  
 
-.text-description{
-    color: #6091FF;
-    margin-top: 12px;
-}
+.solid-line {  
+    height: 2px; /* Độ cao của đường ngang */  
+    background-color: black; /* Màu đen cho đường ngang */  
+    margin-bottom: 20px; /* Khoảng cách dưới đường ngang */  
+}  
 
-
-.input-user,
-.input-password {
-    margin-top: 8px;
-    width: 100%;
-    padding: 11px 0;
-    margin-bottom: 10px;
-    border: 1px solid #555;
-    border-radius: 10px;
-    background-color: #444;
-    color: #fff;
-}
-
-
-.btn-dangnhap {
-    margin-top: 24px;
-    background-color: #007bff;
-    color: #fff;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 19px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.btn-register{
-    margin-top: 24px;
-    background-color: #3B4352;
-    color: #fff;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 19px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.btn-dangki:hover {
-    opacity: 0.8;
-}
-
-.btn-login:hover {
-    background-color: #007bff;
-}
-
-.input-user,
-.input-password {
-    padding-left: 10px;
-}
-
-.password-wrapper {
+.input-container {  
+    margin-bottom: 15px; /* Khoảng cách giữa các ô nhập */  
     position: relative;
-}
-
-.input-password {
-    padding-left: 10px;
-    padding-right: 40px; /* Chừa chỗ cho icon */
-}
+}  
 
 .toggle-password {
     position: absolute;
-    top: 50%;
+    top: 70%;
     right: 10px;
     transform: translateY(-50%);
     cursor: pointer;
     width: 20px;
     height: 20px;
-    opacity: 0.7;
+    opacity: 0.88;
     transition: opacity 0.2s ease;
 }
 
@@ -115,15 +57,41 @@ body {
     opacity: 1;
 }
 
-/* Chế độ hiển thị mật khẩu */
-.show-password .toggle-password {
-    content: url('assets/img/icons8-show-password-24.png');
-}
+p {  
+    margin-bottom: 5px; /* Khoảng cách dưới tiêu đề */  
+    font-weight: bold; /* Làm đậm tiêu đề */  
+    color: black; /* Màu chữ đen */  
+}  
 
-/* Chế độ ẩn mật khẩu */
-.hide-password .toggle-password {
-    content: url('assets/img/icons8-hide-password-24.png');
-}
+input {  
+    width: 100%; /* Độ rộng 100% cho ô nhập */  
+    padding: 10px; /* Khoảng cách bên trong */  
+    border: 1px solid #ccc; /* Đường viền màu xám nhạt */  
+    border-radius: 4px; /* Bo góc ô nhập */  
+    font-size: 14px; /* Kích thước chữ */  
+    transition: border 0.3s; /* Hiệu ứng chuyển tiếp */  
+}  
+
+input:focus {  
+    border: 1px solid black; /* Đường viền đen khi ô nhập được chọn */  
+    outline: none; /* Không hiển thị đường bao quanh ô nhập */  
+}  
+
+button {  
+    background-color: black; /* Nền nút đen */  
+    color: white; /* Chữ trắng */  
+    border: none; /* Không có đường viền */  
+    padding: 10px; /* Khoảng cách bên trong */  
+    width: 100%; /* Độ rộng 100% */  
+    border-radius: 4px; /* Bo góc nút */  
+    font-size: 14px; /* Kích thước chữ */  
+    cursor: pointer; /* Con trỏ khi di chuột */  
+    transition: background-color 0.3s; /* Hiệu ứng chuyển tiếp cho màu nền */  
+}  
+
+button:hover {  
+    background-color: #333; /* Màu nền khi di chuột vào nút */  
+}  
 
 input[type="password"]::-ms-reveal,
 input[type="password"]::-webkit-credentials-auto-fill-button {
