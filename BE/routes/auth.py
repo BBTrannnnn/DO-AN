@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify
 from models.user import User,db
 from models.history import History,db
+from models.payrolls import Payroll,db
+from models.employee import Employee,db
 from datetime import datetime
 
 auth = Blueprint('auth', __name__)
 
-
+# Danh sách các tài khoản
 @auth.route('/get_users', methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -17,6 +19,50 @@ def get_users():
     } for u in users])
 @auth.route('/login', methods=['POST'])
 
+
+# Danh sách các thao tác trong lịch sử
+@auth.route('/get_history', methods=['GET']) 
+def get_history():
+    histories = History.query.order_by(History.timestamp.desc()).all()
+    return jsonify([{
+        'action': h.action,
+        'username': h.username,
+        'target_user': h.target_user,
+        'timestamp': h.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    } for h in histories]), 200
+
+
+# Danh sách payrolls
+from flask import jsonify
+from sqlalchemy.orm import joinedload
+
+@auth.route('/get_payrolls', methods=['GET'])
+def get_payrolls():
+    try:
+        # Truy vấn dữ liệu payrolls và thông tin nhân viên với các trường cụ thể
+        results = db.session.query(Payroll, Employee).join(Employee).all()
+
+        # Xử lý kết quả truy vấn
+        data = []
+        for payroll, emp in results:
+            data.append({
+                "id": payroll.id,
+                "employee_id": emp.id,
+                "name": emp.name,
+                "department": emp.department,
+                "job_title": emp.job_title,
+                "payroll": str(payroll.amount),
+                "time": payroll.time.strftime("%Y-%m-%d %H:%M:%S") if payroll.time else None
+            })
+
+        return jsonify(data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+# Đăng nhập
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -32,6 +78,7 @@ def login():
     else:
         return jsonify({'message': 'Tên tài khoản hoặc mật khẩu sai!'}), 401
     
+#Thêm tài khoản
 @auth.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -49,7 +96,11 @@ def register():
     db.session.commit()
 
     return jsonify({'message': 'Thêm tài khoản thành công!!'}), 201
+#Thêm thông tin payrolls 
+ 
 
+
+# Xóa tài khoản
 @auth.route('/delete', methods=['DELETE'])
 def delete_user():
     data = request.get_json()
@@ -63,7 +114,8 @@ def delete_user():
         return jsonify({'message': 'Xóa tài khoản thành công'}), 200
     else:
         return jsonify({'message': 'Tài khoản không tồn tại'}), 404
-    
+
+# Cập nhật tài khoản   
 @auth.route('/update', methods=['PUT'])
 def update_user():
     data = request.get_json()
@@ -86,6 +138,7 @@ def update_user():
     db.session.commit()
     return jsonify({'message': 'Cập nhật tài khoản thành công'}), 200
 
+# Ghi nhận lịch sử thao tác
 @auth.route('/log_history', methods=['POST'])
 def log_history():
     data = request.get_json()
@@ -99,13 +152,5 @@ def log_history():
     
     return jsonify({'message': 'Lịch sử được ghi nhận!'}), 200
 
-@auth.route('/get_history', methods=['GET'])
-def get_history():
-    histories = History.query.order_by(History.timestamp.desc()).all()
-    return jsonify([{
-        'action': h.action,
-        'username': h.username,
-        'target_user': h.target_user,
-        'timestamp': h.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-    } for h in histories]), 200
+
 
