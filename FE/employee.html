@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang Nhân Viên</title>
+    <link rel="stylesheet" href="styles.css"> <!-- nếu có CSS riêng -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        h1 {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>👨‍💼 Chào mừng nhân viên!</h1>
+    <p id="welcome-message">Đang tải thông tin người dùng...</p>
+
+    <button onclick="logout()">Đăng xuất</button>
+
+    <script>
+        // Hiển thị tên người dùng nếu có trong localStorage (hoặc sửa theo dữ liệu bạn dùng)
+        const username = localStorage.getItem("username");
+        if (username) {
+            document.getElementById("welcome-message").textContent = `Xin chào, ${username}!`;
+        } else {
+            document.getElementById("welcome-message").textContent = "Xin chào!";
+        }
+
+        function logout() {
+            localStorage.clear(); // hoặc chỉ remove username nếu cần
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

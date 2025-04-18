@@ -12,15 +12,35 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     const data = await response.json();
 
-    console.log(data); 
+    console.log(data.role); 
 
     if (response.ok) {
         alert(data.message); 
-        window.location.href = "admin.html"; 
+
+        // Kiểm tra role và điều hướng
+        if (data.role === 'admin') {
+            window.location.href = "admin.html";  // Điều hướng đến trang admin
+        } else if (data.role === 'Employee') {
+            window.location.href = "employee.html";  // Điều hướng đến trang nhân viên
+            
+        }
+
+        else if (data.role === 'HR Management') {
+            window.location.href = "hr.html";  // Điều hướng đến trang nhân viên
+        }
+
+        else if (data.role === 'Payroll Management') {
+            window.location.href = "payroll.html";  // Điều hướng đến trang nhân viên
+        }
+        
+        else {
+            alert("Role không hợp lệ");
+        }
     } else {
         alert(data.message); 
     }
 });
+
 
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById("password");  // Lấy input mật khẩu

@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.querySelector(".confirm-btn");
     const addAccountBtn = document.querySelector(".add-account");
     const searchInput = document.getElementById("searchInput"); 
+
     
 
     let selectedUser = null;
@@ -31,10 +32,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderAccounts(users) {
         const tableBody = document.querySelector(".account-table tbody");
         tableBody.innerHTML = "";
-    
+        
         users.forEach(user => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
+                <td>${user.id}</td>
                 <td>${user.username}</td>
                 <td>${user.password}</td>
                 <td>${user.role}</td>
@@ -45,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
             tableBody.appendChild(tr);
         });
-    
+
         document.querySelectorAll(".edit-btn").forEach((btn, index) => {
             btn.addEventListener("click", function () {
                 const user = users[index];
@@ -66,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+    
 
     // Thêm tài khoản
     async function addAccount() {
@@ -129,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.display = "block";
         accountModal.style.display = "none";
     }
-
+    
     // Sự kiện nút Add Account
     addAccountBtn.addEventListener("click", function () {
         selectedUser = null;
@@ -179,6 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.display = "none";
     });
 
+    // Tìm kiếm tài khoản
     searchInput.addEventListener("input", function () {
         const keyword = searchInput.value.toLowerCase();
         const filtered = allUsers.filter(user =>
@@ -188,6 +192,8 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         renderAccounts(filtered);
     });
+
+
     // Tải dữ liệu ban đầu
     loadAccounts();
 });
