@@ -8,6 +8,7 @@ auth = Blueprint('auth', __name__)
 def get_users():
     users = User.query.all()
     return jsonify([{
+        "id": u.id,
         "username": u.username,
         "password": u.password,
         "role": u.role
@@ -27,7 +28,7 @@ def login():
             'role': user.role
         }), 200
     else:
-        return jsonify({'message': 'Đăng nhập không thành công!'}), 401
+        return jsonify({'message': 'Tên tài khoản hoặc mật khẩu sai!'}), 401
     
 @auth.route('/register', methods=['POST'])
 def register():
