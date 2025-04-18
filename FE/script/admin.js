@@ -72,10 +72,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Thêm tài khoản
     async function addAccount() {
-        const username = document.getElementById("userInput").value;  
+        const username = document.getElementById("userInput").value.trim();  
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value || "Employee";  // Mặc định là "Employee"
 
+
+            // Kiểm tra username là Gmail
+        if (!username.endsWith("@gmail.com")) {
+            showNotification("Tài khoản phải sử dụng @gmail.com");
+            return;
+        }
+
+        // Kiểm tra độ dài mật khẩu
+        if (password.length < 6) {
+            showNotification("Mật khẩu phải có ít nhất 6 ký tự");
+            return;
+        }
         const res = await fetch("http://localhost:5000/api/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -83,10 +95,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (res.ok) {
-            showNotification("Added successfully!");
+            showNotification("Thêm tài khoản thành công.");
             loadAccounts();
         } else {
-            showNotification("Failed to add account.");
+            showNotification("Thêm tài khoản không thành công!!!");
         }
     }
 
@@ -102,10 +114,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (res.ok) {
-            showNotification("Updated successfully!");
+            showNotification("Cập nhật tài khoản thành công.");
             loadAccounts();
         } else {
-            showNotification("Failed to update.");
+            showNotification("Cập nhật tài khoản thất bại!!!!");
         }
     }
 
@@ -119,10 +131,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (res.ok) {
-            showNotification("Deleted successfully!");
+            showNotification("Xóa tài khoản thành công.");
             loadAccounts();
         } else {
-            showNotification("Delete failed.");
+            showNotification("Xóa tài khoản thất bại.");
         }
     }
 
