@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
-from models.user import User, db
-from werkzeug.security import check_password_hash
+from models.user import User,db
+from models.history import History,db
+from datetime import datetime
+
 auth = Blueprint('auth', __name__)
 
 
@@ -83,4 +85,27 @@ def update_user():
 
     db.session.commit()
     return jsonify({'message': 'Cập nhật tài khoản thành công'}), 200
+
+@auth.route('/log_history', methods=['POST'])
+def log_history():
+    data = request.get_json()
+    action = data.get('action')
+    username = data.get('username')
+    target_user = data.get('target_user')
+
+    history = History(action=action, username=username, target_user=target_user)
+    db.session.add(history)
+    db.session.commit()
+    
+    return jsonify({'message': 'Lịch sử được ghi nhận!'}), 200
+
+@auth.route('/get_history', methods=['GET'])
+def get_history():
+    histories = History.query.order_by(History.timestamp.desc()).all()
+    return jsonify([{
+        'action': h.action,
+        'username': h.username,
+        'target_user': h.target_user,
+        'timestamp': h.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    } for h in histories]), 200
 
