@@ -1,47 +1,70 @@
-* {  
-    box-sizing: border-box;  
-    margin: 0;  
-    padding: 0;  
-}  
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-body {  
-    font-family: Arial, sans-serif;  
-    background-color: #eaeaea; /* Màu nền nhẹ cho toàn trang */  
-    display: flex;  
-    justify-content: center;  
-    align-items: center;  
-    height: 100vh; /* Chiều cao toàn bộ cửa sổ */  
-}  
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #e0c3fc, #8ec5fc); /* Cập nhật nền dịu pastel */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-.container {  
-    background-color: white; /* B background trắng */  
-    border-radius: 8px; /* Bo góc */  
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng với độ mờ cao hơn */  
-    padding: 30px; /* Khoảng cách bên trong */  
-    width: 320px; /* Chiều rộng của hộp đăng nhập */  
-}  
+.container {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 35px 30px;
+    width: 340px;
+}
 
-.weblogo-container {  
-    text-align: center; /* Căn giữa logo */  
-    margin-bottom: 20px; /* Khoảng cách dưới logo */  
-}  
+.weblogo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-.web-logo {  
-    max-width: 100px; /* Giới hạn chiều rộng tối đa của logo */  
-}  
+.web-logo {
+    max-width: 90px;
+}
 
-.solid-line {  
-    height: 1px; /* Độ cao của đường ngang */  
-    background-color: black; /* Màu đen cho đường ngang */  
-    margin-bottom: 20px; /* Khoảng cách dưới đường ngang */  
-    opacity: 0.5;
-}  
+.solid-line {
+    height: 1px;
+    background-color: #eee; /* đổi màu nhẹ hơn */
+    margin-bottom: 20px;
+    opacity: 1;
+}
 
-.input-container {  
-    margin-bottom: 15px; /* Khoảng cách giữa các ô nhập */  
+.input-container {
+    margin-bottom: 18px;
     position: relative;
-}  
+}
 
+p {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    border: 1px solid #a88ffc;
+    box-shadow: 0 0 0 2px rgba(168, 143, 252, 0.2);
+    outline: none;
+}
+
+/* Toggle mật khẩu giữ nguyên */
 .toggle-password {
     position: absolute;
     top: 70%;
@@ -58,41 +81,23 @@ body {
     opacity: 1;
 }
 
-p {  
-    margin-bottom: 5px; /* Khoảng cách dưới tiêu đề */  
-    font-weight: bold; /* Làm đậm tiêu đề */  
-    color: black; /* Màu chữ đen */  
-}  
+/* Nút đăng nhập - đổi màu giống đoạn bạn gửi */
+button {
+    background-color: #6FCF97; /* xanh lá dịu */
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-input {  
-    width: 100%; /* Độ rộng 100% cho ô nhập */  
-    padding: 10px; /* Khoảng cách bên trong */  
-    border: 1px solid #ccc; /* Đường viền màu xám nhạt */  
-    border-radius: 7px; /* Bo góc ô nhập */  
-    font-size: 14px; /* Kích thước chữ */  
-    transition: border 0.3s; /* Hiệu ứng chuyển tiếp */  
-}  
-
-input:focus {  
-    border: 1px solid black; /* Đường viền đen khi ô nhập được chọn */  
-    outline: none; /* Không hiển thị đường bao quanh ô nhập */  
-}  
-
-button {  
-    background-color: black; /* Nền nút đen */  
-    color: white; /* Chữ trắng */  
-    border: none; /* Không có đường viền */  
-    padding: 10px; /* Khoảng cách bên trong */  
-    width: 100%; /* Độ rộng 100% */  
-    border-radius: 4px; /* Bo góc nút */  
-    font-size: 14px; /* Kích thước chữ */  
-    cursor: pointer; /* Con trỏ khi di chuột */  
-    transition: background-color 0.3s; /* Hiệu ứng chuyển tiếp cho màu nền */  
-}  
-
-button:hover {  
-    background-color: #333; /* Màu nền khi di chuột vào nút */  
-}  
+button:hover {
+    background-color: #5bc68d;
+}
 
 input[type="password"]::-ms-reveal,
 input[type="password"]::-webkit-credentials-auto-fill-button {
