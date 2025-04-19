@@ -58,9 +58,13 @@
             <!-- Phần tiêu đề riêng biệt -->  
             <section class="title-section">  
                 <h1>All account</h1>  
+                <div class="button-container">  
+                    <button class="history-button" id="showHistoryBtn">History</button>  
+                
                 <button class="add-account">  
                     <img src="assets/img/Buttonsaddcount.png" alt="">  
                 </button>  
+                </div> 
             </section>  
         
             <!-- Phần bảng dữ liệu riêng -->  
@@ -140,6 +144,44 @@
             </div>
         </div>
     </div>
+
+    <main class="history-content" id="historyContent">  
+        <h1>History</h1>  
+        <table>  
+            <thead>  
+                <tr>  
+                    <th>STT</th>  
+                    <th>Người thao tác</th>  
+                    <th>Hành động</th>  
+                    <th>Đối tượng</th>  
+                    <th>Thời gian</th>  
+                </tr>  
+            </thead>  
+            <tbody>  
+                <tr>  
+                    <td>1</td>  
+                    <td>A</td>  
+                    <td>Thêm</td>  
+                    <td>user: dat</td>  
+                    <td>15/04 10:00</td>  
+                </tr>  
+                <tr>  
+                    <td>2</td>  
+                    <td>B</td>  
+                    <td>Xóa</td>  
+                    <td>user: huy</td>  
+                    <td>14/04 11:12</td>  
+                </tr>  
+                <tr>  
+                    <td>3</td>  
+                    <td>C</td>  
+                    <td>Sửa</td>  
+                    <td>user: hung</td>  
+                    <td>15/04 12:30</td>  
+                </tr>  
+            </tbody>  
+        </table>  
+    </main> 
 
     <script src="script/admin.js"></script>
 </body>

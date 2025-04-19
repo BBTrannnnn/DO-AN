@@ -209,3 +209,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Tải dữ liệu ban đầu
     loadAccounts();
 });
+
+document.getElementById('showHistoryBtn').addEventListener('click', function() {  
+    document.getElementById('historyContent').style.display = 'block'; // Hiện nội dung  
+    document.getElementById('overlay').style.display = 'flex'; // Hiện overlay  
+});  
+
+document.getElementById('overlay').addEventListener('click', function() {  
+    document.getElementById('historyContent').style.display = 'none'; // Ẩn nội dung  
+    document.getElementById('overlay').style.display = 'none'; // Ẩn overlay  
+});  
