@@ -19,7 +19,7 @@ with app.app_context():
     db.create_all()
     # Thêm tài khoản admin mặc định nếu chưa có
     if not User.query.filter_by(username='admin').first():
-        admin_user = User(username='admin', password='admin123', role='admin')
+        admin_user = User(username='admin', password='admin123', role='Admin')
         db.session.add(admin_user)
         db.session.commit()
 

@@ -17,7 +17,7 @@ def get_users():
         "password": u.password,
         "role": u.role
     } for u in users])
-@auth.route('/login', methods=['POST'])
+
 
 
 # Danh sách các thao tác trong lịch sử
@@ -32,9 +32,7 @@ def get_history():
     } for h in histories]), 200
 
 
-# Danh sách payrolls
-from flask import jsonify
-from sqlalchemy.orm import joinedload
+
 
 @auth.route('/get_payrolls', methods=['GET'])
 def get_payrolls():
@@ -63,6 +61,7 @@ def get_payrolls():
 
 
 # Đăng nhập
+@auth.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -73,10 +72,13 @@ def login():
     if user and password == user.password:  # So sánh mật khẩu trực tiếp
         return jsonify({
             'message': 'Đăng nhập thành công!',
-            'role': user.role
+            'role': user.role.strip().capitalize()
+
         }), 200
     else:
         return jsonify({'message': 'Tên tài khoản hoặc mật khẩu sai!'}), 401
+    
+
     
 #Thêm tài khoản
 @auth.route('/register', methods=['POST'])
@@ -84,7 +86,7 @@ def register():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    role = data.get('role', 'employee')
+    role = data.get('role', 'employee').strip().capitalize()  # Mặc định là 'employee' nếu không có giá trị
 
     # Kiểm tra nếu tài khoản đã tồn tại
     if User.query.filter_by(username=username).first():
@@ -96,8 +98,7 @@ def register():
     db.session.commit()
 
     return jsonify({'message': 'Thêm tài khoản thành công!!'}), 201
-#Thêm thông tin payrolls 
- 
+
 
 
 # Xóa tài khoản
@@ -137,6 +138,7 @@ def update_user():
 
     db.session.commit()
     return jsonify({'message': 'Cập nhật tài khoản thành công'}), 200
+
 
 # Ghi nhận lịch sử thao tác
 @auth.route('/log_history', methods=['POST'])
