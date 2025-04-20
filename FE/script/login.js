@@ -18,7 +18,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         alert(data.message); 
 
         // Kiểm tra role và điều hướng
-        if (data.role === 'admin') {
+        if (data.role === 'Admin') {
+            localStorage.setItem("admin", username);
             window.location.href = "admin.html";  // Điều hướng đến trang admin
         } else if (data.role === 'Employee') {
             window.location.href = "employee.html";  // Điều hướng đến trang nhân viên

@@ -40,7 +40,67 @@ header {
 .button-container {  
     display: flex; /* Sử dụng flexbox để sắp xếp các nút theo hàng */  
     align-items: center; /* Căn giữa theo chiều dọc */  
-}  
+} 
+
+/* ===================== MODAL LỊCH SỬ ===================== */
+
+.overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+}
+
+#historyModal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+#historyModal h2 {
+    margin-bottom: 20px;
+    color: #212143;
+}
+
+#historyModal .exit-btn {
+    float: right;
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #212143;
+}
+
+.history-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+#historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+#historyTable th, #historyTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#historyTable th {
+    background-color: #f2f2f2;
+}
+
 
 .sidebar-content-wrapper {  
     display: flex;   
@@ -410,21 +470,11 @@ label {
 
 .exit-btn:hover {  
     background-color: #0056b3; /* Màu nền khi hover */  
-}  
-
-.history-content {
-    display: none;   
-    background-color: white;   
-    padding: 20px;   
-    border-radius: 8px;   
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);   
-    width: 70%; /* Chiều rộng của nội dung */  
-    position: absolute; /* Đặt vị trí là absolute */  
-    top: 30%; /* Đặt vị trí từ trên xuống */  
-    left: 50%; /* Đặt vị trí từ bên trái */  
-    transform: translate(-50%, -50%); /* Điều chỉnh để căn giữa */  
-    z-index: 1000; /* Đặt lớp z cao hơn để không bị ẩn */  
 }
+
+
+
+
 
 
 

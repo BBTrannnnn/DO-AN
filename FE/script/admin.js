@@ -11,6 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.querySelector(".confirm-btn");
     const addAccountBtn = document.querySelector(".add-account");
     const searchInput = document.getElementById("searchInput"); 
+    const admin = localStorage.getItem("admin"); // Lấy tên admin từ localStorage
+    const showHistoryBtn = document.getElementById("showHistoryBtn");
+    const historyModal = document.getElementById("historyModal");
+    const historyOverlay = document.getElementById("historyOverlay");
+    const historyCloseBtn = document.getElementById("historyCloseBtn");
+    
 
     
 
@@ -29,7 +35,41 @@ document.addEventListener("DOMContentLoaded", function () {
         allUsers = users;
         renderAccounts(users);
     }
-    function renderAccounts(users) {
+
+
+    async function loadHistory() {
+        try {
+            const res = await fetch("http://localhost:5000/api/get_history");
+            const data = await res.json();
+            const tbody = document.querySelector("#historyTable tbody");
+            tbody.innerHTML = "";
+
+            data.forEach((item, index) => {
+                const tr = document.createElement("tr");
+                const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
+                    timeZone: "Asia/Ho_Chi_Minh",  // Chỉ định múi giờ cho Việt Nam
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                });
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.username}</td>
+                    <td>${item.action}</td>
+                    <td>${item.target_user || "-"}</td>
+                    <td>${formattedTime}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error("Lỗi tải lịch sử:", err);
+        }
+    }
+
+    async function renderAccounts(users) {
         const tableBody = document.querySelector(".account-table tbody");
         tableBody.innerHTML = "";
         
@@ -68,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
-    
 
     // Thêm tài khoản
     async function addAccount() {
@@ -96,7 +135,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (res.ok) {
             showNotification("Thêm tài khoản thành công.");
-            loadAccounts();
+            const currentTime = new Date().toLocaleString("vi-VN", {
+                timeZone: "Asia/Ho_Chi_Minh",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }).replace(/\//g, "-").replace(",", "");
+            await fetch("http://localhost:5000/api/log_history", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "Add",
+                    username: admin,
+                    target_user: username,
+                    timestamp: currentTime
+                })
+            });
+            loadAccounts(); 
         } else {
             showNotification("Thêm tài khoản không thành công!!!");
         }
@@ -115,6 +173,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (res.ok) {
             showNotification("Cập nhật tài khoản thành công.");
+            const currentTime = new Date().toLocaleString("vi-VN", {
+                timeZone: "Asia/Ho_Chi_Minh",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }).replace(/\//g, "-").replace(",", "");
+            await fetch("http://localhost:5000/api/log_history", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "Update",
+                    username: admin,
+                    target_user: selectedUser,
+                    timestamp: currentTime
+                })
+            });
+            
             loadAccounts();
         } else {
             showNotification("Cập nhật tài khoản thất bại!!!!");
@@ -132,6 +210,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (res.ok) {
             showNotification("Xóa tài khoản thành công.");
+            const currentTime = new Date().toLocaleString("vi-VN", {
+                timeZone: "Asia/Ho_Chi_Minh",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }).replace(/\//g, "-").replace(",", "");
+            await fetch("http://localhost:5000/api/log_history", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "Delete",
+                    username: admin,
+                    target_user: selectedUser,
+                    timestamp: currentTime
+                })
+            });
             loadAccounts();
         } else {
             showNotification("Xóa tài khoản thất bại.");
@@ -186,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
             overlay.style.display = "none";
         });
     });
-
+    
     overlay.addEventListener("click", function () {
         accountModal.style.display = "none";
         deleteAccountModal.style.display = "none";
@@ -205,17 +302,28 @@ document.addEventListener("DOMContentLoaded", function () {
         renderAccounts(filtered);
     });
 
+    // Mở modal
+    showHistoryBtn.addEventListener("click", () => {
+        loadHistory();
+        historyModal.style.display = "block";
+        historyOverlay.style.display = "block";
+    });
 
+    // Đóng modal
+    historyCloseBtn.addEventListener("click", closeHistoryModal);
+    historyOverlay.addEventListener("click", closeHistoryModal);
+
+    function closeHistoryModal() {
+        historyModal.style.display = "none";
+        historyOverlay.style.display = "none";
+    }
+
+    // 
     // Tải dữ liệu ban đầu
     loadAccounts();
 });
 
-document.getElementById('showHistoryBtn').addEventListener('click', function() {  
-    document.getElementById('historyContent').style.display = 'block'; // Hiện nội dung  
-    document.getElementById('overlay').style.display = 'flex'; // Hiện overlay  
-});  
 
-document.getElementById('overlay').addEventListener('click', function() {  
-    document.getElementById('historyContent').style.display = 'none'; // Ẩn nội dung  
-    document.getElementById('overlay').style.display = 'none'; // Ẩn overlay  
-});  
+
+
+
