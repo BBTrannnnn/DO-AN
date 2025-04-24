@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.user import User,db
 from models.history import History,db
 from models.payrolls import Payroll,db
-from models.employee import Employee,db
+from models.employees import Employee,db
 from datetime import datetime
 
 auth = Blueprint('auth', __name__)

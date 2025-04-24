@@ -4,7 +4,7 @@ from config import Config
 from models import db
 from models.user import User
 from routes.auth import auth
-
+from routes.employee_route import employee_bp
 
 
 app = Flask(__name__)
@@ -14,6 +14,7 @@ db.init_app(app)
 CORS(app)
 
 app.register_blueprint(auth, url_prefix='/api')
+app.register_blueprint(employee_bp, url_prefix='/api/employees')
 
 with app.app_context():
     db.create_all()
