@@ -233,10 +233,13 @@ th, td {
     padding: 12px;  
     text-align: left;  
     border: 1px solid #ddd;  
+    font-size: 15px;
+    font-weight: 100;
 }  
 
 th {  
     background-color: #f4f4f4;  
+    
 }  
 
 button {  
