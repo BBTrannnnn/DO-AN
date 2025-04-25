@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Employee</title>
+    <link rel="stylesheet" href="assets/css/employee.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="assets/img/Main logo.png" alt="">
+        </div>
+        <div class="settings">
+            <img src="assets/img/Header.png" alt="">
+        </div>
+    </header>
+
+    <div class="sidebar-content-wrapper">  
+        <!-- Navigation Menu -->  
+        <nav class="sidebar">  
+            <ul>  
+                <li>Admin</li>  
+                <li>Employee</li>  
+                <li>Payroll</li>  
+                <li>Department & Title</li>  
+                <li>Reports & Analytics</li>  
+                <li>Notifications</li>  
+            </ul>  
+        </nav>  
+    
+        <div class="content-wrapper">  
+            <!-- Phần tiêu đề riêng biệt -->  
+            <section class="title-section">
+                <h1>Employees List</h1>
+                <button class="add-employee-button">
+                    <span class="add-icon">+</span> Add Employee
+                </button>
+            </section>
+            
+            
+            
+        
+            <!-- Phần bảng dữ liệu riêng -->  
+            <main>  
+                <div class="search-box">  
+                    <input type="text" id="searchInput" placeholder="Search">  
+                    <img src="assets/img/searchicon.png" alt="Search Icon" class="search-icon">  
+
+                </div>  
+        
+                <div class="employee-info">  
+                    <p>Employees information</p>  
+                </div>  
+        
+                <table class="employee-table">  
+                    <thead>  
+                        <tr> 
+                            <th>Id</th>  
+                            <th>Name</th>  
+                            <th>Department</th>  
+                            <th>JobTitle</th>  
+                            <th>Working Status</th>
+                            <th>Edit</th>  
+                        </tr>  
+                    </thead>  
+                    <tbody>  
+                        <!-- Dữ liệu sẽ được render từ JavaScript -->  
+                    </tbody>  
+                </table>  
+            </main>  
+        </div>  
+    </div>  
+
+    <div id="overlay" class="overlay"></div>
+
+
+    <!-- Modal thêm/sửa nhân viên -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <h2>Employee details</h2>
+            
+            <label>ID</label>
+            <input type="text" placeholder="Enter ID">
+    
+            <label>Name</label>
+            <input type="text" placeholder="Enter Name">
+    
+            <label>Gender</label>
+            <input type="text" placeholder="Enter Gender">
+    
+            <label>Department</label>
+            <select>
+                <option disabled selected>---</option>
+                <option>HR Management</option>
+                <option>Payroll Management</option>
+                <option>Employee</option>
+                <option>Admin</option>
+            </select>
+    
+            <label>Email</label>
+            <input type="email" placeholder="Enter Email">
+    
+            <label>Working status</label>
+            <input type="date">
+    
+            <label>DOB</label>
+            <input type="date">
+    
+            <label>Job Title</label>
+            <select>
+                <option disabled selected>---</option>
+                <option>Tax Officer</option>
+                <option>a</option>
+                <option>b</option>
+                <option>c</option>
+            </select>
+    
+            <div class="modal-buttons">
+                <button id="closeBtn" class="close-btn">Thoát</button>
+                <button class="ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal thông báo
+    <div id="notificationModal" class="modal">
+        <div class="notification-content">
+            <h2>Notification</h2>
+            <p>Information updated successfully!</p>
+            <div class="modal-buttons">
+                <button class="exit-btn">Exit</button>
+            </div>
+        </div>
+    </div>
+
+     Modal xác nhận xóa tài khoản 
+    <div id="deleteAccountModal" class="modal">
+        <div class="notification-content">
+            <h2>Delete account</h2>
+            <p>Are you sure you want to delete this account? Once you delete it, any related information will no longer
+                be recoverable.</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="deleteAccount()">OK</button>
+                <button class="exit-btn" onclick="closeModal('deleteAccountModal')">Exit</button>
+            </div>
+        </div>
+    </div> -->
+
+    <script src="script/employee.js"></script>
+</body>
+
+</html>
