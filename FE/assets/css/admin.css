@@ -20,21 +20,18 @@ header {
 }
 
 .history-button {  
-    background-color: #212143; /* Màu nền */  
-    color: white; /* Màu chữ */  
-    border: none;  
-    width: 138px;
-    height: 32px;
-    border-radius: 6px; /* Bo tròn viền */  
-    padding: 10px; /* Khoảng cách bên trong */  
-    font-size: 14px; /* Kích thước chữ */  
-    cursor: pointer; /* Con trỏ khi di chuột */  
-    transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */  
-    opacity: 0.97;
-}  
-
-.history-button:hover {  
-    background-color: #2a2a8c; /* Màu nền khi di chuột */  
+    background-color: #000000; /* Black background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Adjust padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 5px; /* Space between the plus sign and text */
 }  
 
 .button-container {  
@@ -172,11 +169,18 @@ h1 {
 }
 
 .add-account {
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 10px;
+    background-color: #000000; /* Black background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Adjust padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 5px; /* Space between the plus sign and text */
 }
 
 /* Bố cục bảng tách riêng */
@@ -228,7 +232,7 @@ table {
 th, td {  
     padding: 12px;  
     text-align: left;  
-    border-bottom: 1px solid #ddd;  
+    border: 1px solid #ddd;  
 }  
 
 th {  
@@ -244,13 +248,13 @@ button {
 }  
 
 .edit-btn {  
-    background-color: #007bff;  
-    color: white;  
+    background-color: #CFCFCF;  
+    color: #F5F5F5;  
 }  
 
 .delete-btn {  
-    background-color: #dc3545;  
-    color: white;  
+    background-color: #CFCFCF;  
+    color: #F5F5F5;  
 }  
 
 .edit-btn:hover {  

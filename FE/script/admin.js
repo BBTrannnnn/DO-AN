@@ -81,8 +81,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${user.password}</td>
                 <td>${user.role}</td>
                 <td>
-                    <button class="edit-btn">Edit</button>
-                    <button class="delete-btn">Delete</button>
+                    <button class="edit-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
+                        <img src="assets/img/pencil-write.png" alt="Edit" style="width: 12px; height: 12px; transform: scale(1.8); display: block; margin: 3.5px; vertical-align: middle;">
+                    </button>
+                     <button class="delete-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
+                        <img src="assets/img/bin.png" alt="Edit" style="width: 8px; height: 8px; transform: scale(1.8); display: block; margin: 4px; vertical-align: middle;">
+                    </button>
                 </td>
             `;
             tableBody.appendChild(tr);
