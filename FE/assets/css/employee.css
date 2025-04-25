@@ -179,11 +179,34 @@ th, td {
     padding: 12px;  
     text-align: left;  
     border: 1px solid #ddd;  
-}  
+}
 
 th {  
     background-color: #f4f4f4;  
 }  
+
+.employeeID{
+    width: 30px;
+}
+.employeeName{
+    width: 150px;
+}
+.employeeDepartment{
+    width: 120px;
+}
+.employeeJobTitle{
+    width: 150px;
+}
+.employeeEmail{
+    width: 150px;
+}
+.employeeWorkingStatus{
+    width: 120px;
+}
+.employeeEdit{
+    width: 60px;
+}
+
 
 
 

@@ -60,12 +60,13 @@
                 <table class="employee-table">  
                     <thead>  
                         <tr> 
-                            <th>Id</th>  
-                            <th>Name</th>  
-                            <th>Department</th>  
-                            <th>JobTitle</th>  
-                            <th>Working Status</th>
-                            <th>Edit</th>  
+                            <th class = "employeeID">Id</th>  
+                            <th class = "employeeName">Name</th>   
+                            <th class = "employeeDepartment">Department</th>  
+                            <th class = "employeeJobTitle">Job Title</th>  
+                            <th class = "employeeEmail">Email</th>  
+                            <th class = "employeeWorkingStatus">Working Status</th>  
+                            <th class = "employeeEdit">Edit</th>  
                         </tr>  
                     </thead>  
                     <tbody>  
@@ -94,12 +95,14 @@
             <input type="text" placeholder="Enter Gender">
     
             <label>Department</label>
-            <select>
+            <select id="departmentSelect">
                 <option disabled selected>---</option>
-                <option>HR Management</option>
-                <option>Payroll Management</option>
-                <option>Employee</option>
-                <option>Admin</option>
+                <option>IT</option>
+                <option>HR</option>
+                <option>Sales</option>
+                <option>Marketing</option>
+                <option>Finance</option>
+                <option>Administration</option>
             </select>
     
             <label>Email</label>
@@ -112,12 +115,8 @@
             <input type="date">
     
             <label>Job Title</label>
-            <select>
+            <select id="jobTitleSelect">
                 <option disabled selected>---</option>
-                <option>Tax Officer</option>
-                <option>a</option>
-                <option>b</option>
-                <option>c</option>
             </select>
     
             <div class="modal-buttons">
@@ -127,7 +126,7 @@
         </div>
     </div>
 
-    <!-- Modal thông báo
+    <!-- Modal thông báo -->
     <div id="notificationModal" class="modal">
         <div class="notification-content">
             <h2>Notification</h2>
@@ -138,7 +137,7 @@
         </div>
     </div>
 
-     Modal xác nhận xóa tài khoản 
+    <!-- Modal xác nhận xóa tài khoản  -->
     <div id="deleteAccountModal" class="modal">
         <div class="notification-content">
             <h2>Delete account</h2>
@@ -149,7 +148,7 @@
                 <button class="exit-btn" onclick="closeModal('deleteAccountModal')">Exit</button>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <script src="script/employee.js"></script>
 </body>
