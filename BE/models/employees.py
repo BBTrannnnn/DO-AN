@@ -16,5 +16,17 @@ class Employee(db.Model):
 
     payrolls = db.relationship('Payroll', backref='employee', lazy=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'gender': self.gender,
+            'department': self.department,
+            'job_title': self.job_title,
+            'email': self.email,
+            'working_status': self.working_status.isoformat() if self.working_status else None,
+            'dob': self.dob.isoformat() if self.dob else None
+        }
+    
     def __repr__(self):
         return f"<Employee {self.id} - {self.name}>"

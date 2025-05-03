@@ -5,6 +5,7 @@ from models import db
 from models.user import User
 from routes.auth import auth
 from routes.employee_route import employee_bp
+from routes.payroll_route import payroll_bp
 
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ CORS(app)
 
 app.register_blueprint(auth, url_prefix='/api')
 app.register_blueprint(employee_bp, url_prefix='/api/employees')
+app.register_blueprint(payroll_bp, url_prefix='/api/payrolls')
 
 with app.app_context():
     db.create_all()
