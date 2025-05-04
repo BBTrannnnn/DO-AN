@@ -132,10 +132,12 @@ main {
 
 .filter-reset-box {
     display: flex;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-    height: 42px;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 14px;
+    background-color: white;
 }
 .filter-reset-box {
     position: relative;  /* Đảm bảo modal sẽ xuất hiện theo vị trí của nút filter */

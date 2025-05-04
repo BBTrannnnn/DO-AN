@@ -20,97 +20,98 @@
         </div>
     </header>
 
-    <div class="sidebar-content-wrapper">  
-        <!-- Navigation Menu -->  
-        <nav class="sidebar">  
-            <ul>  
-                <li>
+    <div class="sidebar-content-wrapper">
+        <!-- Navigation Menu -->
+        <nav class="sidebar">
+            <ul>
+                <li id="account">
                     <img src="assets/img/iconNav/account 1.png" alt="">
                     Account
-                </li>  
-                <li>
+                </li>
+                <li id="employee">
                     <img src="assets/img/iconNav/user.png" alt="">
                     Employee
-                </li>  
-                <li>
+                </li>
+                <li id="payroll">
                     <img src="assets/img/iconNav/dollar 1.png" alt="">
                     Payroll
-                </li>  
-                <li>
+                </li>
+                <li id="attendance">
                     <img src="assets/img/iconNav/attendance 1.png" alt="">
                     Attendance
-                </li> 
+                </li>
                 <li>
                     <img src="assets/img/iconNav/suitcase.png" alt="">
                     Department & Title
-                </li>  
+                </li>
                 <li>
                     <img src="assets/img/iconNav/report 1.png" alt="">
-                    Reports & Analytics</li>  
+                    Reports & Analytics
+                </li>
                 <li>
                     <img src="assets/img/iconNav/bell.png" alt="">
                     Notifications
-                </li>  
-            </ul>  
-        </nav>  
-    
-        <div class="content-wrapper">  
-            <!-- Phần tiêu đề riêng biệt -->  
-            <section class="title-section">  
-                <h1>Attendance</h1>  
-            </section>  
-        
-            <!-- Phần bảng dữ liệu riêng -->  
-            <main>  
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-wrapper">
+            <!-- Phần tiêu đề riêng biệt -->
+            <section class="title-section">
+                <h1>Attendance</h1>
+            </section>
+
+            <!-- Phần bảng dữ liệu riêng -->
+            <main>
                 <div class="top-bar">
-                    <div class="search-box">  
-                      <input type="text" id="searchInput" placeholder="Search">  
-                      <img src="assets/img/searchicon.png" alt="Search Icon" class="search-icon">  
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search">
+                        <img src="assets/img/searchicon.png" alt="Search Icon" class="search-icon">
                     </div>
-                  
+
                     <div class="filter-bar">
-                      <div class="filter-item">
-                        <img src="assets/img/Vector.png" alt="Filter" class="icon" />
+                        <div class="filter-item">
+                            <img src="assets/img/Vector.png" alt="Filter" class="icon" />
+                            <div class="divider"></div>
+                            <span class="label">Time</span>
+                            <img src="assets/img/arrowdown.png" alt="Arrow" class="arrow-icon" />
+                        </div>
                         <div class="divider"></div>
-                        <span class="label">Time</span>
-                        <img src="assets/img/arrowdown.png" alt="Arrow" class="arrow-icon" />
-                      </div>
-                      <div class="divider"></div>
-                      <div class="filter-item">
-                        <img src="assets/img/reset.png" alt="Reset" class="icon" />
-                        <span class="label">Reset filter</span>
-                      </div>
+                        <div class="filter-item">
+                            <img src="assets/img/reset.png" alt="Reset" class="icon" />
+                            <span class="label">Reset filter</span>
+                        </div>
                     </div>
-                  </div>
+                </div>
 
 
-                <div class="account-info">  
-                    <p>Attendance information</p>  
-                </div>  
-        
-                <table class="account-table">  
-                    <thead>  
-                        <tr> 
-                            <th>Id</th>  
-                            <th>Name</th>  
-                            <th>Department</th>  
-                            <th>Job title</th>  
-                            <th>Working days</th>  
-                            <th>Absebces</th>  
-                            <th>Leave days</th>  
-                            <th>Time</th>  
+                <div class="account-info">
+                    <p>Attendance information</p>
+                </div>
 
-                        </tr>  
-                    </thead>  
-                    <tbody>  
-                        <!-- Dữ liệu sẽ được render từ JavaScript -->  
-                    </tbody>  
-                </table>  
-            </main>  
-        </div>  
-    </div>  
+                <table class="account-table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Job title</th>
+                            <th>Working days</th>
+                            <th>Absebces</th>
+                            <th>Leave days</th>
+                            <th>Time</th>
 
-    <div id="overlay" class="overlay"></div>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu sẽ được render từ JavaScript -->
+                    </tbody>
+                </table>
+            </main>
+        </div>
+    </div>
+
+    <script src="script/attendance.js"></script>
 
 
 
