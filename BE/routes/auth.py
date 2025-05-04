@@ -4,6 +4,7 @@ from models.history import History,db
 from models.payrolls import Payroll,db
 from models.employees import Employee,db
 from datetime import datetime
+import pytz
 
 auth = Blueprint('auth', __name__)
 
@@ -144,14 +145,38 @@ def update_user():
 @auth.route('/log_history', methods=['POST'])
 def log_history():
     data = request.get_json()
+
     action = data.get('action')
     username = data.get('username')
     target_user = data.get('target_user')
+    timestamp_iso = data.get('timestamp')
 
-    history = History(action=action, username=username, target_user=target_user)
+    # Kiểm tra timestamp đầu vào
+    if not timestamp_iso:
+        return jsonify({'error': 'Thiếu timestamp'}), 400
+
+    try:
+        # Chuyển từ ISO UTC về datetime object
+        utc_time = datetime.fromisoformat(timestamp_iso.replace("Z", "+00:00"))
+
+        # Chuyển sang múi giờ Việt Nam
+        vietnam_tz = pytz.timezone("Asia/Ho_Chi_Minh")
+        vn_time = utc_time.astimezone(vietnam_tz)
+
+    except Exception as e:
+        return jsonify({'error': 'Định dạng thời gian không hợp lệ'}), 400
+
+    # Tạo đối tượng History và lưu vào database
+    history = History(
+        action=action,
+        username=username,
+        target_user=target_user,
+        timestamp=vn_time  # giả sử trường timestamp của bạn dùng DateTime
+    )
+
     db.session.add(history)
     db.session.commit()
-    
+
     return jsonify({'message': 'Lịch sử được ghi nhận!'}), 200
 
 
