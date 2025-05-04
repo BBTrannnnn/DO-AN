@@ -139,15 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (res.ok) {
             showNotification("Thêm tài khoản thành công.");
-            const currentTime = new Date().toLocaleString("vi-VN", {
-                timeZone: "Asia/Ho_Chi_Minh",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            }).replace(/\//g, "-").replace(",", "");
+            const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
             await fetch("http://localhost:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -177,15 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (res.ok) {
             showNotification("Cập nhật tài khoản thành công.");
-            const currentTime = new Date().toLocaleString("vi-VN", {
-                timeZone: "Asia/Ho_Chi_Minh",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            }).replace(/\//g, "-").replace(",", "");
+            const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
             await fetch("http://localhost:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -214,15 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (res.ok) {
             showNotification("Xóa tài khoản thành công.");
-            const currentTime = new Date().toLocaleString("vi-VN", {
-                timeZone: "Asia/Ho_Chi_Minh",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            }).replace(/\//g, "-").replace(",", "");
+            const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
             await fetch("http://localhost:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

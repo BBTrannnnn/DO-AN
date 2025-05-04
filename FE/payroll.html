@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll</title>
+    <link rel="stylesheet" href="assets/css/payroll.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="assets/img/Main logo.png" alt="">
+        </div>
+        <div class="settings">
+            <img src="assets/img/Header.png" alt="">
+        </div>
+    </header>
+
+    <div class="sidebar-content-wrapper">
+        <!-- Navigation Menu -->
+        <nav class="sidebar">
+            <ul>
+                <li>
+                    <img src="assets/img/iconNav/account 1.png" alt="">
+                    Account
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/user.png" alt="">
+                    Employee
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/dollar 1.png" alt="">
+                    Payroll
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/attendance 1.png" alt="">
+                    Attendance
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/suitcase.png" alt="">
+                    Department & Title
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/report 1.png" alt="">
+                    Reports & Analytics
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/bell.png" alt="">
+                    Notifications
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-wrapper">
+            <!-- Phần tiêu đề riêng biệt -->
+            <section class="title-section">
+                <h1>Payroll</h1>
+            </section>
+            <!-- Phần bảng dữ liệu riêng -->
+            <main>
+                <div class="search-row">
+                    
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search">
+                        <img src="assets/img/searchicon.png" alt="Search Icon" class="search-icon">
+                    </div>
+
+                    <div class="filter-reset-box">
+
+                        <div class="vector-icon">
+                            <img src="assets/img/Vector.png" alt="Vector Icon" class="btn-icon">
+                        </div>
+
+                        <button class="filter-button">
+                            <p>Time</p>
+                            <img src="assets/img/Path.png" alt="Filter Icon" class="btn-icon">
+                        </button>
+
+                        <div id="monthYearModal" class="modal">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button onclick="prevYear()">&#8249;</button>
+                                <span id="modalYear">2025</span>
+                                <button onclick="nextYear()">&#8250;</button>
+                              </div>
+                              <div class="modal-months">
+                                <!-- Các nút tháng -->
+                                <button onclick="selectMonth(this)">Jan</button>
+                                <button onclick="selectMonth(this)">Feb</button>
+                                <button onclick="selectMonth(this)">Mar</button>
+                                <button onclick="selectMonth(this)">Apr</button>
+                                <button onclick="selectMonth(this)">May</button>
+                                <button onclick="selectMonth(this)">June</button>
+                                <button onclick="selectMonth(this)">July</button>
+                                <button onclick="selectMonth(this)">Aug</button>
+                                <button onclick="selectMonth(this)">Sep</button>
+                                <button onclick="selectMonth(this)">Oct</button>
+                                <button onclick="selectMonth(this)">Nov</button>
+                                <button onclick="selectMonth(this)">Dec</button>
+                              </div>
+                              <div class="modal-footer">
+                                <button onclick="applyMonth()">Apply</button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <button class="reset-button">
+                            <img src="assets/img/ic-replay-24px.png" alt="Reset Icon" class="btn-icon">
+                            <p>Reset filter</p>
+                        </button>
+                    </div>
+                </div>
+
+            
+
+                <div class="payroll-info">
+                    <p>Payroll information</p>
+                </div>
+
+                <table class="payroll-table">
+                    <thead>
+                        <tr>
+                            <th class="ID">ID</th>
+                            <th class="employeeID">Employee ID</th>
+                            <th class="employeeName">Name</th>
+                            <th class="employeeDepartment">Department</th>
+                            <th class="employeeJobTitle">Job Title</th>
+                            <th class="salary">Salary</th>
+                            <th class="time">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu sẽ được render từ JavaScript -->
+                    </tbody>
+                </table>
+
+
+                <!-- <div class="navigation">
+                    <button class="prev-btn">
+                        Prev
+                    </button>
+
+                    <button class="next-btn">
+                        Next
+                    </button>
+                </div> -->
+
+
+
+            </main>
+        </div>
+    </div>
+
+    <script src="script/payroll.js"></script>
+</body>
+
+</html>

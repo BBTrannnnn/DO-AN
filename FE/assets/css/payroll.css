@@ -1,0 +1,351 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFF;
+    color: white;
+    padding: 15px 20px;
+}
+
+.sidebar-content-wrapper {  
+    display: flex;   
+    width: 100%; 
+    height: 900px;
+}  
+
+/* Sidebar Styles */  
+.sidebar {  
+    background-color: #F7F7F7;
+    width: 10%; 
+    padding: 20px;  
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);  
+    border-right: 1px solid #ddd; /* Border on the right for separation */  
+}  
+
+.sidebar ul {  
+    list-style-type: none;  
+    padding: 0;  
+    margin: 0;  
+}  
+
+.sidebar li {  
+    display: flex; /* Flex display for icon and text */  
+    align-items: center; /* Center vertically */  
+    padding: 10px 0;  
+    cursor: pointer;  
+    font-size: 16px; /* Adjust font size */  
+    color: #333; /* Darker text color */  
+}  
+
+.sidebar li:hover {  
+    background-color: #E6E6E6; /* Highlight on hover */  
+}  
+
+.sidebar li img {  
+    width: 20px; /* Width for icons */  
+    height: 20px; /* Height for icons */  
+    margin-right: 10px; /* Space between icon and text */  
+}  
+
+/* Content Wrapper Styles */  
+.content-wrapper {  
+    width: 90%; /* 70% width for the content */  
+    padding: 20px; /* Add padding for the content area */  
+}  
+
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.settings img {
+    cursor: pointer;
+}
+
+/* Phần tiêu đề tách biệt */
+.title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 20px auto;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+
+
+
+/* main */
+main {
+    width: 90%;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 150px;
+    margin: 20px 0;
+}
+
+.search-box {
+    position: relative;
+    display: inline-block;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    pointer-events: none;
+}
+
+.filter-reset-box {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 42px;
+}
+.filter-reset-box {
+    position: relative;  /* Đảm bảo modal sẽ xuất hiện theo vị trí của nút filter */
+    overflow: visible; /* Đảm bảo phần tử này không che khuất modal */
+}
+
+
+.filter-button,
+.reset-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    height: 100%;
+}
+
+.filter-button p,
+.reset-button p {
+    color: #747678;
+}
+
+.reset-button {
+    border-left: 1px solid #ccc;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.vector-icon {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-right: 1px solid #ccc;
+    height: 100%;
+}
+
+.btn-icon {
+    width: 15px;
+}
+
+.payroll-info p {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.ID {
+    width: 40px;
+}
+
+.employeeID {
+    width: 40px;
+}
+.employeeName {
+    width: 160px;
+}
+
+.employeeDepartment {
+    width: 160px;
+}
+
+.employeeJobTitle {
+    width: 160px;
+}
+
+.salary {
+    width: 80px;
+}
+
+.time {
+    width: 80px;
+}
+
+
+
+
+button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* .prev-btn {
+    padding: 10px 15px;
+    border: 1px solid #ccc ;
+    border-radius: 5px;
+    background-color: #fff;
+}
+.next-btn {
+    padding: 10px 15px;
+    border: 1px solid #ccc ;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.prev-btn:hover, 
+.next-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.navigation {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+} */
+
+.modal {
+    display: none;
+    position: absolute;
+    top: 110%; 
+    left: -70%;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 30px;
+    width: 500px;
+    z-index: 1000; /* Đảm bảo z-index cao hơn các phần tử khác */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.modal-header {
+    display: flex;
+    align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+    justify-content: center; /* Căn giữa các phần tử theo chiều ngang */
+    margin-bottom: 20px; /* Thêm khoảng cách dưới phần header */
+}
+
+.modal-header button {
+    background: none;
+    border: 1px solid #ccc;
+    font-size: 14px; /* Giảm kích thước font cho nút */
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 3px 8px; /* Padding nhỏ hơn để làm nút nhỏ lại */
+    width: auto;
+    height: auto;
+    transition: background-color 0.3s ease;
+    margin: 0 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-header button:hover {
+    background-color: #f0f0f0;
+}
+
+#modalYear {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.modal-months {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-months button {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    cursor: pointer;
+    background: #f9f9f9;
+}
+
+.modal-months button.active {
+    background-color: #333;
+    color: white;
+}
+.modal-months button:hover {
+    background-color: #555; /* Màu nền thay đổi khi hover */
+}
+
+.modal-footer {
+    text-align: center;
+}
+
+.modal-footer button {
+    padding: 10px 40px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.modal-footer button:hover {
+    background-color: #555; /* Màu nền thay đổi khi hover */
+}
