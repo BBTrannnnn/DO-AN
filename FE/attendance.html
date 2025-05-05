@@ -59,13 +59,16 @@
             <!-- Phần tiêu đề riêng biệt -->
             <section class="title-section">
                 <h1>Attendance</h1>
+                <div class="button-container">
+                    <button class="history-button" id="showHistoryBtn">History</button>
 
-                <button class="add-attendance">
-                    <span>+</span> Add Attendance
-                </button>
+                    <button class="add-attendance">
+                        <span>+</span> Add
+                    </button>
+                </div>
             </section>
 
-            
+           
 
             <!-- Phần bảng dữ liệu riêng -->
             <main>
@@ -109,12 +112,12 @@
                             <th>Time</th>
                             <th>Edit</th>
                         </tr>
-                        
-                        
+
+
                     </thead>
                     <tbody>
                         <!-- Dữ liệu sẽ được render từ JavaScript -->
-                         <!--  2 nút edit và delete
+                        <!--  2 nút edit và delete
 
                         <button class="edit-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
                         <img src="assets/img/pencil-write.png" alt="Edit" style="width: 12px; height: 12px; transform: scale(1.8); display: block; margin: 3.5px; vertical-align: middle;">

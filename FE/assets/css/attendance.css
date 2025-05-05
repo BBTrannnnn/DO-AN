@@ -225,3 +225,26 @@ th {
     justify-content: center; /* Center horizontally */
     gap: 5px; /* Space between the plus sign and text */
 }
+
+
+/* Phần nút history */
+.history-button {  
+    background-color: #000000; /* Black background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Adjust padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 5px; /* Space between the plus sign and text */
+}  
+
+.button-container {  
+    display: flex; /* Sử dụng flexbox để sắp xếp các nút theo hàng */  
+    align-items: center; /* Căn giữa theo chiều dọc */  
+    gap: 10px;
+} 
