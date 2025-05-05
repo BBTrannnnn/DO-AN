@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department & Job Title</title>
+    <link rel="stylesheet" href="assets/css/department_jobtitle.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="assets/img/Main logo.png" alt="">
+        </div>
+        <div class="settings">
+            <img src="assets/img/Header.png" alt="">
+        </div>
+    </header>
+
+    <div class="sidebar-content-wrapper">
+        <!-- Navigation Menu -->
+        <nav class="sidebar">
+            <ul>
+                <li id="account">
+                    <img src="assets/img/iconNav/account 1.png" alt="">
+                    Account
+                </li>
+                <li id="employee">
+                    <img src="assets/img/iconNav/user.png" alt="">
+                    Employee
+                </li>
+                <li id="payroll">
+                    <img src="assets/img/iconNav/dollar 1.png" alt="">
+                    Payroll
+                </li>
+                <li id="attendance">
+                    <img src="assets/img/iconNav/attendance 1.png" alt="">
+                    Attendance
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/suitcase.png" alt="">
+                    Department & Title
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/report 1.png" alt="">
+                    Reports & Analytics
+                </li>
+                <li>
+                    <img src="assets/img/iconNav/bell.png" alt="">
+                    Notifications
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content-wrapper">
+            <!-- Phần tiêu đề riêng biệt -->
+            <section class="title-section">
+                <h1>Department & Job Title</h1>
+
+                <button class="add-department-jobtitle">
+                    <span>+</span> Add Department & Job Title
+                </button>
+            </section>
+
+            
+
+            <!-- Phần bảng dữ liệu riêng -->
+            <main>
+                <div class="top-bar">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search">
+                        <img src="assets/img/searchicon.png" alt="Search Icon" class="search-icon">
+                    </div>
+
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <img src="assets/img/Vector.png" alt="Filter" class="icon" />
+                            <div class="divider"></div>
+                            <span class="label">Time</span>
+                            <img src="assets/img/arrowdown.png" alt="Arrow" class="arrow-icon" />
+                        </div>
+                        <div class="divider"></div>
+                        <div class="filter-item">
+                            <img src="assets/img/reset.png" alt="Reset" class="icon" />
+                            <span class="label">Reset filter</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="account-info">
+                    <p>Information</p>
+                </div>
+
+                <table class="account-table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Job title</th>
+                            <th>Working days</th>
+                            <th>Absebces</th>
+                            <th>Leave days</th>
+                            <th>Time</th>
+                            <th>Edit</th>
+                        </tr>
+                        
+                        
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu sẽ được render từ JavaScript -->
+                         <!--  2 nút edit và delete
+
+                        <button class="edit-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
+                        <img src="assets/img/pencil-write.png" alt="Edit" style="width: 12px; height: 12px; transform: scale(1.8); display: block; margin: 3.5px; vertical-align: middle;">
+                        </button>
+                         <button class="delete-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
+                        <img src="assets/img/bin.png" alt="Edit" style="width: 8px; height: 8px; transform: scale(1.8); display: block; margin: 4px; vertical-align: middle;">
+                         </button>
+                         -->
+                    </tbody>
+                </table>
+            </main>
+        </div>
+    </div>
+
+    <script src="script/department_jobtitle.js"></script>
+
+
+
+</body>
+
+</html>
