@@ -1,6 +1,5 @@
-
 from flask import Blueprint, jsonify, request
-from models import db, Employee
+from models.employees import db, Employee
 from datetime import datetime
 
 employee_bp = Blueprint('employees', __name__)
@@ -19,8 +18,26 @@ def get_employee(employee_id):
 @employee_bp.route('/', methods=['POST'])
 def add_employee():
     data = request.get_json()
-    if not data or 'id' not in data or 'name' not in data:
+    if not data or 'id' not in data or 'name' not in data or 'gender' not in data or 'department' not in data or 'job_title' not in data or 'working_status' not in data or 'dob' not in data :
         return jsonify({'message': 'Missing required data (id, name)'}), 400
+    employee_id = data['id']
+    email = data.get('email')
+    gender = data.get('gender')
+    department = data.get('department')
+    job_tiltle = data.get('job_titlle')
+    working_status = data.get('working_status')
+    dob = data.get('dob')
+
+    existing_employee_id = Employee.query.filter_by(id=employee_id).first()
+    if existing_employee_id:
+        return jsonify({'message': f'ID "{employee_id}" đã tồn tại!'}), 400
+
+    if email:
+        existing_employee_email = Employee.query.filter_by(email=email).first()
+        if existing_employee_email:
+            return jsonify({'message': f'Email "{email}" đã tồn tại!'}), 400
+
+    
 
     new_employee = Employee(
         id=data['id'],
@@ -59,10 +76,9 @@ def update_employee(employee_id):
 def delete_employee(employee_id):
     employee = Employee.query.get_or_404(employee_id)
 
-    # Thêm logic kiểm tra ràng buộc payroll/dividends ở đây
-    # Ví dụ đơn giản:
-    if employee.payrolls:
-        return jsonify({'message': 'Cannot delete employee with associated payroll data.'}), 400
+   
+   # if employee.payrolls:
+    #    return jsonify({'message': 'Cannot delete employee with associated payroll data.'}), 400
 
     db.session.delete(employee)
     db.session.commit()

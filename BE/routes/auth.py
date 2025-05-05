@@ -121,17 +121,19 @@ def delete_user():
 @auth.route('/update', methods=['PUT'])
 def update_user():
     data = request.get_json()
-    username = data.get('username')
+    old_username = data.get('old_username')  # tên tài khoản hiện tại
+    new_username = data.get('new_username')  # tên tài khoản mới
+    new_password = data.get('password')
+    new_role = data.get('role')
 
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(username=old_username).first()
 
     if not user:
         return jsonify({'message': 'Tài khoản không tồn tại'}), 404
 
-    # Cập nhật thông tin nếu có
-    new_password = data.get('password')
-    new_role = data.get('role')
-
+    # Cập nhật các thông tin
+    if new_username:
+        user.username = new_username
     if new_password:
         user.password = new_password
     if new_role:

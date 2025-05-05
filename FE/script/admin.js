@@ -10,25 +10,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const exitBtns = document.querySelectorAll(".exit-btn");
     const confirmBtn = document.querySelector(".confirm-btn");
     const addAccountBtn = document.querySelector(".add-account");
-    const searchInput = document.getElementById("searchInput"); 
+    const searchInput = document.getElementById("searchInput");
     const admin = localStorage.getItem("admin"); // Lấy tên admin từ localStorage
     const showHistoryBtn = document.getElementById("showHistoryBtn");
     const historyModal = document.getElementById("historyModal");
     const historyOverlay = document.getElementById("historyOverlay");
     const historyCloseBtn = document.getElementById("historyCloseBtn");
-    
 
-    
+
+
 
     let selectedUser = null;
     let allUsers = [];
 
     // Load danh sách account từ Flask
     async function loadAccounts() {
-        const res = await fetch("http://localhost:5000/api/get_users", {
+        const res = await fetch("http://127.0.0.1:5000/api/get_users", {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-         
+
         });
         const users = await res.json();
 
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function loadHistory() {
         try {
-            const res = await fetch("http://localhost:5000/api/get_history");
+            const res = await fetch("http://127.0.0.1:5000/api/get_history");
             const data = await res.json();
             const tbody = document.querySelector("#historyTable tbody");
             tbody.innerHTML = "";
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function renderAccounts(users) {
         const tableBody = document.querySelector(".account-table tbody");
         tableBody.innerHTML = "";
-        
+
         users.forEach(user => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 overlay.style.display = "block";
             });
         });
-    
+
         document.querySelectorAll(".delete-btn").forEach((btn, index) => {
             btn.addEventListener("click", function () {
                 selectedUser = users[index].username;
@@ -115,12 +115,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Thêm tài khoản
     async function addAccount() {
-        const username = document.getElementById("userInput").value.trim();  
+        const username = document.getElementById("userInput").value.trim();
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value || "Employee";  // Mặc định là "Employee"
 
 
-            // Kiểm tra username là Gmail
+        // Kiểm tra username là Gmail
         if (!username.endsWith("@gmail.com")) {
             showNotification("Tài khoản phải sử dụng @gmail.com");
             return;
@@ -131,16 +131,16 @@ document.addEventListener("DOMContentLoaded", function () {
             showNotification("Mật khẩu phải có ít nhất 6 ký tự");
             return;
         }
-        const res = await fetch("http://localhost:5000/api/register", {
+        const res = await fetch("http://127.0.0.1:5000/api/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password, role })  
+            body: JSON.stringify({ username, password, role })
         });
 
         if (res.ok) {
             showNotification("Thêm tài khoản thành công.");
             const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
-            await fetch("http://localhost:5000/api/log_history", {
+            await fetch("http://127.0.0.1:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     timestamp: currentTime
                 })
             });
-            loadAccounts(); 
+            loadAccounts();
         } else {
             showNotification("Thêm tài khoản không thành công!!!");
         }
@@ -158,29 +158,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cập nhật tài khoản
     async function updateAccount() {
+        const newUsername = document.getElementById("userInput").value;  // Lấy username mới
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value;
 
-        const res = await fetch("http://localhost:5000/api/update", {
+        const res = await fetch("http://127.0.0.1:5000/api/update", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: selectedUser, password, role })
+            body: JSON.stringify({
+                old_username: selectedUser,
+                new_username: newUsername,
+                password: password,
+                role: role
+            })
         });
 
         if (res.ok) {
             showNotification("Cập nhật tài khoản thành công.");
-            const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
-            await fetch("http://localhost:5000/api/log_history", {
+            const currentTime = new Date().toISOString();
+            await fetch("http://127.0.0.1:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "Update",
                     username: admin,
-                    target_user: selectedUser,
+                    target_user: newUsername,
                     timestamp: currentTime
                 })
             });
-            
+
             loadAccounts();
         } else {
             showNotification("Cập nhật tài khoản thất bại!!!!");
@@ -190,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Xóa tài khoản
     async function deleteAccount() {
         deleteAccountModal.style.display = "none";
-        const res = await fetch("http://localhost:5000/api/delete", {
+        const res = await fetch("http://127.0.0.1:5000/api/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: selectedUser })
@@ -199,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (res.ok) {
             showNotification("Xóa tài khoản thành công.");
             const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
-            await fetch("http://localhost:5000/api/log_history", {
+            await fetch("http://127.0.0.1:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -221,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.display = "block";
         accountModal.style.display = "none";
     }
-    
+
     // Sự kiện nút Add Account
     addAccountBtn.addEventListener("click", function () {
         selectedUser = null;
@@ -237,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const username = document.getElementById("userInput").value;
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value || "employee"; // Mặc định là "employee"
-    
+
         if (selectedUser) {
             updateAccount(); // Cập nhật tài khoản
         } else {
@@ -263,7 +269,7 @@ document.addEventListener("DOMContentLoaded", function () {
             overlay.style.display = "none";
         });
     });
-    
+
     overlay.addEventListener("click", function () {
         accountModal.style.display = "none";
         deleteAccountModal.style.display = "none";
@@ -303,8 +309,9 @@ document.addEventListener("DOMContentLoaded", function () {
         'employee': 'employee.html',
         'payroll': 'payroll.html',
         'attendance': 'attendance.html',
+        'department': 'department_jobtitle.html',
     };
-    
+
     // Duyệt qua từng phần tử trong menu và thêm sự kiện click
     Object.keys(routes).forEach(id => {
         const el = document.getElementById(id);
@@ -315,8 +322,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
-    
-    
+
+
     // Tải dữ liệu ban đầu
     loadAccounts();
 });

@@ -22,36 +22,37 @@
 
     <div class="sidebar-content-wrapper">  
         <!-- Navigation Menu -->  
-        <nav class="sidebar">  
-            <ul>  
+        <nav class="sidebar">
+            <ul>
                 <li id="account">
                     <img src="assets/img/iconNav/account 1.png" alt="">
                     Account
-                </li>  
+                </li>
                 <li id="employee">
                     <img src="assets/img/iconNav/user.png" alt="">
                     Employee
-                </li>  
+                </li>
                 <li id="payroll">
                     <img src="assets/img/iconNav/dollar 1.png" alt="">
                     Payroll
-                </li>  
+                </li>
                 <li id="attendance">
                     <img src="assets/img/iconNav/attendance 1.png" alt="">
                     Attendance
-                </li> 
-                <li>
+                </li>
+                <li id ="department">
                     <img src="assets/img/iconNav/suitcase.png" alt="">
                     Department & Title
-                </li>  
+                </li>
                 <li>
                     <img src="assets/img/iconNav/report 1.png" alt="">
-                    Reports & Analytics</li>  
+                    Reports & Analytics
+                </li>
                 <li>
                     <img src="assets/img/iconNav/bell.png" alt="">
                     Notifications
-                </li>  
-            </ul>  
+                </li>
+            </ul>
         </nav>  
     
         <div class="content-wrapper">  
@@ -90,7 +91,7 @@
                             <th class = "employeeEdit">Edit</th>  
                         </tr>  
                     </thead>  
-                    <tbody>  
+                    <tbody id ="employeeTableBody">  
                         <!-- Dữ liệu sẽ được render từ JavaScript -->  
                     </tbody>  
                 </table>  
@@ -104,16 +105,16 @@
     <!-- Modal thêm/sửa nhân viên -->
     <div id="employeeModal" class="modal">
         <div class="modal-content">
-            <h2>Employee details</h2>
+            <h2 id="modalTitle">Employee details</h2>
             
             <label>ID</label>
-            <input type="text" placeholder="Enter ID">
+            <input type="text" id="idInput" placeholder="Enter ID">
     
             <label>Name</label>
-            <input type="text" placeholder="Enter Name">
+            <input type="text" id="nameInput" placeholder="Enter Name">
     
             <label>Gender</label>
-            <input type="text" placeholder="Enter Gender">
+            <input type="text" id="genderInput" placeholder="Enter Gender">
     
             <label>Department</label>
             <select id="departmentSelect">
@@ -127,13 +128,13 @@
             </select>
     
             <label>Email</label>
-            <input type="email" placeholder="Enter Email">
+            <input type="email" id="emailInput" placeholder="Enter Email">
     
             <label>Working status</label>
-            <input type="date">
+            <input type="date" id="workingStatusInput">
     
             <label>DOB</label>
-            <input type="date">
+            <input type="date" id="dobInput">
     
             <label>Job Title</label>
             <select id="jobTitleSelect">
@@ -148,6 +149,7 @@
     </div>
 
     <!-- Modal thông báo -->
+    <!-- Modal thông báo -->
     <div id="notificationModal" class="modal">
         <div class="notification-content">
             <h2>Notification</h2>
@@ -158,6 +160,7 @@
         </div>
     </div>
 
+
     <!-- Modal xác nhận xóa tài khoản  -->
     <div id="deleteAccountModal" class="modal">
         <div class="notification-content">
@@ -166,7 +169,7 @@
                 be recoverable.</p>
             <div class="modal-buttons">
                 <button class="confirm-btn" onclick="deleteAccount()">OK</button>
-                <button class="exit-btn" onclick="closeModal('deleteAccountModal')">Exit</button>
+                <button class="exit-btn" onclick="closeModal('deleteAccountModal')"></button>
             </div>
         </div>
     </div>

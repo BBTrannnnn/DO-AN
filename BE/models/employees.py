@@ -14,8 +14,11 @@ class Employee(db.Model):
     working_status = db.Column(db.Date)  # Ngày bắt đầu làm việc
     dob = db.Column(db.Date)             # Ngày sinh
 
-    payrolls = db.relationship('Payroll', backref='employee', lazy=True)
-
+    # payrolls = db.relationship('Payroll', backref='employee', lazy=True)
+    
+    def __repr__(self):
+        return f"<Employee {self.id} - {self.name}>"
+    
     def to_dict(self):
         return {
             'id': self.id,
@@ -28,5 +31,4 @@ class Employee(db.Model):
             'dob': self.dob.isoformat() if self.dob else None
         }
     
-    def __repr__(self):
-        return f"<Employee {self.id} - {self.name}>"
+    
