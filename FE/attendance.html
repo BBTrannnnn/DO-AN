@@ -40,7 +40,7 @@
                     <img src="assets/img/iconNav/attendance 1.png" alt="">
                     Attendance
                 </li>
-                <li id ="department">
+                <li id="department">
                     <img src="assets/img/iconNav/suitcase.png" alt="">
                     Department & Title
                 </li>
@@ -68,7 +68,7 @@
                 </div>
             </section>
 
-           
+
 
             <!-- Phần bảng dữ liệu riêng -->
             <main>
@@ -131,6 +131,46 @@
             </main>
         </div>
     </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="modal" id="attendanceModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Attendance</h2>
+
+            <label>Employee ID</label>
+            <input type="text" id="idInput" placeholder="Employee ID">
+
+            <label>Working days</label>
+            <input type="text" placeholder="Working days">
+
+            <label>Absences</label>
+            <input type="text" placeholder="Absences">
+
+            <label>Leave days</label>
+            <input type="text" placeholder="Leave days">
+
+            <label>Time</label>
+            <input type="date">
+
+            <div class="modal-buttons">
+                <button class="close-btn">Thoát</button>
+                <button class="ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal thông báo -->
+    <div id="notificationModal" class="modal">
+        <div class="notification-content">
+            <h2>Notification</h2>
+            <p>Information updated successfully!</p>
+            <div class="modal-buttons">
+                <button class="exit-btn">Exit</button>
+            </div>
+        </div>
+    </div>
+
 
     <script src="script/attendance.js"></script>
 
