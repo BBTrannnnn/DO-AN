@@ -40,7 +40,7 @@
                     <img src="assets/img/iconNav/attendance 1.png" alt="">
                     Attendance
                 </li>
-                <li id ="department">
+                <li id="department">
                     <img src="assets/img/iconNav/suitcase.png" alt="">
                     Department & Title
                 </li>
@@ -59,63 +59,75 @@
             <!-- Phần tiêu đề riêng biệt -->
             <section class="title-section">
                 <h1>Payroll</h1>
+                <div class="button-container">
+                    <button class="history-button" id="showHistoryBtn">History</button>
+
+                    <button class="add-payroll-button" id="showAddbtn">
+                        <span class="add-icon">+</span> Add
+                    </button>
+                </div>
             </section>
+
+
             <!-- Phần bảng dữ liệu riêng -->
             <main>
-                <div class="search-row">
-                    
+                <div class="top-bar">
                     <div class="search-box">
                         <input type="text" id="searchInput" placeholder="Search">
                         <img src="assets/img/searchicon.png" alt="Search Icon" class="search-icon">
                     </div>
 
-                    <div class="filter-reset-box">
-
-                        <div class="vector-icon">
-                            <img src="assets/img/Vector.png" alt="Vector Icon" class="btn-icon">
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <img src="assets/img/Vector.png" alt="Filter" class="icon" />
+                            <div class="divider"></div>
+                            <span class="label">Time</span>
+                            <img src="assets/img/arrowdown.png" alt="Arrow" class="arrow-icon" />
                         </div>
 
-                        <button class="filter-button">
-                            <p>Time</p>
-                            <img src="assets/img/arrowdown.png" alt="Filter Icon" class="btn-icon">
-                        </button>
 
-                        <div id="monthYearModal" class="modal">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button onclick="prevYear()">&#8249;</button>
-                                <span id="modalYear">2025</span>
-                                <button onclick="nextYear()">&#8250;</button>
-                              </div>
-                              <div class="modal-months">
-                                <!-- Các nút tháng -->
-                                <button onclick="selectMonth(this)">Jan</button>
-                                <button onclick="selectMonth(this)">Feb</button>
-                                <button onclick="selectMonth(this)">Mar</button>
-                                <button onclick="selectMonth(this)">Apr</button>
-                                <button onclick="selectMonth(this)">May</button>
-                                <button onclick="selectMonth(this)">June</button>
-                                <button onclick="selectMonth(this)">July</button>
-                                <button onclick="selectMonth(this)">Aug</button>
-                                <button onclick="selectMonth(this)">Sep</button>
-                                <button onclick="selectMonth(this)">Oct</button>
-                                <button onclick="selectMonth(this)">Nov</button>
-                                <button onclick="selectMonth(this)">Dec</button>
-                              </div>
-                              <div class="modal-footer">
-                                <button onclick="applyMonth()">Apply</button>
-                              </div>
+
+
+
+                        <div id="monthYearModal" class="modal-filter">
+                            <div class="modal-content-filter">
+                                <div class="modal-header">
+                                    <button onclick="prevYear()">&#8249;</button>
+                                    <span id="modalYear">2025</span>
+                                    <button onclick="nextYear()">&#8250;</button>
+                                </div>
+                                <div class="modal-months">
+                                    <!-- Các nút tháng -->
+                                    <button onclick="selectMonth(this)">Jan</button>
+                                    <button onclick="selectMonth(this)">Feb</button>
+                                    <button onclick="selectMonth(this)">Mar</button>
+                                    <button onclick="selectMonth(this)">Apr</button>
+                                    <button onclick="selectMonth(this)">May</button>
+                                    <button onclick="selectMonth(this)">June</button>
+                                    <button onclick="selectMonth(this)">July</button>
+                                    <button onclick="selectMonth(this)">Aug</button>
+                                    <button onclick="selectMonth(this)">Sep</button>
+                                    <button onclick="selectMonth(this)">Oct</button>
+                                    <button onclick="selectMonth(this)">Nov</button>
+                                    <button onclick="selectMonth(this)">Dec</button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button onclick="applyMonth()">Apply</button>
+                                </div>
                             </div>
                         </div>
 
-                        <button class="reset-button">
-                            <img src="assets/img/reset.png" alt="Reset Icon" class="btn-icon">
-                            <p>Reset filter</p>
-                        </button>
+                        <div class="divider"></div>
+                        <div class="filter-item">
+                            <button class="reset-filter-btn">
+                                <img src="assets/img/reset.png" alt="Reset" class="icon" />
+                                <span class="label">Reset filter</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-            
+
 
                 <div class="payroll-info">
                     <p>Payroll information</p>
@@ -131,6 +143,7 @@
                             <th class="employeeJobTitle">Job Title</th>
                             <th class="salary">Salary</th>
                             <th class="time">Time</th>
+                            <th class="edit">Edit</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -139,21 +152,73 @@
                 </table>
 
 
-                <!-- <div class="navigation">
-                    <button class="prev-btn">
-                        Prev
-                    </button>
+                <div id="overlay"></div>
+                <!-- Modal thêm nhân viên -->
+                <div id="payrollModal" class="modal-payroll">
+                    <div class="modal-content-payroll">
+                        <h2>Payroll Details</h2>
 
-                    <button class="next-btn">
-                        Next
-                    </button>
-                </div> -->
+                        <label>Employee ID</label>
+                        <input type="text" placeholder="Enter Employee ID">
+
+                        <label>Name</label>
+                        <input type="text" placeholder="Enter Name">
+
+                        <label>Salary</label>
+                        <input type="text" placeholder="Enter Salary">
+
+                        <div class="modal-buttons">
+                            <button id="closeBtn" class="close-btn">Thoát</button>
+                            <button class="ok-btn">OK</button>
+                        </div>
+                    </div>
+                </div>
 
 
+                
+
+                <div id="historyOverlay" class="overlay"></div>
+                <!-- Modal xem lịch sử -->
+                <div id="historyModal" class="modal">
+                    <div class="modal-content-history">
+                        <button id="historyCloseBtn" class="exit-btn">×</button>
+                        <h2>Lịch sử thao tác</h2>
+                        <div class="history-table-wrapper">
+                            <table id="historyTable">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Người thao tác</th>
+                                        <th>Hành động</th>
+                                        <th>Đối tượng</th>
+                                        <th>Thời gian</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal xác nhận xóa payroll -->
+                <div id="deletePayrollModal" class="modal">
+                    <div class="notification-content">
+                        <h2>Delete payroll</h2>
+                        <p>Bạn có chắc chắn muốn xóa không? Sau khi bạn xóa, mọi thông tin liên quan sẽ không còn
+                            có thể khôi phục được.</p>
+                        <div class="modal-buttons">
+                            <button class="confirm-btn" onclick="deletePayroll()">OK</button>
+                            <button class="exit-btn" onclick="closeModal('deletePayrollModal')">Thoát</button>
+                        </div>
+                    </div>
+                </div>
 
             </main>
         </div>
     </div>
+
+
 
     <script src="script/payroll.js"></script>
 </body>

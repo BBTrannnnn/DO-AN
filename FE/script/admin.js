@@ -278,14 +278,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Tìm kiếm tài khoản
-    searchInput.addEventListener("input", function () {
+    searchInput.addEventListener("input", () => {
         const keyword = searchInput.value.toLowerCase();
+
         const filtered = allUsers.filter(user =>
             user.username.toLowerCase().includes(keyword) ||
-            user.password.toLowerCase().includes(keyword) ||
+            
             user.role.toLowerCase().includes(keyword)
         );
-        renderAccounts(filtered);
+
+        renderAccounts(filtered);  // Cập nhật lại bảng tài khoản
     });
 
     // Mở modal

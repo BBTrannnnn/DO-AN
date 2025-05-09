@@ -31,9 +31,7 @@ def add_payroll():
 
     if existing:
         return jsonify({'message': 'Nhân viên này đã có bản lương trong tháng này'}), 400
-
-
-
+    
     new_payroll = Payroll(
         employee_id=employee_id,
         salary=salary,
@@ -72,44 +70,41 @@ def get_payrolls():
 
     return jsonify(payroll_list), 200
 
-@payroll_bp.route('/<int:payroll_id>', methods=['PUT'])
-def update_payroll(payroll_id):
+@payroll_bp.route('/update', methods=['PUT'])
+def update_payroll():
     data = request.get_json()
-    payroll = Payroll.query.get_or_404(payroll_id)
+    payroll_id = data.get('payroll_id')  
+    new_salary = data.get('salary')
+    new_time = data.get('time')
 
-    payroll.salary = data.get('salary', payroll.salary)
-    if data.get('time'):
-        payroll.time = datetime.strptime(data['time'], '%m/%Y').date()
+    payroll = Payroll.query.filter_by(id=payroll_id).first()
 
+    if not payroll:
+        return jsonify({'message': 'Bản lương không tồn tại'}), 404
+
+    # Cập nhật các thông tin mới
+    if new_salary:
+        payroll.salary = new_salary
+    if new_time:
+        try:
+            payroll.time = datetime.strptime('01/' + new_time, '%d/%m/%Y')
+        except ValueError:
+            return jsonify({'message': 'Sai định dạng thời gian. Định dạng đúng: mm/YYYY'}), 400
     db.session.commit()
-    return jsonify({'message': 'Cập nhật bản lương thành công!',})
+    return jsonify({'message': 'Cập nhật bản lương thành công'}), 200
 
-@payroll_bp.route('/<int:payroll_id>', methods=['DELETE'])
-def delete_payroll(payroll_id):
-    payroll = Payroll.query.get_or_404(payroll_id)
+@payroll_bp.route('/delete', methods=['DELETE'])
+def delete_payroll():
+    data = request.get_json()
+    payroll_id = data.get('payroll_id')
+    
+    if not payroll_id:
+        return jsonify({'error': 'payroll_id không được bỏ trống'}), 400
 
+    payroll = Payroll.query.filter_by(id=payroll_id).first()
+    if not payroll:
+         return jsonify({'error': 'Bản lương không tồn tại'}), 404
     db.session.delete(payroll)
     db.session.commit()
-    return jsonify({'message': 'Xóa bản lương thành công!', })
-
-@payroll_bp.route('/search_employee/<int:employee_id>', methods=['GET'])
-def get_payrolls_by_employee(employee_id):
-    payrolls = Payroll.query.filter_by(employee_id=employee_id).all()
-
-    if not payrolls:
-        return jsonify({'message': 'Không tìm thấy bản lương nào cho nhân viên này'}), 404
-
-    result = []
-    for p in payrolls:
-        employee = Employee.query.get(p.employee_id)
-        result.append({
-            'payroll_id': p.id,
-            'employee_id': p.employee_id,
-            'salary': float(p.salary),
-            'time': p.time.strftime('%m/%Y'),
-            'department': employee.department, 
-            'job_title': employee.job_title,
-            'employee_name': employee.name 
-        })
-
-    return jsonify(result), 200
+    return jsonify({'message': 'Xóa bản lương thành công!'})
+        

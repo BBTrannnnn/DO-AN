@@ -25,6 +25,110 @@ header {
     height: 900px;
 }  
 
+/* Header */
+.history-button {  
+    background-color: #000000; /* Black background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Adjust padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 5px; /* Space between the plus sign and text */
+}  
+
+.button-container {  
+    display: flex; /* Sử dụng flexbox để sắp xếp các nút theo hàng */  
+    align-items: center; /* Căn giữa theo chiều dọc */  
+    gap: 10px;
+}
+
+
+/* ===================== MODAL LỊCH SỬ ===================== */
+
+#historyOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+}
+
+#historyModal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+#historyModal h2 {
+    margin-bottom: 20px;
+    color: #212143;
+}
+
+#historyModal .exit-btn {
+    float: right;
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #212143;
+}
+
+.history-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+#historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+#historyTable th, #historyTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#historyTable th {
+    background-color: #f2f2f2;
+}
+
+
+.add-payroll-button {
+    background-color: #000000; /* Black background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Adjust padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold;
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 5px; /* Space between the plus sign and text */
+}
+
+/* add */
+
+
+
+
+
 /* Sidebar Styles */  
 .sidebar {  
     background-color: #F7F7F7;
@@ -92,6 +196,7 @@ h1 {
 
 
 
+
 /* main */
 main {
     width: 90%;
@@ -102,14 +207,14 @@ main {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-.search-row {
+.top-bar {
     display: flex;
     align-items: center;
-    gap: 150px;
-    margin: 20px 0;
+    gap: 80px; /* khoảng cách giữa 2 phần */
 }
 
 .search-box {
+    margin: 20px 0;
     position: relative;
     display: inline-block;
 }
@@ -124,13 +229,24 @@ main {
 .search-icon {
     position: absolute;
     left: 10px;
-    top: 50%;
+    top: 48%;
     transform: translateY(-50%);
     width: 15px;
     pointer-events: none;
 }
 
-.filter-reset-box {
+.filter-bar {
+    position: relative;  /* Đảm bảo modal sẽ xuất hiện theo vị trí của nút filter */
+    overflow: visible; /* Đảm bảo phần tử này không che khuất modal */
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 80px; /* khoảng cách giữa 2 phần */
+  }
+
+  .filter-bar {
     display: flex;
     align-items: center;
     border: 1px solid #e0e0e0;
@@ -138,51 +254,48 @@ main {
     padding: 4px 8px;
     font-size: 14px;
     background-color: white;
-}
-.filter-reset-box {
-    position: relative;  /* Đảm bảo modal sẽ xuất hiện theo vị trí của nút filter */
-    overflow: visible; /* Đảm bảo phần tử này không che khuất modal */
-}
-
-
-.filter-button,
-.reset-button {
+  }
+  
+  .filter-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    background-color: white;
-    font-size: 14px;
+    padding: 4px 8px;
+    gap: 4px;
+    color: #5f6368;
+    font-weight: 300;
     cursor: pointer;
-    height: 100%;
-}
+  }
+  .reset-filter-btn span {
+    color: #5f6368;
+  }
+  
+  .divider {
+    width: 1px;
+    height: 20px;
+    background-color: #e0e0e0;
+    margin: 0 4px;
+  }
+  
+  .icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+  
+  .arrow-icon {
+    width: 10px;
+    height: 10px;
+    object-fit: contain;
+    margin-left: 2px;
+    transform: translateY(1px);
+  }
 
-.filter-button p,
-.reset-button p {
-    color: #747678;
-}
-
-.reset-button {
-    border-left: 1px solid #ccc;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.vector-icon {
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    border-right: 1px solid #ccc;
-    height: 100%;
-}
-
-.btn-icon {
-    width: 15px;
-}
 
 .payroll-info p {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 24px; 
+    font-weight: bold; 
+    color: #000;    
+    text-align: left;
     margin-bottom: 12px;
 }
 
@@ -191,54 +304,55 @@ table {
     border-collapse: collapse;
 }
 
-th,
-td {
-    padding: 12px;
-    text-align: left;
+th, td {
+    padding: 12px;  
+    text-align: left;  
     border: 1px solid #ddd;
+    font-size: 15px;
+    font-weight: 100 bold;
 }
 
 th {
     background-color: #f4f4f4;
 }
 
-.ID {
-    width: 40px;
-}
+th.ID, td.ID {
+    width: 5%;
+  }
+  
+  th.employeeID, td.employeeID {
+    width: 10%;
+  }
+  
+  th.employeeName, td.employeeName {
+    width: 15%;
+  }
+  
+  th.employeeDepartment, td.employeeDepartment {
+    width: 15%;
+  }
+  
+  th.employeeJobTitle, td.employeeJobTitle {
+    width: 15%;
+  }
+  
+  th.salary, td.salary {
+    width: 10%;
+  }
+  
+  th.time, td.time {
+    width: 10%;
+  }
+  
+  th.edit, td.edit {
+    width: 10%;
+  }
+  
 
-.employeeID {
-    width: 40px;
-}
-.employeeName {
-    width: 160px;
-}
-
-.employeeDepartment {
-    width: 160px;
-}
-
-.employeeJobTitle {
-    width: 160px;
-}
-
-.salary {
-    width: 80px;
-}
-
-.time {
-    width: 80px;
-}
 
 
 
 
-button {
-    padding: 8px 12px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
 
 /* .prev-btn {
     padding: 10px 15px;
@@ -265,7 +379,7 @@ button {
     margin-top: 20px;
 } */
 
-.modal {
+.modal-filter {
     display: none;
     position: absolute;
     top: 110%; 
@@ -275,7 +389,7 @@ button {
     padding: 20px;
     border-radius: 30px;
     width: 500px;
-    z-index: 1000; /* Đảm bảo z-index cao hơn các phần tử khác */
+    z-index: 2000; /* Đảm bảo z-index cao hơn các phần tử khác */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -350,4 +464,238 @@ button {
 }
 .modal-footer button:hover {
     background-color: #555; /* Màu nền thay đổi khi hover */
+}
+
+
+
+/* payroll Modal */
+#overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+}
+#payrollModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    width: 400px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    display: none;
+}
+
+.modal-content-payroll h2 {
+    margin-top: 0;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal-content-payroll label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+.modal-content-payroll input[type="text"],
+.modal-content-payroll input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/*nút đóng, ok*/
+.close-btn, .ok-btn {  
+    background-color: white;
+    color: black;  
+    padding: 10px 70px;  
+    border: 1px solid black; 
+    border-radius: 5px;  
+    cursor: pointer;  
+    margin: 12px;
+}  
+
+.close-btn:hover, .ok-btn:hover {  
+    background-color: #4B5668;  
+}  
+
+.reset-filter-btn {
+    display: flex;
+    gap: 4px;
+    border: none;
+    font-size: 14px;
+    background: transparent;
+    cursor: pointer;
+}
+
+/* Xóa thông tin */
+#deletePayrollModal {  
+    display: none; /* Ẩn modal mặc định */  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: #ffffff; /* Màu nền trắng */  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 400px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+/* Định dạng cho nội dung modal xác nhận xóa */  
+#deletePayrollModal .notification-content {   
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#deletePayrollModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#deletePayrollModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+ /* Nút Xóa và Edit */
+button {  
+    padding: 8px 12px;  
+    margin: 0 5px;  
+    border: none;  
+    border-radius: 5px;  
+    cursor: pointer;  
+}  
+
+.edit-btn {  
+    background-color: #CFCFCF;  
+    color: #F5F5F5;  
+}  
+
+.delete-btn {  
+    background-color: #CFCFCF;  
+    color: #F5F5F5;  
+}  
+
+.edit-btn:hover {  
+    background-color: #0056b3;  
+}  
+
+.delete-btn:hover {  
+    background-color: #c82333;  
+}
+
+#notificationModal .exit-btn {  
+    background-color: #007bff; /* Màu nền nút */  
+    color: white; /* Màu chữ */  
+    padding: 10px 20px; /* Khoảng cách bên trong */  
+    border: none; /* Bỏ viền */  
+    border-radius: 5px; /* Bo tròn viền */  
+    cursor: pointer; /* Chỉ tay khi hover */  
+}  
+
+#notificationModal .exit-btn:hover {  
+    background-color: #0056b3; /* Màu nền khi hover */  
+} 
+
+.modal {  
+    display: none;  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: white;  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 400px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+#notificationModal {  
+    display: none; /* Ẩn modal mặc định */  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: #ffffff; /* Màu nền trắng */  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 300px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+/* Định dạng cho nội dung modal thông báo */  
+#notificationModal .notification-content { /* Sử dụng selector cụ thể */  
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#notificationModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#notificationModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+#notificationModal .modal-buttons {  
+    display: flex;  
+    justify-content: center; /* Canh giữa nút */  
+    margin-top: 20px; /* Khoảng cách trên nút */  
+}
+
+#deletePayrollModal .exit-btn, .confirm-btn {  
+    background-color: red; /* Màu nền nút */  
+    color: white; /* Màu chữ */  
+    padding: 10px 20px; /* Khoảng cách bên trong */  
+    border: none; /* Bỏ viền */  
+    border-radius: 5px; /* Bo tròn viền */  
+    cursor: pointer; /* Chỉ tay khi hover */  
+}  
+
+
+.exit-btn:hover {  
+    background-color: #0056b3; /* Màu nền khi hover */  
+}
+
+
+.notification-modal {  
+    display: none;  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: white;  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 300px; /* Kích thước của modal thông báo */  
+}  
+
+.notification-modal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+}  
+
+.notificationModal .modal-content p{
+    text-align: center;
 }

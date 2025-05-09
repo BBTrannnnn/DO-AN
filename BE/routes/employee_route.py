@@ -77,8 +77,8 @@ def delete_employee(employee_id):
     employee = Employee.query.get_or_404(employee_id)
 
    
-   # if employee.payrolls:
-    #    return jsonify({'message': 'Cannot delete employee with associated payroll data.'}), 400
+    if employee.payrolls:
+        return jsonify({'message': 'Cannot delete employee with associated payroll data.'}), 400
 
     db.session.delete(employee)
     db.session.commit()
