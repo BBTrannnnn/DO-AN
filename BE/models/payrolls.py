@@ -6,7 +6,7 @@ class Payroll(db.Model):
     __tablename__ = 'payroll'
 
     id = db.Column(db.Integer, primary_key=True)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
+    employee_id = db.Column(db.String(10), db.ForeignKey('employees.id'), nullable=False)
     salary = db.Column(db.Numeric(10, 3))  # 
     time = db.Column(db.String(7))  # Dạng MM/YYYY, ví dụ: '03/2025'
 

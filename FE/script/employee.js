@@ -229,7 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmButton = confirmationModal.querySelector('.confirm-btn');
         const cancelButton = confirmationModal.querySelector('.exit-btn');
         const confirmationMessage = confirmationModal.querySelector('p');
-    
+        const overlay = document.getElementById('overlay');
+
         confirmationMessage.textContent = message;
         confirmationModal.style.display = "block";
         overlay.style.display = "block";
@@ -244,6 +245,11 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmationModal.style.display = "none";
             overlay.style.display = "none";
         };
+    }
+    function hideConfirmationModal() {
+        deleteConfirmationModal.style.display = "none";
+        overlay.style.display = "none";
+        selectedEmployeeId = null; // Reset selected employee after confirmation
     }
 
     function openModal() {
@@ -285,13 +291,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Event Listeners ---
-
+    const notificationExitBtn = document.querySelector('#notificationModal .exit-btn');
+    notificationExitBtn.addEventListener('click', () => {
+    notificationModal.style.display = 'none';
+    overlay.style.display = 'none';
+});
     addEmployeeBtn.addEventListener('click', openModalForNew);
     closeBtn.addEventListener('click', hideModal);
     overlay.addEventListener('click', hideModal);
     saveBtn.addEventListener('click', () => {
         if (selectedEmployee) {
             updateEmployee();
+        
         } else {
             addEmployee();
         }
