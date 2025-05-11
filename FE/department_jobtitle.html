@@ -40,7 +40,7 @@
                     <img src="assets/img/iconNav/attendance 1.png" alt="">
                     Attendance
                 </li>
-                <li id ="department">
+                <li id="department">
                     <img src="assets/img/iconNav/suitcase.png" alt="">
                     Department & Title
                 </li>
@@ -59,13 +59,9 @@
             <!-- Phần tiêu đề riêng biệt -->
             <section class="title-section">
                 <h1>Department & Job Title</h1>
-                
-                <button class="add-department-jobtitle">
-                    <span>+</span> Add 
-                </button>
             </section>
 
-            
+
 
             <!-- Phần bảng dữ liệu riêng -->
             <main>
@@ -79,56 +75,89 @@
                         <div class="filter-item">
                             <img src="assets/img/Vector.png" alt="Filter" class="icon" />
                             <div class="divider"></div>
-                            <span class="label">Time</span>
-                            <img src="assets/img/arrowdown.png" alt="Arrow" class="arrow-icon" />
-                        </div>
-                        <div class="divider"></div>
-                        <div class="filter-item">
-                            <img src="assets/img/reset.png" alt="Reset" class="icon" />
-                            <span class="label">Reset filter</span>
+                            <span class="label" id="department-label">Department</span>
+                            <div class="divider"></div>
+                            <span class="label" id="job-title-label">Job Title</span>
+                            <div class="divider"></div>
+                            <img src="assets/img/reset.png" alt="Reset" class="icon" id="reset-btn" />
+
                         </div>
                     </div>
                 </div>
 
+                <!-- Department Modal -->
+                <div id="department-modal" class="modal-overlay">
+                    <div class="modal">
+                        <h3>Select Department</h3>
+                        <div class="modal-item">
+                            <label for="department-select">Department ID:</label>
+                            <select id="department-select">
+                                  <option value="">----</option>
+                                <option value="PC01">PC01</option>
+                                <option value="PC02">PC02</option>
+                                <option value="PC03">PC03</option>
+                            </select>
+                        </div>
+                        <div class="modal-item">
+                            <label>Department Name:</label>
+                            <span id="department-name">IT</span>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" id="close-department">Close</button>
+                            <button class="btn" id="ok-department">OK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Title Modal -->
+                <div id="job-title-modal" class="modal-overlay">
+                    <div class="modal">
+                        <h3>Select Job Title</h3>
+                        <div class="modal-item">
+                            <label for="jobtitle-select">Job Title ID:</label>
+                            <select id="jobtitle-select">
+                                <option value="">----</option>
+                                <option value="JT01">JT01</option>
+                                <option value="JT02">JT02</option>
+                                <option value="JT03">JT03</option>
+                            </select>
+                        </div>
+                        <div class="modal-item">
+                            <label>Job Title Name:</label>
+                            <span id="job-title-name">Developer</span>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" id="close-jobtitle">Close</button>
+                            <button class="btn" id="ok-jobtitle">OK</button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="account-info">
                     <p>Information</p>
                 </div>
 
-                <table class="account-table">
+                <table class="department-jobtitle-table">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            <th>Employee ID</th>
+                            <th>ID Department</th>
+                            <th>ID Job Title</th>
+                            <th>ID Employees</th>
                             <th>Name</th>
                             <th>Department</th>
-                            <th>Job title</th>
-                            <th>Working days</th>
-                            <th>Absebces</th>
-                            <th>Leave days</th>
-                            <th>Time</th>
-                            <th>Edit</th>
+                            <th>Job Title</th>
                         </tr>
-                        
-                        
                     </thead>
                     <tbody>
-                        <!-- Dữ liệu sẽ được render từ JavaScript -->
-                         <!--  2 nút edit và delete
 
-                        <button class="edit-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
-                        <img src="assets/img/pencil-write.png" alt="Edit" style="width: 12px; height: 12px; transform: scale(1.8); display: block; margin: 3.5px; vertical-align: middle;">
-                        </button>
-                         <button class="delete-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
-                        <img src="assets/img/bin.png" alt="Edit" style="width: 8px; height: 8px; transform: scale(1.8); display: block; margin: 4px; vertical-align: middle;">
-                         </button>
-                         -->
                     </tbody>
                 </table>
+
             </main>
         </div>
     </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script/department_jobtitle.js"></script>
 
 

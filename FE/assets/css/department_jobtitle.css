@@ -139,7 +139,7 @@ table {
 
 th, td {  
     padding: 12px;  
-    text-align: left;  
+    text-align: center;  
     border: 1px solid #ddd;
     font-size: 15px;
     font-weight: 100;
@@ -224,4 +224,96 @@ th {
     align-items: center; /* Align vertically */
     justify-content: center; /* Center horizontally */
     gap: 5px; /* Space between the plus sign and text */
+}
+
+/* Filer */
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal */
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.modal h3 {
+    text-align: center;
+}
+
+.modal-body {
+    margin-top: 20px;
+}
+
+.modal-item {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.modal-item label {
+    font-weight: bold;
+}
+
+.modal-footer {
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+/* Label styling */
+.filter-bar .label {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+select {
+  font-size: 15px;
+  width: 100px;
+}
+
+.label {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.label:hover {
+  background-color: #f0f0f0;
+  color: #007bff; /* Màu xanh dương nhẹ */
+}
+
+.icon {
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.icon:hover {
+  transform: scale(2); /* phóng to nhẹ */
+  filter: brightness(1.2); /* sáng hơn một chút */
 }
