@@ -6,7 +6,7 @@ from models.user import User
 from routes.auth import auth
 from routes.employee_route import employee_bp
 from routes.payroll_route import payroll_bp
-
+from routes.attendance_route import attendance_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -17,6 +17,7 @@ CORS(app)
 app.register_blueprint(auth, url_prefix='/api')
 app.register_blueprint(employee_bp, url_prefix='/api/employees')
 app.register_blueprint(payroll_bp, url_prefix='/api/payrolls')
+app.register_blueprint(attendance_bp, url_prefix='/api/attendances')
 
 with app.app_context():
     db.create_all()
