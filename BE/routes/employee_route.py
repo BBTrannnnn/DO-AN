@@ -1,4 +1,4 @@
-#employee.route(cũ)
+
 from flask import Blueprint, jsonify, request
 from models.employees import db, Employee
 from datetime import datetime
