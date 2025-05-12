@@ -1,3 +1,4 @@
+
 from flask import Blueprint, request, jsonify
 from models.user import User,db
 from models.history import History,db
@@ -5,6 +6,8 @@ from models.payrolls import Payroll,db
 from models.employees import Employee,db
 from datetime import datetime
 import pytz
+from flask import current_app
+
 
 auth = Blueprint('auth', __name__)
 
@@ -70,7 +73,7 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    if user and password == user.password:  # So sánh mật khẩu trực tiếp
+    if user and current_app.bcrypt.check_password_hash(user.password, password):  # So sánh mật khẩu trực tiếp
         return jsonify({
             'message': 'Đăng nhập thành công!',
             'role': user.role.strip().capitalize()
@@ -92,8 +95,11 @@ def register():
     # Kiểm tra nếu tài khoản đã tồn tại
     if User.query.filter_by(username=username).first():
         return jsonify({'message': 'Tài khoản đã tồn tại'}), 400
+    
+    hashed_password = current_app.bcrypt.generate_password_hash(password).decode('utf-8')
 
-    new_user = User(username=username, password=password, role=role)
+
+    new_user = User(username=username, password=hashed_password, role=role)
 
     db.session.add(new_user)
     db.session.commit()
@@ -135,7 +141,7 @@ def update_user():
     if new_username:
         user.username = new_username
     if new_password:
-        user.password = new_password
+        user.password = current_app.bcrypt.generate_password_hash(new_password).decode('utf-8')
     if new_role:
         user.role = new_role
 
