@@ -101,10 +101,15 @@ h1 {
     margin: 0;
 }
 
+/* bảng thêm nhân viên */
+#overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+}
 
-
-
-/*nút add nhân viên*/
 .add-employee-button {
     background-color: #000000; /* Black background */
     color: white; /* White text */
@@ -123,6 +128,86 @@ h1 {
 .add-icon {
     font-size: 18px; /* Adjust size of the plus sign */
 }
+
+/* Phần nút history */
+.history-button {  
+    background-color: #000000; /* Black background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Adjust padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Center horizontally */
+    gap: 5px; /* Space between the plus sign and text */
+}  
+
+.button-container {  
+    display: flex; /* Sử dụng flexbox để sắp xếp các nút theo hàng */  
+    align-items: center; /* Căn giữa theo chiều dọc */  
+    gap: 10px;
+} 
+/* ===================== MODAL LỊCH SỬ ===================== */
+
+#historyOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+}
+
+#historyModal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+#historyModal h2 {
+    margin-bottom: 20px;
+    color: #212143;
+}
+
+#historyModal .exit-btn {
+    float: right;
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #212143;
+}
+
+.history-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+#historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+#historyTable th, #historyTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#historyTable th {
+    background-color: #f2f2f2;
+}  
 
 
 /* Bố cục bảng tách riêng */
@@ -445,6 +530,8 @@ label {
 #deleteAccountModal p {  
     margin: 15px 0; /* Khoảng cách cho phần thông báo */  
 }  
+
+
 
 #notificationModal .notification-content {   
     text-align: center; /* Canh giữa nội dung */  
