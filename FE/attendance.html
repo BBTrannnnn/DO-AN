@@ -125,7 +125,7 @@
                          <button class="delete-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
                         <img src="assets/img/bin.png" alt="Edit" style="width: 8px; height: 8px; transform: scale(1.8); display: block; margin: 4px; vertical-align: middle;">
                          </button>
-                         -->
+                        -->
                     </tbody>
                 </table>
             </main>
@@ -151,7 +151,7 @@
             <input type="text" placeholder="Leave days">
 
             <label>Time</label>
-            <input type="month">
+            <input type="date">
 
             <div class="modal-buttons">
                 <button class="close-btn">Thoát</button>
@@ -171,6 +171,45 @@
         </div>
     </div>
 
+    <!-- Modal xác nhận xóa tài khoản  -->
+    <div id="deleteAccountModal" class="modal">
+        <div class="notification-content">
+            <h2>Delete account</h2>
+            <p>Are you sure you want to delete this account? Once you delete it, any related information will no longer
+                be recoverable.</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="deletePayroll()">OK</button>
+                <button class="exit-btn" onclick="closeModal('deletePayrollModal')">Thoát</button>
+            </div>
+        </div>
+    </div>
+    
+
+
+
+    <div id="historyOverlay" class="overlay"></div>
+    <!-- Modal xem lịch sử -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content-history">
+            <button id="historyCloseBtn" class="exit-btn">×</button>
+            <h2>Lịch sử thao tác</h2>
+            <div class="history-table-wrapper">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Người thao tác</th>
+                            <th>Hành động</th>
+                            <th>Đối tượng</th>
+                            <th>Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script src="script/attendance.js"></script>
 
