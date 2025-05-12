@@ -503,7 +503,8 @@ th.ID, td.ID {
 }
 
 .modal-content-payroll input[type="text"],
-.modal-content-payroll input[type="number"] {
+.modal-content-payroll input[type="number"],
+.modal-content-payroll input[type="date"] {
     width: 100%;
     padding: 8px 10px;
     border: 1px solid #ccc;
@@ -515,9 +516,14 @@ th.ID, td.ID {
 .modal-buttons {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
     margin-top: 20px;
 }
+
+.modal-buttons {  
+    display: flex;  
+    justify-content: space-around;  
+    margin-top: 20px;  
+}  
 
 /*nút đóng, ok*/
 .close-btn, .ok-btn {  
@@ -690,12 +696,20 @@ button {
     border-radius: 8px;  
     z-index: 100;  
     width: 300px; /* Kích thước của modal thông báo */  
+    border: 1px solid #ddd; /* Viền cho modal */  
 }  
 
-.notification-modal h2 {  
-    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
-}  
-
-.notificationModal .modal-content p{
-    text-align: center;
+#timeInput {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
 }
