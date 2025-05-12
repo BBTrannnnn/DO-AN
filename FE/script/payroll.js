@@ -11,8 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.querySelector(".confirm-btn");
     const okBtn = document.querySelector(".ok-btn");
 
-    let selectedMonth = null;
-    let currentYear = 2024;
+
 
 
     let selectedPayroll = null;
@@ -69,6 +68,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("salaryInput").value = payroll.salary;
                 document.getElementById("timeInput").value = payroll.time;
 
+                document.getElementById("employeeIdInput").value = payroll.employee_id;
+                document.getElementById("employeeIdInput").disabled = true; // Khóa ô input
+
                 payrollModal.style.display = "block";
                 overlay.style.display = "block";
             });
@@ -110,42 +112,90 @@ document.addEventListener("DOMContentLoaded", function () {
         historyOverlay.style.display = "none";
     }
 
-    // async function loadHistory() {
-    //     try {
-    //         const res = await fetch("http://localhost:5000/api/get_history");
-    //         const data = await res.json();
-    //         const tbody = document.querySelector("#historyTable tbody");
-    //         tbody.innerHTML = "";
+    async function loadHistory() {
+        try {
+            const res = await fetch("http://localhost:5000/api/get_history");
+            const data = await res.json();
+            const tbody = document.querySelector("#historyTable tbody");
+            tbody.innerHTML = "";
 
-    //         data.forEach((item, index) => {
-    //             const tr = document.createElement("tr");
-    //             const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
-    //                 timeZone: "Asia/Ho_Chi_Minh",
-    //                 year: "numeric",
-    //                 month: "2-digit",
-    //                 day: "2-digit",
-    //                 hour: "2-digit",
-    //                 minute: "2-digit",
-    //                 second: "2-digit"
-    //             });
-    //             tr.innerHTML = `
-    //                 <td>${index + 1}</td>
-    //                 <td>${item.username}</td>
-    //                 <td>${item.action}</td>
-    //                 <td>${item.target_user || "-"}</td>
-    //                 <td>${formattedTime}</td>
-    //             `;
-    //             tbody.appendChild(tr);
-    //         });
-    //     } catch (err) {
-    //         console.error("Lỗi tải lịch sử:", err);
-    //     }
-    // }
+            data.forEach((item, index) => {
+                const tr = document.createElement("tr");
+                const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
+                    timeZone: "Asia/Ho_Chi_Minh",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                });
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.username}</td>
+                    <td>${item.action}</td>
+                    <td>${item.target_user || "-"}</td>
+                    <td>${formattedTime}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error("Lỗi tải lịch sử:", err);
+        }
+    }
+
+
+    async function addPayroll() {
+        const employee_id = document.getElementById("employeeIdInput").value.trim();
+        const salary = parseFloat(document.getElementById("salaryInput").value);
+        const time = document.getElementById("timeInput").value.trim(); // dạng yyyy-mm-dd
+
+        console.log("Time value:", time);
+        const timeRegex = /^\d{4}-\d{2}-\d{2}$/; // Định dạng yyyy-mm-dd
+        if (!time || !timeRegex.test(time)) {
+            showNotification("Vui lòng nhập thời gian hợp lệ (yyyy-mm-dd).");
+            return; // Dừng lại nếu thời gian không hợp lệ
+        }
+
+
+        if (!employee_id) {
+            showNotification("Vui lòng nhập mã nhân viên.");
+            return;
+        }
+
+        if (isNaN(salary) || salary <= 0) {
+            showNotification("Số tiền lương phải là một số hợp lệ và lớn hơn 0.");
+            return;
+        }
+
+        if (!time) {
+            showNotification("Vui lòng nhập thời gian.");
+            return;
+        }
+
+        console.log("Time Selected: ", time);
+
+        const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ employee_id, salary, time })
+        });
+        
+        if (res.ok) {
+            showNotification("Thêm lương thành công.");
+            loadPayrolls();
+        } else {
+            showNotification("Thêm lương không thành công!!!!! ");
+        }
+    }
+
+
+
 
 
     async function updatePayroll() {
         const salary = document.getElementById("salaryInput").value;
-        const time = document.getElementById("timeInput").value; // format: "mm/yyyy"
+        const time = document.getElementById("timeInput").value;
 
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/update", {
             method: "PUT",
@@ -156,8 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 time: time
             })
         });
-
-        const data = await res.json();
 
         if (res.ok) {
             showNotification("Cập nhật lương thành công.");
@@ -176,34 +224,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (res.ok) {
-            showNotification("Xóa tài lương thành công.");
-            loadPayrolls();
+            showNotification("Xóa lương thành công.");
+            selectedPayroll = null; // Reset selectedPayroll
+            await loadPayrolls();
         } else {
-            showNotification("Xóa tài lương thất bại.");
+            showNotification("Xóa lương thất bại.");
         }
+        deletePayrollModal.style.display = "none";
+        overlay.style.display = "none";
     }
 
     confirmBtn.addEventListener("click", deletePayroll);
-
-    addPayrollBtn.addEventListener("click", function () {
-        payrollModal.style.display = "block";
-        overlay.style.display = "block";
-    });
-
-    closeBtn.addEventListener("click", function () {
-        payrollModal.style.display = "none";
-        overlay.style.display = "none";
-    });
-
-    okBtn.addEventListener("click", function () {
-
-        if (selectedPayroll) {
-            updatePayroll(); // Cập nhật tài khoản
-        } else {
-            // Thêm tài khoản mới
-        }
-    });
-
 
     exitBtns.forEach(btn => {
         btn.addEventListener("click", function () {
@@ -216,6 +247,32 @@ document.addEventListener("DOMContentLoaded", function () {
             overlay.style.display = "none";
         });
     });
+
+    addPayrollBtn.addEventListener("click", function () {
+        selectedPayroll = null;
+        document.getElementById("employeeIdInput").value = "";
+        document.getElementById("salaryInput").value = "";
+        document.getElementById("timeInput").value = "";
+        document.getElementById("employeeIdInput").disabled = false;
+        payrollModal.style.display = "block";
+        overlay.style.display = "block";
+    });
+
+    closeBtn.addEventListener("click", function () {
+        payrollModal.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    okBtn.addEventListener("click", function () {
+    if (selectedPayroll) {
+        updatePayroll();
+    } else {
+        addPayroll();  
+    }
+    });
+
+
+
 
     overlay.addEventListener("click", function () {
         payrollModal.style.display = "none";
@@ -237,26 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector('.filter-item').addEventListener('click', toggleModal);
 
-    function prevYear() {
-        currentYear--;
-        document.getElementById('modalYear').innerText = currentYear;
-    }
-
-    function nextYear() {
-        currentYear++;
-        document.getElementById('modalYear').innerText = currentYear;
-    }
-
-    function selectMonth(btn) {
-        document.querySelectorAll('.modal-months button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedMonth = btn.innerText;
-    }
-
-    function applyMonth() {
-        alert(`Đã chọn: ${selectedMonth} ${currentYear}`);
-        toggleModal(); // Đóng modal sau khi chọn tháng
-    }
     const routes = {
         'account': 'admin.html',
         'employee': 'employee.html',
@@ -278,6 +315,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Gọi hàm khi load trang
     loadPayrolls();
+
+
+
 
 
 });
