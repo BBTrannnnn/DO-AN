@@ -6,6 +6,7 @@ from models.user import User
 from routes.auth import auth
 from routes.employee_route import employee_bp
 from routes.payroll_route import payroll_bp
+from flask_bcrypt import Bcrypt
 from routes.attendance_route import attendance_bp
 
 app = Flask(__name__)
@@ -23,7 +24,11 @@ with app.app_context():
     db.create_all()
     # Thêm tài khoản admin mặc định nếu chưa có
     if not User.query.filter_by(username='admin').first():
-        admin_user = User(username='admin', password='admin123', role='Admin')
+        admin_user =User(
+        username='admin',
+        password=bcrypt.generate_password_hash('admin123').decode('utf-8'),
+        role='Admin'
+)
         db.session.add(admin_user)
         db.session.commit()
 
