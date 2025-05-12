@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notificationMessage.textContent = message;
         notificationModal.style.display = "block";
         overlay.style.display = "block";
-    
+
         const closeBtn = notificationModal.querySelector('.close-btn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
@@ -234,13 +234,13 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationMessage.textContent = message;
         confirmationModal.style.display = "block";
         overlay.style.display = "block";
-    
+
         confirmButton.onclick = () => {
             onConfirm();
             confirmationModal.style.display = "none";
             overlay.style.display = "none";
         };
-    
+
         cancelButton.onclick = () => {
             confirmationModal.style.display = "none";
             overlay.style.display = "none";
@@ -293,16 +293,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Event Listeners ---
     const notificationExitBtn = document.querySelector('#notificationModal .exit-btn');
     notificationExitBtn.addEventListener('click', () => {
-    notificationModal.style.display = 'none';
-    overlay.style.display = 'none';
-});
+        notificationModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
     addEmployeeBtn.addEventListener('click', openModalForNew);
     closeBtn.addEventListener('click', hideModal);
     overlay.addEventListener('click', hideModal);
     saveBtn.addEventListener('click', () => {
         if (selectedEmployee) {
             updateEmployee();
-        
+
         } else {
             addEmployee();
         }
@@ -335,6 +335,71 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // nút xem history
+    showHistoryBtn.addEventListener("click", () => {
+        loadHistory();
+        historyModal.style.display = "block";
+        historyOverlay.style.display = "block";
+    });
+
+    historyCloseBtn.addEventListener("click", closeHistoryModal);
+    historyOverlay.addEventListener("click", closeHistoryModal);
+
+    function closeHistoryModal() {
+        historyModal.style.display = "none";
+        historyOverlay.style.display = "none";
+    }
+
+    async function loadHistory() {
+        try {
+            const res = await fetch("http://localhost:5000/api/get_history");
+            const data = await res.json();
+            const tbody = document.querySelector("#historyTable tbody");
+            tbody.innerHTML = "";
+
+            data.forEach((item, index) => {
+                const tr = document.createElement("tr");
+                const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
+                    timeZone: "Asia/Ho_Chi_Minh",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                });
+                tr.innerHTML =
+                    `<td>${index + 1}</td>
+                <td>${item.username}</td>
+                <td>${item.action}</td>
+                <td>${item.target_user || "-"}</td>
+                <td>${formattedTime}</td>`
+                    ;
+                tbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error("Lỗi tải lịch sử:", err);
+        }
+    }
+
+    addEmployeeBtn.addEventListener('click', () => {
+        employeeModal.style.display = 'block';
+        overlay.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', () => {
+        employeeModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+
+    overlay.addEventListener('click', () => {
+        employeeModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+
+
+
     // --- Initial Data Load ---
     loadEmployees();
 });
