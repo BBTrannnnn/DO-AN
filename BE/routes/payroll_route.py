@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
-from models.employees import Employee, db
-from models.payrolls import Payroll, db
+from models.employees import Employee
+from models.payrolls import Payroll
+from models import db
 from datetime import datetime
 
 payroll_bp = Blueprint('payrolls', __name__)
@@ -10,9 +11,9 @@ def add_payroll():
     data = request.get_json()
     employee_id = data.get('employee_id')
     salary = data.get('salary')
-    time_str = data.get('time')  # dạng MM/YYYY
+    time = data.get('time')  
 
-    if not employee_id or not salary or not time_str:
+    if not employee_id or not salary or not time:
         return jsonify({'message': 'Thiếu thông tin bắt buộc (employee_id, salary, time)'}), 400
 
     employee = Employee.query.get(employee_id)
@@ -20,20 +21,22 @@ def add_payroll():
         return jsonify({'message': 'Không tìm thấy nhân viên'}), 404
 
     try:
-        time = datetime.strptime(time_str, '%m/%Y')
+        time = datetime.strptime(time, '%Y-%m-%d')
     except ValueError:
-        return jsonify({'message': 'Định dạng thời gian không hợp lệ. Đúng dạng MM/YYYY'}), 400
+        return jsonify({'message': 'Định dạng thời gian không hợp lệ.'}), 400
 
-    existing = Payroll.query.filter_by(employee_id=employee_id).filter(
+    existing = Payroll.query.filter(
+    Payroll.employee_id == employee_id,
     db.extract('month', Payroll.time) == time.month,
     db.extract('year', Payroll.time) == time.year
-    ).first()
+).first()
+
 
     if existing:
         return jsonify({'message': 'Nhân viên này đã có bản lương trong tháng này'}), 400
     
     new_payroll = Payroll(
-        employee_id=employee_id,
+        employee_id=employee_id,    
         salary=salary,
         time=time
     )
@@ -62,7 +65,7 @@ def get_payrolls():
                 'payroll_id': payroll.id,
                 'employee_id': payroll.employee_id,
                 'salary': payroll.salary,
-                'time': payroll.time.strftime('%m/%Y'), 
+                'time': payroll.time.strftime('%Y-%m-%d'), 
                 'employee_name': employee.name ,
                 'department': employee.department, 
                 'job_title': employee.job_title 
@@ -87,9 +90,12 @@ def update_payroll():
         payroll.salary = new_salary
     if new_time:
         try:
-            payroll.time = datetime.strptime('01/' + new_time, '%d/%m/%Y')
+            new_time_obj = datetime.strptime(new_time, '%Y-%m-%d')
+            payroll.time = new_time_obj
         except ValueError:
-            return jsonify({'message': 'Sai định dạng thời gian. Định dạng đúng: mm/YYYY'}), 400
+            return jsonify({'message': 'Sai định dạng thời gian. Định dạng đúng: YYYY-MM-DD'}), 400
+
+
     db.session.commit()
     return jsonify({'message': 'Cập nhật bản lương thành công'}), 200
 
