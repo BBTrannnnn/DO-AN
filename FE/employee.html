@@ -59,9 +59,12 @@
             <!-- Phần tiêu đề riêng biệt -->  
             <section class="title-section">
                 <h1>Employees List</h1>
-                <button class="add-employee-button">
-                    <span class="add-icon">+</span> Add Employee
-                </button>
+                <div class="button-container">
+                    <button class="history-button" id="showHistoryBtn">History</button>
+                    <button class="add-employee-button">
+                        <span>+</span> Add
+                    </button>
+                </div>
             </section>
             
             
@@ -99,10 +102,8 @@
         </div>  
     </div>  
 
-    <div id="overlay" class="overlay"></div>
-
-
-    <!-- Modal thêm/sửa nhân viên -->
+    <div id="overlay"></div>
+    <!-- Modal thêm nhân viên -->
     <div id="employeeModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Employee details</h2>
@@ -148,7 +149,30 @@
         </div>
     </div>
 
-    <!-- Modal thông báo -->
+    <div id="historyOverlay" class="overlay"></div>
+    <!-- Modal xem lịch sử -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content-history">
+            <button id="historyCloseBtn" class="exit-btn">×</button>
+            <h2>Lịch sử thao tác</h2>
+            <div class="history-table-wrapper">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Người thao tác</th>
+                            <th>Hành động</th>
+                            <th>Đối tượng</th>
+                            <th>Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal thông báo -->
     <div id="notificationModal" class="modal">
         <div class="notification-content">
