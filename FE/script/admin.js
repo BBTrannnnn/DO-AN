@@ -69,6 +69,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // làm gọn password
+    function shortenText(text, maxLength) {
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+    return text;
+}
+
     async function renderAccounts(users) {
         const tableBody = document.querySelector(".account-table tbody");
         tableBody.innerHTML = "";
@@ -78,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
             tr.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.username}</td>
-                <td>${user.password}</td>
+                <td>${shortenText(user.password, 25)}</td>
                 <td>${user.role}</td>
                 <td>
                     <button class="edit-btn" style="width: 24px; height: 24px; padding: 4px; overflow: hidden;">
@@ -96,9 +104,12 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.addEventListener("click", function () {
                 const user = users[index];
                 selectedUser = user.username;
-                document.getElementById("userInput").value = user.username;
+                
                 document.getElementById("passwordInput").value = user.password;
                 document.getElementById("departmentSelect").value = user.role;
+
+                document.getElementById("userInput").value =user.username
+                document.getElementById("userInput").disabled = true; // Khóa ô input
                 accountModal.style.display = "block";
                 overlay.style.display = "block";
             });
@@ -234,6 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("userInput").value = "";
         document.getElementById("passwordInput").value = "";
         document.getElementById("departmentSelect").value = "Employee"; // Mặc định là "employee"
+        document.getElementById("userInput").disabled = false;
         accountModal.style.display = "block";
         overlay.style.display = "block";
     });
@@ -325,6 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    
 
     // Tải dữ liệu ban đầu
     loadAccounts();
