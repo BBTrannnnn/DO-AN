@@ -7,6 +7,10 @@
     <title>Payroll</title>
     <link rel="stylesheet" href="assets/css/payroll.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- them vao -->
+    <!-- Flatpickr styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
 </head>
 
 <body>
@@ -153,20 +157,18 @@
 
 
                 <div id="overlay"></div>
-                <!-- Modal thêm nhân viên -->
+                <!-- Modal thêm lương -->
                 <div id="payrollModal" class="modal-payroll">
                     <div class="modal-content-payroll">
                         <h2>Payroll Details</h2>
 
                         <label>Employee ID</label>
-                        <input type="text" placeholder="Enter Employee ID">
-
-                        <label>Name</label>
-                        <input type="text" placeholder="Enter Name">
-
+                        <input type="text" id="employeeIdInput" placeholder="Enter Employee ID">
                         <label>Salary</label>
-                        <input type="text" placeholder="Enter Salary">
-
+                        <input type="text" id="salaryInput" placeholder="Enter Salary">
+                        <label>Time</label>
+                        <input type="date" id="timeInput" placeholder="Enter Time (YYYY-MM-DD)">
+                  
                         <div class="modal-buttons">
                             <button id="closeBtn" class="close-btn">Thoát</button>
                             <button class="ok-btn">OK</button>
@@ -175,7 +177,17 @@
                 </div>
 
 
-                
+                <!-- Modal thông báo -->
+                <div id="notificationModal" class="modal">
+                    <div class="notification-content">
+                        <h2>Notification</h2>
+                        <p>Information updated successfully!</p>
+                        <div class="modal-buttons">
+                            <button class="exit-btn">Thoát</button>
+                        </div>
+                    </div>
+                </div>
+
 
                 <div id="historyOverlay" class="overlay"></div>
                 <!-- Modal xem lịch sử -->
