@@ -10,6 +10,11 @@ def get_all_attendance():
     records = Attendance.query.all()
     attendance_list = [r.to_dict() for r in records]
     return jsonify(attendance_list)
+    
+@attendance_bp.route('/<int:id>', methods=['GET'])
+def get_attendance_by_id(id):
+    record = Attendance.query.get_or_404(id)
+    return jsonify(record.to_dict())
 
 @attendance_bp.route('/', methods=['POST'])
 def create_attendance():
