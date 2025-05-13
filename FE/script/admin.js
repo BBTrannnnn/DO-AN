@@ -132,9 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // Kiểm tra username là Gmail
-        if (!username.endsWith("@gmail.com")) {
-            showNotification("Tài khoản phải sử dụng @gmail.com");
-            return;
+        if (!username.includes("@")) {
+        showNotification("Tài khoản phải chứa ký tự @");
+        return;
         }
 
         // Kiểm tra độ dài mật khẩu
@@ -336,8 +336,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
-
-    
 
     // Tải dữ liệu ban đầu
     loadAccounts();
