@@ -90,7 +90,7 @@
                             <th class = "employeeDepartment">Department</th>  
                             <th class = "employeeJobTitle">Job Title</th>  
                             <th class = "employeeEmail">Email</th>  
-                            <th class = "employeeWorkingStatus">Working Status</th>  
+                            <th class = "employeeWorkingStatus">Day of Work</th>  
                             <th class = "employeeEdit">Edit</th>  
                         </tr>  
                     </thead>  
@@ -119,19 +119,19 @@
     
             <label>Department</label>
             <select id="departmentSelect">
-                <option disabled selected>---</option>
-                <option>IT</option>
-                <option>HR</option>
-                <option>Sales</option>
-                <option>Marketing</option>
-                <option>Finance</option>
-                <option>Administration</option>
+                <option value="" disabled selected hidden >---</option>
+                <option value="IT">IT</option>
+                <option value="HR">HR</option>
+                <option value="Sales">Sales</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Finance">Finance</option>
+                <option value="Administration">Administration</option>
             </select>
     
             <label>Email</label>
             <input type="email" id="emailInput" placeholder="Enter Email">
     
-            <label>Working status</label>
+            <label>Day of Work</label>
             <input type="date" id="workingStatusInput">
     
             <label>DOB</label>
@@ -139,7 +139,7 @@
     
             <label>Job Title</label>
             <select id="jobTitleSelect">
-                <option disabled selected>---</option>
+                <option value="" disabled selected hidden >---</option>
             </select>
     
             <div class="modal-buttons">
