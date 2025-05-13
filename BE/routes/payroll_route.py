@@ -98,7 +98,6 @@ def update_payroll():
 
     db.session.commit()
     return jsonify({'message': 'Cập nhật bản lương thành công'}), 200
-
 @payroll_bp.route('/delete', methods=['DELETE'])
 def delete_payroll():
     data = request.get_json()
@@ -113,4 +112,3 @@ def delete_payroll():
     db.session.delete(payroll)
     db.session.commit()
     return jsonify({'message': 'Xóa bản lương thành công!'})
-        
