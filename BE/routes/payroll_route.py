@@ -3,10 +3,12 @@ from models.employees import Employee
 from models.payrolls import Payroll
 from models import db
 from datetime import datetime
+from utils.auth_utils import role_required
 
 payroll_bp = Blueprint('payrolls', __name__)
 
 @payroll_bp.route('/', methods=['POST'])
+
 def add_payroll():
     data = request.get_json()
     employee_id = data.get('employee_id')
@@ -47,6 +49,7 @@ def add_payroll():
     return jsonify({'message': 'Thêm bản lương thành công!'}), 201
 
 @payroll_bp.route('/', methods=['GET'])
+
 def get_payrolls():
     # Lấy tất cả các bản lương từ cơ sở dữ liệu
     payrolls = Payroll.query.all()
@@ -74,6 +77,7 @@ def get_payrolls():
     return jsonify(payroll_list), 200
 
 @payroll_bp.route('/update', methods=['PUT'])
+
 def update_payroll():
     data = request.get_json()
     payroll_id = data.get('payroll_id')  
@@ -99,6 +103,7 @@ def update_payroll():
     db.session.commit()
     return jsonify({'message': 'Cập nhật bản lương thành công'}), 200
 @payroll_bp.route('/delete', methods=['DELETE'])
+
 def delete_payroll():
     data = request.get_json()
     payroll_id = data.get('payroll_id')

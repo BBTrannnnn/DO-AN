@@ -1,4 +1,7 @@
 from models import db
+from datetime import datetime, timedelta
+from flask import current_app
+import jwt
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -9,3 +12,10 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
+    def generate_token(self):
+        payload = {
+            'username': self.username,
+            'role': self.role,
+            'exp': datetime.utcnow() + timedelta(hours=2)
+        }
+        return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')

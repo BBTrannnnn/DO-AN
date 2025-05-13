@@ -8,6 +8,7 @@ from routes.employee_route import employee_bp
 from routes.payroll_route import payroll_bp
 from flask_bcrypt import Bcrypt
 from routes.attendance_route import attendance_bp
+from routes.notification_route import notification_bp
 
 
 
@@ -26,6 +27,7 @@ app.register_blueprint(auth, url_prefix='/api')
 app.register_blueprint(employee_bp, url_prefix='/api/employees')
 app.register_blueprint(payroll_bp, url_prefix='/api/payrolls')
 app.register_blueprint(attendance_bp, url_prefix='/api/attendances')
+app.register_blueprint(notification_bp, url_prefix='/api/notifications')
 
 with app.app_context():
     db.create_all()

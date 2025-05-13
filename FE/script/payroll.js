@@ -22,7 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
                 method: "GET",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json"
+                    
+                 },
             });
             const payrolls = await res.json();
             allPayrolls = payrolls;
@@ -177,7 +179,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json",
+             },
             body: JSON.stringify({ employee_id, salary, time })
         });
         
@@ -199,7 +202,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/update", {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json",
+                "Authorization": "Bearer " + localStorage.getItem("token")
+             },
             body: JSON.stringify({
                 payroll_id: selectedPayroll,
                 salary: salary,
@@ -219,7 +224,8 @@ document.addEventListener("DOMContentLoaded", function () {
         deletePayrollModal.style.display = "none";
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/delete", {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json"          
+             },
             body: JSON.stringify({ payroll_id: selectedPayroll })
         });
 

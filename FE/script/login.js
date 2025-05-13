@@ -4,7 +4,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    const response = await fetch("http://localhost:5000/api/login", {  
+    const response = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -12,34 +12,29 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     const data = await response.json();
 
-    console.log(data.role); 
+    console.log(data.role);
 
     if (response.ok) {
-        alert(data.message); 
+        alert(data.message);
 
         // Kiểm tra role và điều hướng
         if (data.role === 'Admin') {
             localStorage.setItem("admin", username);
             window.location.href = "admin.html";  // Điều hướng đến trang admin
-        } else if (data.role === 'Employee') {
+        } else if (data.role.toLowerCase() === 'employee') {
             window.location.href = "employee.html";  // Điều hướng đến trang nhân viên
-            
-        }
-
-        else if (data.role === 'HR Management') {
-            window.location.href = "hr.html";  // Điều hướng đến trang nhân viên
-        }
-
-        else if (data.role === 'Payroll Management') {
-            window.location.href = "payroll.html";  // Điều hướng đến trang nhân viên
-        }
-        
-        else {
+        } else if (data.role.toLowerCase() === 'hr management') {
+            window.location.href = "employee.html";  // Điều hướng đến trang HR Management
+        } else if (data.role.toLowerCase() === 'payroll management') {
+            window.location.href = "payroll.html";  // Điều hướng đến trang Payroll Management
+        } else {
             alert("Role không hợp lệ");
         }
     } else {
-        alert(data.message); 
+        alert(data.message);
     }
+    console.log(data.role);
+
 });
 
 

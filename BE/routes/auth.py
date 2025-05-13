@@ -9,10 +9,11 @@ import pytz
 from flask import current_app
 
 
+
 auth = Blueprint('auth', __name__)
 
 # Danh sách các tài khoản
-@auth.route('/get_users', methods=['GET'])
+@auth.route('/get_users', methods=['GET']) 
 def get_users():
     users = User.query.all()
     return jsonify([{
@@ -36,34 +37,6 @@ def get_history():
     } for h in histories]), 200
 
 
-
-
-@auth.route('/get_payrolls', methods=['GET'])
-def get_payrolls():
-    try:
-        # Truy vấn dữ liệu payrolls và thông tin nhân viên với các trường cụ thể
-        results = db.session.query(Payroll, Employee).join(Employee).all()
-
-        # Xử lý kết quả truy vấn
-        data = []
-        for payroll, emp in results:
-            data.append({
-                "id": payroll.id,
-                "employee_id": emp.id,
-                "name": emp.name,
-                "department": emp.department,
-                "job_title": emp.job_title,
-                "payroll": str(payroll.amount),
-                "time": payroll.time.strftime("%Y-%m-%d %H:%M:%S") if payroll.time else None
-            })
-
-        return jsonify(data), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-
 # Đăng nhập
 @auth.route('/login', methods=['POST'])
 def login():
@@ -76,7 +49,8 @@ def login():
     if user and current_app.bcrypt.check_password_hash(user.password, password):  # So sánh mật khẩu trực tiếp
         return jsonify({
             'message': 'Đăng nhập thành công!',
-            'role': user.role.strip().capitalize()
+            'role': user.role.strip().capitalize(),
+            'token': user.generate_token()  # Giả sử bạn có phương thức này trong model User
 
         }), 200
     else:
@@ -86,6 +60,7 @@ def login():
     
 #Thêm tài khoản
 @auth.route('/register', methods=['POST'])
+
 def register():
     data = request.get_json()
     username = data.get('username')
