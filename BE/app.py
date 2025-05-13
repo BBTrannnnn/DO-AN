@@ -9,8 +9,15 @@ from routes.payroll_route import payroll_bp
 from flask_bcrypt import Bcrypt
 from routes.attendance_route import attendance_bp
 
+
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
+
+bcrypt = Bcrypt(app)
+app.bcrypt = bcrypt  # để auth.py có thể dùng lại bcrypt
+
 
 db.init_app(app)
 CORS(app)
