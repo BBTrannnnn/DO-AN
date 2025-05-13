@@ -187,5 +187,3 @@ def log_history():
 
     return jsonify({'message': 'Lịch sử được ghi nhận!'}), 200
 
-
-
