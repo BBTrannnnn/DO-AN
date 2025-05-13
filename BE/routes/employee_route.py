@@ -20,7 +20,7 @@ def get_employee(employee_id):
 def add_employee():
     data = request.get_json()
     if not data or 'id' not in data or 'name' not in data or 'gender' not in data or 'department' not in data or 'job_title' not in data or 'working_status' not in data or 'dob' not in data :
-        return jsonify({'message': 'Missing required data (id, name)'}), 400
+        return jsonify({'message': 'Thiếu thông tin bắt buộc  (id, name)'}), 400
     employee_id = data['id']
     email = data.get('email')
     gender = data.get('gender')
@@ -53,7 +53,7 @@ def add_employee():
 
     db.session.add(new_employee)
     db.session.commit()
-    return jsonify({'message': 'Employee added successfully!', 'employee': new_employee.to_dict()}), 201
+    return jsonify({'message': 'Thêm nhân viên thành công !', 'employee': new_employee.to_dict()}), 201
 
 @employee_bp.route('/<employee_id>', methods=['PUT'])
 def update_employee(employee_id):
@@ -71,16 +71,11 @@ def update_employee(employee_id):
         employee.dob = datetime.strptime(data['dob'], '%Y-%m-%d').date()
 
     db.session.commit()
-    return jsonify({'message': 'Employee updated successfully!', 'employee': employee.to_dict()})
+    return jsonify({'message': 'Cập nhật thông tin nhân viên thành công!', 'employee': employee.to_dict()})
 
 @employee_bp.route('/<employee_id>', methods=['DELETE'])
 def delete_employee(employee_id):
     employee = Employee.query.get_or_404(employee_id)
-
-   
-   # if employee.payrolls:
-    #    return jsonify({'message': 'Cannot delete employee with associated payroll data.'}), 400
-
     db.session.delete(employee)
     db.session.commit()
-    return jsonify({'message': 'Employee deleted successfully!'})
+    return jsonify({'message': 'Xóa nhân viên thành công!'})
