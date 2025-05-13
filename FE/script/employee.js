@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById("searchInput");
     const notificationModal = document.getElementById('notificationModal');
     const notificationMessage = notificationModal.querySelector('p');
+    
 
     // --- Data variables ---
     let allEmployees = [];
@@ -41,6 +42,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function isAtLeast18YearsOld(dob, workingDate) {
+    const dobDate = new Date(dob);
+    const workDate = new Date(workingDate);
+
+    const age = workDate.getFullYear() - dobDate.getFullYear();
+    const monthDiff = workDate.getMonth() - dobDate.getMonth();
+    const dayDiff = workDate.getDate() - dobDate.getDate();
+
+    if (age > 18) return true;
+    if (age === 18) {
+        if (monthDiff > 0) return true;
+        if (monthDiff === 0 && dayDiff >= 0) return true;
+    }
+    return false;
+    }
+
+    function capitalizeWords(str) {
+    return str
+        .toLowerCase()
+        .trim()
+        .split(" ")
+        .filter(word => word.length > 0)
+        .map(word => word[0].toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+
+
+
     async function addEmployee() {
         const idInput = document.getElementById("idInput");
         const nameInput = document.getElementById("nameInput");
@@ -52,9 +81,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const dobInput = document.getElementById("dobInput");
 
 
+        // Kiểm tra các trường bắt buộc
+    if (!isAtLeast18YearsOld(dobInput.value.trim(), workingStatusInput.value.trim())) {
+        showNotification("Nhân viên phải đủ 18 tuổi trở lên!.");
+        return;
+    }
+
+    if (!idInput.value.trim()) {
+        showNotification("Vui lòng nhập mã nhân viên.");
+        return;
+    }
+    if (!nameInput.value.trim()) {
+        showNotification("Vui lòng nhập tên nhân viên.");
+        return;
+    }
+    if (!genderInput.value) {
+        showNotification("Vui lòng chọn giới tính.");
+        return;
+    }
+    if (!jobTitleSelectModal.value) {
+        showNotification("Vui lòng chọn chức vụ.");
+        return;
+    }
+    if (!departmentSelectModal.value) {
+        showNotification("Vui lòng chọn phòng ban.");
+        return;
+    }
+    if (!emailInput.value.trim()) {
+        showNotification("Vui lòng nhập email.");
+        return;
+    }
+    if (!workingStatusInput.value) {
+        showNotification("Vui lòng chọn tình trạng làm việc.");
+        return;
+    }
+    if (!dobInput.value) {
+        showNotification("Vui lòng nhập ngày sinh.");
+        return;
+    }
         const newEmployee = {
             id: idInput.value.trim(),
-            name: nameInput.value.trim(),
+            name: capitalizeWords(nameInput.value),
             gender: genderInput.value,
             job_title: jobTitleSelectModal.value,
             department: departmentSelectModal.value,
@@ -92,8 +159,46 @@ document.addEventListener('DOMContentLoaded', () => {
         const workingStatusInput = document.getElementById("workingStatusInput");
         const dobInput = document.getElementById("dobInput");
 
+        if (!isAtLeast18YearsOld(dobInput.value.trim(), workingStatusInput.value.trim())) {
+        showNotification("Nhân viên phải đủ 18 tuổi trở lên!.");
+        return;
+    }
+
+    if (!idInput.value.trim()) {
+        showNotification("Vui lòng nhập mã nhân viên.");
+        return;
+    }
+    if (!nameInput.value.trim()) {
+        showNotification("Vui lòng nhập tên nhân viên.");
+        return;
+    }
+    if (!genderInput.value) {
+        showNotification("Vui lòng chọn giới tính.");
+        return;
+    }
+    if (!jobTitleSelectModal.value) {
+        showNotification("Vui lòng chọn chức vụ.");
+        return;
+    }
+    if (!departmentSelectModal.value) {
+        showNotification("Vui lòng chọn phòng ban.");
+        return;
+    }
+    if (!emailInput.value.trim()) {
+        showNotification("Vui lòng nhập email.");
+        return;
+    }
+    if (!workingStatusInput.value) {
+        showNotification("Vui lòng chọn tình trạng làm việc.");
+        return;
+    }
+    if (!dobInput.value) {
+        showNotification("Vui lòng nhập ngày sinh.");
+        return;
+    }
+
         const updatedEmployee = {
-            name: nameInput.value.trim(),
+            name: capitalizeWords(nameInput.value),
             gender: genderInput.value,
             job_title: jobTitleSelectModal.value,
             department: departmentSelectModal.value,
@@ -275,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("emailInput").value = '';
         document.getElementById("workingStatusInput").value = '';
         document.getElementById("dobInput").value = '';
-        departmentSelect.value = '---';
+        departmentSelect.value = '';
         jobTitleSelect.innerHTML = '<option disabled selected>---</option>';
     }
 
