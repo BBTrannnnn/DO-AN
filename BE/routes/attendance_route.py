@@ -1,7 +1,11 @@
+#attendance.route
 from flask import Blueprint, request, jsonify
 from models import db
 from models.attendances import Attendance
 from models.employees import Employee
+from datetime import datetime
+from sqlalchemy import func
+
 
 attendance_bp = Blueprint('attendance', __name__)
 
@@ -26,7 +30,10 @@ def create_attendance():
     working_days = data['working_days']
     absence = data['absence']
     leave = data['leave']
-    time = data['time']
+    try:
+        time = datetime.strptime(data['time'], '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'message': 'Không đúng định dạng!. Use YYYY-MM-DD'}), 400
 
     # Kiểm tra xem employee_id có tồn tại trong bảng Employees không
     existing_employee = Employee.query.filter_by(id=employee_id).first()
@@ -43,7 +50,7 @@ def create_attendance():
         )
         db.session.add(new_record)
         db.session.commit()
-        return jsonify({'message': 'Attendance added successfully!', 'attendance': new_record.to_dict()}), 201
+        return jsonify({'message': 'Thêm thành công !', 'attendance': new_record.to_dict()}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
@@ -56,7 +63,12 @@ def update_attendance(id):
     record.working_days = data.get('working_days', record.working_days)
     record.absence = data.get('absence', record.absence)
     record.leave = data.get('leave', record.leave)
-    record.time = data.get('time', record.time)
+    if 'time' in data:
+        try:
+            record.time = datetime.strptime(data['time'], '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'message': 'Invalid time format. Use YYYY-MM-DD'}), 400
+
 
     try:
         db.session.commit()
