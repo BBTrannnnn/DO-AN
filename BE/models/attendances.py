@@ -9,9 +9,10 @@ class Attendance(db.Model):
     working_days = db.Column(db.Integer, nullable=False)
     absence = db.Column(db.Integer, nullable=False)
     leave = db.Column(db.Integer, nullable=False)
-    time = db.Column(db.String(7), nullable=False)  # Ví dụ: '04/2025'
+    time = db.Column(db.Date, nullable=False)  # Ví dụ: '04/2025'
 
     employee = db.relationship('Employee', backref=db.backref('attendances', cascade='all, delete-orphan'))
+
 
     def to_dict(self):
         return {
@@ -23,5 +24,5 @@ class Attendance(db.Model):
             'working_days': self.working_days,
             'absence': self.absence,
             'leave': self.leave,
-            'time': self.time
+            'time': self.time.strftime('%Y-%m-%d') if self.time else None
         }
