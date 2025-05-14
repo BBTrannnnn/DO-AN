@@ -24,79 +24,189 @@ document.addEventListener('DOMContentLoaded', () => {
             const attendanceData = await res.json();
             allAttendanceRecords = attendanceData;
             renderAttendanceTable(attendanceData);
+            updateIds();
         } catch (error) {
             console.error("Failed to load attendance:", error);
             showNotification("Lỗi khi load attendance!");
         }
     }
 
-    async function addAttendance() {
-        const idInput = document.getElementById("idInput");
-        const workingDaysInput = attendanceModal.querySelector('input[placeholder="Working days"]');
-        const absenceInput = attendanceModal.querySelector('input[placeholder="Absences"]');
-        const leaveInput = attendanceModal.querySelector('input[placeholder="Leave days"]');
-        const timeInput = attendanceModal.querySelector('input[type="date"]');
-
-        const newAttendance = {
-            employee_id: idInput.value.trim(),
-            working_days: parseInt(workingDaysInput.value) || 0,
-            absence: parseInt(absenceInput.value) || 0,
-            leave: parseInt(leaveInput.value) || 0,
-            time: timeInput.value ? timeInput.value.slice(0, 7).split('-').reverse().join('/') : ''
-        };
-
+    async function checkExistingAttendance(employeeId, month) {
         try {
-            const res = await fetch("http://127.0.0.1:5000/api/attendances/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newAttendance)
-            });
+            const res = await fetch(`http://127.0.0.1:5000/api/attendances/check?employee_id=${employeeId}&month=${month}`);
             const data = await res.json();
-            if (res.ok) {
-                loadAttendance();
-                hideModal();
-                showNotification("Thêm attendance thành công!.");
-            } else {
-                showNotification(data.message || "lỗi khi thêm attendance!");
-            }
+            return data.exists; // Trả về true nếu đã tồn tại, false nếu không
         } catch (error) {
-            console.error("Error adding attendance:", error);
-            showNotification("lỗi khi thêm attendance!");
+            console.error("Error checking existing attendance:", error);
+            return true; // Trả về true để tránh thêm/sửa trùng lặp nếu có lỗi xảy ra
         }
     }
+
+    function getDaysInMonth(dateStr) {
+        const [year, month] = dateStr.split("-").map(Number);
+        return new Date(year, month, 0).getDate(); // ngày 0 của tháng kế là ngày cuối tháng hiện tại
+    }
+
+    function isAttendanceValid(working, absence, leave, dateStr) {
+        const total = working + absence + leave;
+        const daysInMonth = getDaysInMonth(dateStr);
+        return total <= daysInMonth;
+    }
+    function getMonthYear(dateStr) {
+        const [year, month] = dateStr.split("-");
+        return `${year}-${month}`;
+    }
+
+    async function addAttendance() {
+    const idInput = document.getElementById("idInput");
+    const workingDaysInput = attendanceModal.querySelector('input[placeholder="Working days"]');
+    const absenceInput = attendanceModal.querySelector('input[placeholder="Absences"]');
+    const leaveInput = attendanceModal.querySelector('input[placeholder="Leave days"]');
+    const timeInput = attendanceModal.querySelector('input[type="date"]');
+    const timeValue = timeInput.value;
+    const formattedTime = timeValue ? timeValue : '';
+
+    const working = parseInt(workingDaysInput.value) || 0;
+    const absence = parseInt(absenceInput.value) || 0;
+    const leave = parseInt(leaveInput.value) || 0;
+
+    if (!formattedTime) {
+        showNotification("Vui lòng chọn ngày tháng!");
+        return;
+    }
+
+    if (!isAttendanceValid(working, absence, leave, formattedTime)) {
+        showNotification("Tổng số ngày đi làm và nghỉ vượt quá số ngày trong tháng!");
+        return;
+    }
+
+    // 1. Gọi API lấy toàn bộ bản ghi hoặc theo employee_id
+    try {
+        const res = await fetch("http://127.0.0.1:5000/api/attendances/");
+        const allAttendances = await res.json();
+
+        const selectedMonth = getMonthYear(formattedTime);
+        const employeeId = idInput.value.trim();
+
+        const exists = allAttendances.some(item => {
+            return item.employee_id === employeeId &&
+                getMonthYear(item.time) === selectedMonth;
+        });
+
+        if (exists) {
+            showNotification("Đã tồn tại bản ghi tháng này của nhân viên!");
+            return;
+        }
+
+        // 2. Nếu không tồn tại, gửi request thêm mới
+        const newAttendance = {
+            employee_id: employeeId,
+            working_days: working,
+            absence: absence,
+            leave: leave,
+            time: formattedTime
+        };
+
+        const resAdd = await fetch("http://127.0.0.1:5000/api/attendances/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newAttendance)
+        });
+
+        const data = await resAdd.json();
+        if (resAdd.ok) {
+            loadAttendance();
+            hideModal();
+            showNotification("Thêm attendance thành công!");
+        } else {
+            showNotification(data.message || "Lỗi khi thêm attendance!");
+        }
+
+    } catch (error) {
+        console.error("Error:", error);
+        showNotification("Lỗi khi kiểm tra hoặc thêm attendance!");
+    }
+}
 
     async function updateAttendance() {
-        const workingDaysInput = attendanceModal.querySelector('input[placeholder="Working days"]');
-        const absenceInput = attendanceModal.querySelector('input[placeholder="Absences"]');
-        const leaveInput = attendanceModal.querySelector('input[placeholder="Leave days"]');
-        const timeInput = attendanceModal.querySelector('input[type="date"]');
+    const workingDaysInput = attendanceModal.querySelector('input[placeholder="Working days"]');
+    const absenceInput = attendanceModal.querySelector('input[placeholder="Absences"]');
+    const leaveInput = attendanceModal.querySelector('input[placeholder="Leave days"]');
+    const timeInput = attendanceModal.querySelector('input[type="date"]');
 
+    const timeValue = timeInput.value;
+    const formattedTime = timeValue ? timeValue : '';
+
+    const working = parseInt(workingDaysInput.value) || 0;
+    const absence = parseInt(absenceInput.value) || 0;
+    const leave = parseInt(leaveInput.value) || 0;
+
+    if (!formattedTime) {
+        showNotification("Vui lòng chọn ngày tháng!");
+        return;
+    }
+
+    if (!isAttendanceValid(working, absence, leave, formattedTime)) {
+        showNotification("Tổng số ngày đi làm và nghỉ vượt quá số ngày trong tháng!");
+        return;
+    }
+
+    try {
+        // 1. Lấy toàn bộ bản ghi để kiểm tra
+        const res = await fetch("http://127.0.0.1:5000/api/attendances/");
+        const allAttendances = await res.json();
+
+        const selectedMonth = getMonthYear(formattedTime);
+
+        // 2. Lấy employee_id của bản ghi đang sửa
+        const currentAttendance = allAttendances.find(item => item.id === selectedAttendanceId);
+        if (!currentAttendance) {
+            showNotification("Không tìm thấy bản ghi để cập nhật!");
+            return;
+        }
+
+        const employeeId = currentAttendance.employee_id;
+
+        // 3. Kiểm tra xem có bản ghi nào khác (không phải chính nó) trùng tháng và employee_id không
+        const conflict = allAttendances.some(item => {
+            return item.employee_id === employeeId &&
+                   item.id !== selectedAttendanceId &&
+                   getMonthYear(item.time) === selectedMonth;
+        });
+
+        if (conflict) {
+            showNotification("Đã tồn tại bản ghi tháng này của nhân viên!");
+            return;
+        }
+
+        // 4. Gửi request PUT
         const updatedAttendance = {
-            working_days: parseInt(workingDaysInput.value) || 0,
-            absence: parseInt(absenceInput.value) || 0,
-            leave: parseInt(leaveInput.value) || 0,
-            time: timeInput.value ? timeInput.value.slice(0, 7).split('-').reverse().join('/') : ''
+            working_days: working,
+            absence: absence,
+            leave: leave,
+            time: formattedTime
         };
 
-        try {
-            const res = await fetch(`http://127.0.0.1:5000/api/attendances/${selectedAttendanceId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedAttendance)
-            });
-            const data = await res.json();
-            if (res.ok) {
-                loadAttendance();
-                hideModal();
-                showNotification("Cập nhật attendace thành công!");
-            } else {
-                showNotification(data.message || "Lỗi khi cập nhật attendance!");
-            }
-        } catch (error) {
-            console.error("Error updating attendance:", error);
-            showNotification("Lỗi khi cập nhật attendance! ");
+        const updateRes = await fetch(`http://127.0.0.1:5000/api/attendances/${selectedAttendanceId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedAttendance)
+        });
+
+        const data = await updateRes.json();
+        if (updateRes.ok) {
+            loadAttendance();
+            hideModal();
+            showNotification("Cập nhật attendance thành công!");
+        } else {
+            showNotification(data.message || "Lỗi khi cập nhật attendance!");
         }
+
+    } catch (error) {
+        console.error("Error updating attendance:", error);
+        showNotification("Lỗi khi cập nhật attendance!");
     }
+}
 
     async function deleteAttendance() {
         try {
@@ -133,13 +243,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Functions to render data on the UI ---
+    function updateIds() {
+    const rows = document.querySelectorAll('.account-table tbody tr'); // Sử dụng selector đúng với bảng của bạn
+    rows.forEach((row, index) => {
+        const idCell = row.querySelector('.id-cell');
+        if (idCell) {
+            idCell.textContent = index + 1;
+        }
+    });
+}
 
     function renderAttendanceTable(attendanceRecords) {
         attendanceTableBody.innerHTML = '';
         attendanceRecords.forEach(record => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                    <td>${record.id}</td>
+                    <td class="id-cell">${record.id}</td>
                     <td>${record.employee_id}</td>
                     <td>${record.employee_name}</td>
                     <td>${record.department}</td>
