@@ -3,11 +3,15 @@ from models.employees import Employee
 from models.payrolls import Payroll
 from models import db
 from datetime import datetime
-from utils.auth_utils import role_required
+from routes.decorators import role_required
+from flask import current_app
+
 
 payroll_bp = Blueprint('payrolls', __name__)
 
 @payroll_bp.route('/', methods=['POST'])
+@role_required('Admin', 'Payroll management') 
+
 
 def add_payroll():
     data = request.get_json()
@@ -77,6 +81,7 @@ def get_payrolls():
     return jsonify(payroll_list), 200
 
 @payroll_bp.route('/update', methods=['PUT'])
+@role_required('Admin', 'Payroll management') 
 
 def update_payroll():
     data = request.get_json()
@@ -102,7 +107,10 @@ def update_payroll():
 
     db.session.commit()
     return jsonify({'message': 'Cập nhật bản lương thành công'}), 200
+
+
 @payroll_bp.route('/delete', methods=['DELETE'])
+@role_required('Admin', 'Payroll management') 
 
 def delete_payroll():
     data = request.get_json()
@@ -117,3 +125,4 @@ def delete_payroll():
     db.session.delete(payroll)
     db.session.commit()
     return jsonify({'message': 'Xóa bản lương thành công!'})
+ 
