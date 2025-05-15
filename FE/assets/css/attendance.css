@@ -248,6 +248,66 @@ th {
     align-items: center; /* Căn giữa theo chiều dọc */  
     gap: 10px;
 } 
+/* ===================== MODAL LỊCH SỬ ===================== */
+
+#historyOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 99;
+}
+
+#historyModal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+#historyModal h2 {
+    margin-bottom: 20px;
+    color: #212143;
+}
+
+#historyModal .exit-btn {
+    float: right;
+    font-size: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #212143;
+}
+
+.history-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+#historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+#historyTable th, #historyTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#historyTable th {
+    background-color: #f2f2f2;
+}     
+
+
 
 .modal {  
     display: none;
@@ -368,4 +428,69 @@ th {
 
 #notificationModal .exit-btn:hover {  
     background-color: #0056b3; /* Màu nền khi hover */  
+}  
+
+
+
+button {  
+    padding: 8px 12px;  
+    margin: 0 5px;  
+    border: none;  
+    border-radius: 5px;  
+    cursor: pointer;  
+}  
+
+.edit-btn {  
+    background-color: #CFCFCF;  
+    color: #F5F5F5;  
+}  
+
+.delete-btn {  
+    background-color: #CFCFCF;  
+    color: #F5F5F5;  
+}  
+
+.edit-btn:hover {  
+    background-color: #0056b3;  
+}  
+
+.delete-btn:hover {  
+    background-color: #c82333;  
+}  
+#deleteAccountModal {  
+    display: none; /* Ẩn modal mặc định */  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: #ffffff; /* Màu nền trắng */  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 400px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+}  
+
+/* Định dạng cho nội dung modal xác nhận xóa */  
+#deleteAccountModal .notification-content {   
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#deleteAccountModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#deleteAccountModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+#deleteAccountModal .exit-btn, .confirm-btn {  
+    background-color: red; /* Màu nền nút */  
+    color: white; /* Màu chữ */  
+    padding: 10px 20px; /* Khoảng cách bên trong */  
+    border: none; /* Bỏ viền */  
+    border-radius: 5px; /* Bo tròn viền */  
+    cursor: pointer; /* Chỉ tay khi hover */  
 }  
