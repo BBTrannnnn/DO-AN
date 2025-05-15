@@ -240,12 +240,6 @@ main {
     overflow: visible; /* Đảm bảo phần tử này không che khuất modal */
 }
 
-.top-bar {
-    display: flex;
-    align-items: center;
-    gap: 80px; /* khoảng cách giữa 2 phần */
-  }
-
   .filter-bar {
     display: flex;
     align-items: center;
@@ -580,13 +574,15 @@ th.ID, td.ID {
 }  
 
  /* Nút Xóa và Edit */
-button {  
+button.edit-btn,
+button.delete-btn {
     padding: 8px 12px;  
     margin: 0 5px;  
     border: none;  
     border-radius: 5px;  
     cursor: pointer;  
-}  
+}
+
 
 .edit-btn {  
     background-color: #CFCFCF;  
