@@ -12,10 +12,15 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
-    def generate_token(self):
+    
+    def generate_token(self, expires_in=3600):
+        """Tạo token JWT cho người dùng"""
         payload = {
+            'id': self.id,
             'username': self.username,
-            'role': self.role,
-            'exp': datetime.utcnow() + timedelta(hours=2)
+            'role': [self.role],
+            'exp': datetime.utcnow() + timedelta(seconds=expires_in)
         }
-        return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+        # Mã hóa token bằng JWT
+        token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+        return token  # Token sẽ trả về dưới dạng chuỗi
