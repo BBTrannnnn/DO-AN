@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request
+import jwt
 from flask_cors import CORS
 from config import Config
 from models import db
@@ -22,6 +23,23 @@ app.bcrypt = bcrypt  # để auth.py có thể dùng lại bcrypt
 
 db.init_app(app)
 CORS(app)
+
+
+@app.before_request
+def load_user():
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        token = auth_header.split(" ")[1]
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            request.user = {
+                'id': data.get('user_id'),
+                'role': data.get('role')
+            }
+        except Exception:
+            request.user = None
+    else:
+        request.user = None
 
 app.register_blueprint(auth, url_prefix='/api')
 app.register_blueprint(employee_bp, url_prefix='/api/employees')
