@@ -1,0 +1,22 @@
+from models import db
+from models.employees import Employee
+
+class DepartmentJobTitle(db.Model):
+    __tablename__ = 'department_job_title'
+    id = db.Column(db.Integer, primary_key=True)
+    department_id = db.Column(db.String(10), nullable=False)
+    job_title_id = db.Column(db.String(10), nullable=False)
+    employee_id = db.Column(db.String(10), db.ForeignKey('employees.id', ondelete='CASCADE'), nullable=True)
+
+    employee = db.relationship('Employee', backref=db.backref('department_job_title', cascade='all, delete-orphan'))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'department_id': self.department_id,
+            'job_title_id': self.job_title_id,
+            'employee_id': self.employee_id,
+            'employee_name': self.employee.name if self.employee else None,
+            'department': self.employee.department if self.employee else None,
+            'job_title': self.employee.job_title if self.employee else None,
+        }
