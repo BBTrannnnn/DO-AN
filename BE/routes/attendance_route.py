@@ -5,6 +5,8 @@ from models.attendances import Attendance
 from models.employees import Employee
 from datetime import datetime
 from sqlalchemy import func
+from routes.decorators import role_required
+
 
 
 attendance_bp = Blueprint('attendance', __name__)
@@ -21,6 +23,7 @@ def get_attendance_by_id(id):
     return jsonify(record.to_dict())
 
 @attendance_bp.route('/', methods=['POST'])
+@role_required('Admin', 'Payroll management') 
 def create_attendance():
     data = request.get_json()
     if not data or 'employee_id' not in data or 'working_days' not in data or 'absence' not in data or 'leave' not in data or 'time' not in data:
@@ -56,6 +59,7 @@ def create_attendance():
         return jsonify({'error': str(e)}), 400
 
 @attendance_bp.route('/<int:id>', methods=['PUT'])
+@role_required('Admin', 'Payroll management') 
 def update_attendance(id):
     record = Attendance.query.get_or_404(id)
     data = request.get_json()
@@ -78,6 +82,7 @@ def update_attendance(id):
         return jsonify({'error': str(e)}), 400
 
 @attendance_bp.route('/<int:id>', methods=['DELETE'])
+@role_required('Admin', 'Payroll management') 
 def delete_attendance(id):
     record = Attendance.query.get_or_404(id)
     try:
@@ -87,3 +92,4 @@ def delete_attendance(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+    
