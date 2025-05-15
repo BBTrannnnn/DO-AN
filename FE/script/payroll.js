@@ -22,9 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
                 method: "GET",
-                headers: { "Content-Type": "application/json"
-                    
-                 },
+                headers: {
+                    "Content-Type": "application/json"
+
+                },
             });
             const payrolls = await res.json();
             allPayrolls = payrolls;
@@ -114,37 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
         historyOverlay.style.display = "none";
     }
 
-    async function loadHistory() {
-        try {
-            const res = await fetch("http://localhost:5000/api/get_history");
-            const data = await res.json();
-            const tbody = document.querySelector("#historyTable tbody");
-            tbody.innerHTML = "";
-
-            data.forEach((item, index) => {
-                const tr = document.createElement("tr");
-                const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
-                    timeZone: "Asia/Ho_Chi_Minh",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                });
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${item.username}</td>
-                    <td>${item.action}</td>
-                    <td>${item.target_user || "-"}</td>
-                    <td>${formattedTime}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } catch (err) {
-            console.error("Lỗi tải lịch sử:", err);
-        }
-    }
+    // Lấy token từ localStorage
 
 
     async function addPayroll() {
@@ -158,8 +129,31 @@ document.addEventListener("DOMContentLoaded", function () {
             showNotification("Vui lòng nhập thời gian hợp lệ (yyyy-mm-dd).");
             return; // Dừng lại nếu thời gian không hợp lệ
         }
+        const token = localStorage.getItem("token");  // Lấy token từ localStorage
 
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "payroll management"];
 
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
         if (!employee_id) {
             showNotification("Vui lòng nhập mã nhân viên.");
             return;
@@ -179,11 +173,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
             method: "POST",
-            headers: { "Content-Type": "application/json",
-             },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify({ employee_id, salary, time })
         });
-        
+
         if (res.ok) {
             showNotification("Thêm lương thành công.");
             loadPayrolls();
@@ -199,12 +195,39 @@ document.addEventListener("DOMContentLoaded", function () {
     async function updatePayroll() {
         const salary = document.getElementById("salaryInput").value;
         const time = document.getElementById("timeInput").value;
+        const token = localStorage.getItem("token");  // Lấy token từ localStorage
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
+        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+
+        const allowedRoles = ["admin", "payroll management"];
+
+        // Chuẩn hóa role trong token thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
 
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/update", {
             method: "PUT",
-            headers: { "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("token")
-             },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify({
                 payroll_id: selectedPayroll,
                 salary: salary,
@@ -222,10 +245,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function deletePayroll() {
         deletePayrollModal.style.display = "none";
+        const token = localStorage.getItem("token");  // Lấy token từ localStorage
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
+        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+        const allowedRoles = ["admin", "payroll management"];
+
+        // Chuẩn hóa role trong token thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
+
         const res = await fetch("http://127.0.0.1:5000/api/payrolls/delete", {
             method: "DELETE",
-            headers: { "Content-Type": "application/json"          
-             },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify({ payroll_id: selectedPayroll })
         });
 
@@ -270,11 +321,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     okBtn.addEventListener("click", function () {
-    if (selectedPayroll) {
-        updatePayroll();
-    } else {
-        addPayroll();  
-    }
+        if (selectedPayroll) {
+            updatePayroll();
+        } else {
+            addPayroll();
+        }
     });
 
 
