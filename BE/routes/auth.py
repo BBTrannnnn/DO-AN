@@ -6,7 +6,9 @@ from models.payrolls import Payroll,db
 from models.employees import Employee,db
 from datetime import datetime
 import pytz
+from  routes.decorators import role_required
 from flask import current_app
+
 
 
 
@@ -14,6 +16,7 @@ auth = Blueprint('auth', __name__)
 
 # Danh sách các tài khoản
 @auth.route('/get_users', methods=['GET']) 
+
 def get_users():
     users = User.query.all()
     return jsonify([{
@@ -27,6 +30,7 @@ def get_users():
 
 # Danh sách các thao tác trong lịch sử
 @auth.route('/get_history', methods=['GET']) 
+@role_required('Admin')
 def get_history():
     histories = History.query.order_by(History.timestamp.desc()).all()
     return jsonify([{
@@ -47,11 +51,11 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if user and current_app.bcrypt.check_password_hash(user.password, password):  # So sánh mật khẩu trực tiếp
+        token = user.generate_token()  # Giả sử bạn có phương thức này trong model User
         return jsonify({
             'message': 'Đăng nhập thành công!',
             'role': user.role.strip().capitalize(),
-            'token': user.generate_token()  # Giả sử bạn có phương thức này trong model User
-
+            'token': token  # Trả về token cho người dùng
         }), 200
     else:
         return jsonify({'message': 'Tên tài khoản hoặc mật khẩu sai!'}), 401
@@ -60,7 +64,7 @@ def login():
     
 #Thêm tài khoản
 @auth.route('/register', methods=['POST'])
-
+@role_required('Admin')
 def register():
     data = request.get_json()
     username = data.get('username')
@@ -85,6 +89,7 @@ def register():
 
 # Xóa tài khoản
 @auth.route('/delete', methods=['DELETE'])
+@role_required('Admin')
 def delete_user():
     data = request.get_json()
     username = data.get('username')
@@ -100,6 +105,7 @@ def delete_user():
 
 # Cập nhật tài khoản   
 @auth.route('/update', methods=['PUT'])
+@role_required('Admin')
 def update_user():
     data = request.get_json()
     old_username = data.get('old_username')  # tên tài khoản hiện tại
@@ -126,6 +132,7 @@ def update_user():
 
 # Ghi nhận lịch sử thao tác
 @auth.route('/log_history', methods=['POST'])
+@role_required('Admin')
 def log_history():
     data = request.get_json()
 
