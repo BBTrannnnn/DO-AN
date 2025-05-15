@@ -490,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'payroll': 'payroll.html',
         'attendance': 'attendance.html',
         'department': 'department_jobtitle.html',
+        'report': 'report.html',
     };
     Object.keys(routes).forEach(id => {
         const el = document.getElementById(id);

@@ -357,6 +357,7 @@ document.addEventListener("DOMContentLoaded", function () {
         'payroll': 'payroll.html',
         'attendance': 'attendance.html',
         'department': 'department_jobtitle.html',
+        'report': 'report.html',
     };
 
     // Duyệt qua từng phần tử trong menu và thêm sự kiện click
