@@ -70,6 +70,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const absence = parseInt(absenceInput.value) || 0;
     const leave = parseInt(leaveInput.value) || 0;
 
+    const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+        return;
+    }
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin", "payroll management"];
+
+    // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    } else {
+        rolesInToken = [];
+    }
+
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
+
+
     if (!formattedTime) {
         showNotification("Vui lòng chọn ngày tháng!");
         return;
@@ -109,7 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const resAdd = await fetch("http://127.0.0.1:5000/api/attendances/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify(newAttendance)
         });
 
@@ -117,9 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (resAdd.ok) {
             loadAttendance();
             hideModal();
-            showNotification("Thêm attendance thành công!");
+            showNotification("Thêm chấm công thành công.");
         } else {
-            showNotification(data.message || "Lỗi khi thêm attendance!");
+            showNotification(data.message || "Thêm chấm công thất bại!");
         }
 
     } catch (error) {
@@ -140,6 +170,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const working = parseInt(workingDaysInput.value) || 0;
     const absence = parseInt(absenceInput.value) || 0;
     const leave = parseInt(leaveInput.value) || 0;
+
+
+    const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+        return;
+    }
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin", "payroll management"];
+
+    // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    } else {
+        rolesInToken = [];
+    }
+
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
 
     if (!formattedTime) {
         showNotification("Vui lòng chọn ngày tháng!");
@@ -189,7 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updateRes = await fetch(`http://127.0.0.1:5000/api/attendances/${selectedAttendanceId}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify(updatedAttendance)
         });
 
@@ -197,9 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (updateRes.ok) {
             loadAttendance();
             hideModal();
-            showNotification("Cập nhật attendance thành công!");
+            showNotification("Cập nhật chấm công thành công.");
         } else {
-            showNotification(data.message || "Lỗi khi cập nhật attendance!");
+            showNotification(data.message || "Xóa chấm công thất bại!");
         }
 
     } catch (error) {
@@ -209,17 +269,48 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
     async function deleteAttendance() {
+
+        const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "payroll management"];
+
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
         try {
             const res = await fetch(`http://127.0.0.1:5000/api/attendances/${selectedAttendanceId}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
+            
             });
             const data = await res.json();
             if (res.ok) {
                 loadAttendance();
                 hideConfirmationModal();
-                showNotification("Xóa attendance thành công!");
+                showNotification("Xóa chấm công thành công.");
             } else {
-                showNotification(data.message || "Lỗi khi xóa attendance!");
+                showNotification(data.message || "Xóa chấm công thất bại!");
             }
         } catch (error) {
             console.error("Error deleting attendance:", error);
@@ -413,51 +504,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // nút xem history
-    showHistoryBtn.addEventListener("click", () => {
-        loadHistory();
-        historyModal.style.display = "block";
-        historyOverlay.style.display = "block";
-    });
+    // showHistoryBtn.addEventListener("click", () => {
+    //     loadHistory();
+    //     historyModal.style.display = "block";
+    //     historyOverlay.style.display = "block";
+    // });
 
-    historyCloseBtn.addEventListener("click", closeHistoryModal);
-    historyOverlay.addEventListener("click", closeHistoryModal);
+    // historyCloseBtn.addEventListener("click", closeHistoryModal);
+    // historyOverlay.addEventListener("click", closeHistoryModal);
 
-    function closeHistoryModal() {
-        historyModal.style.display = "none";
-        historyOverlay.style.display = "none";
-    }
+    // function closeHistoryModal() {
+    //     historyModal.style.display = "none";
+    //     historyOverlay.style.display = "none";
+    // }
 
-    async function loadHistory() {
-        try {
-            const res = await fetch("http://localhost:5000/api/get_history");
-            const data = await res.json();
-            const tbody = document.querySelector("#historyTable tbody");
-            tbody.innerHTML = "";
+    // async function loadHistory() {
+    //     try {
+    //         const res = await fetch("http://localhost:5000/api/get_history");
+    //         const data = await res.json();
+    //         const tbody = document.querySelector("#historyTable tbody");
+    //         tbody.innerHTML = "";
 
-            data.forEach((item, index) => {
-                const tr = document.createElement("tr");
-                const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
-                    timeZone: "Asia/Ho_Chi_Minh",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                });
-                tr.innerHTML =
-                    `<td>${index + 1}</td>
-                <td>${item.username}</td>
-                <td>${item.action}</td>
-                <td>${item.target_user || "-"}</td>
-                <td>${formattedTime}</td>`
-                    ;
-                tbody.appendChild(tr);
-            });
-        } catch (err) {
-            console.error("Lỗi tải lịch sử:", err);
-        }
-    }
+    //         data.forEach((item, index) => {
+    //             const tr = document.createElement("tr");
+    //             const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
+    //                 timeZone: "Asia/Ho_Chi_Minh",
+    //                 year: "numeric",
+    //                 month: "2-digit",
+    //                 day: "2-digit",
+    //                 hour: "2-digit",
+    //                 minute: "2-digit",
+    //                 second: "2-digit"
+    //             });
+    //             tr.innerHTML =
+    //                 `<td>${index + 1}</td>
+    //             <td>${item.username}</td>
+    //             <td>${item.action}</td>
+    //             <td>${item.target_user || "-"}</td>
+    //             <td>${formattedTime}</td>`
+    //                 ;
+    //             tbody.appendChild(tr);
+    //         });
+    //     } catch (err) {
+    //         console.error("Lỗi tải lịch sử:", err);
+    //     }
+    // }
 
     // --- Initial Data Load ---
     loadAttendance();
