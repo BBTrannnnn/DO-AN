@@ -8,17 +8,17 @@ document.addEventListener("DOMContentLoaded", function () {
         'report': 'report.html',
     };
 
-    // Duyệt qua từng phần tử trong menu và thêm sự kiện click
     Object.keys(routes).forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.style.cursor = 'pointer'; // Hiện thị dấu tay khi rê chuột
+            el.style.cursor = 'pointer';
             el.addEventListener('click', () => {
-                window.location.href = routes[id]; // Chuyển trang khi click vào menu
+                window.location.href = routes[id];
             });
         }
     });
 
+    loadDepartmentJobTitleData(); // <-- Gọi hàm khi DOM load xong
 });
 
 const departmentMap = {
@@ -34,7 +34,6 @@ const jobTitleMap = {
 };
 
 $(document).ready(function () {
-    // Open modals
     $('#department-label').click(() => {
         $('#department-modal').css('display', 'flex');
     });
@@ -53,7 +52,6 @@ $(document).ready(function () {
         $('#job-title-name').text(jobTitleMap[selected] || '');
     });
 
-    // Close modals
     $('#close-department, #ok-department').click(() => {
         $('#department-modal').fadeOut();
     });
@@ -62,14 +60,12 @@ $(document).ready(function () {
         $('#job-title-modal').fadeOut();
     });
 
-    // Close if click outside modal
     $('.modal-overlay').click(function (e) {
         if (e.target === this) {
             $(this).fadeOut();
         }
     });
 
-    // Init names
     $('#department-select').trigger('change');
     $('#jobtitle-select').trigger('change');
 });
@@ -80,3 +76,34 @@ $('#reset-btn').click(function () {
     $('#department-name').text('');
     $('#job-title-name').text('');
 });
+
+// 🔄 Hàm lấy dữ liệu từ API và hiển thị lên bảng
+function loadDepartmentJobTitleData() {
+    fetch('http://127.0.0.1:5000/api/department-job-title') // KHỚP với Flask app.py
+        .then(response => {
+            if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
+            return response.json();
+        })
+        .then(data => {
+            const tbody = document.getElementById('department-job-title-body');
+            tbody.innerHTML = ''; // Xóa dữ liệu cũ
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+
+                tr.innerHTML = `
+                    <td>${item.id_department}</td>
+                    <td>${item.id_job_title}</td>
+                    <td>${item.id_employee}</td>
+                    <td>${item.name}</td>
+                    <td>${item.department}</td>
+                    <td>${item.job_title}</td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(error => {
+            console.error("Không thể tải dữ liệu department-job-title:", error);
+        });
+}
