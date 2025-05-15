@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
     const editBtns = document.querySelectorAll(".edit-btn");
     const deleteBtns = document.querySelectorAll(".delete-btn");
@@ -16,6 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const historyModal = document.getElementById("historyModal");
     const historyOverlay = document.getElementById("historyOverlay");
     const historyCloseBtn = document.getElementById("historyCloseBtn");
+
+
 
 
 
@@ -129,8 +132,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const username = document.getElementById("userInput").value.trim();
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value || "Employee";  // Mặc định là "Employee"
+        const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
 
+        if (!token) {
+            showNotification("Role của bạn ko đủ quyền sử dụng chức năng này !!!!");  // Thông báo nếu không có token
+            return;
+        }
+         const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
+        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
 
+        if (userRole !== "Admin") {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");  // Thông báo nếu không phải admin
+            return;
+        }
         // Kiểm tra username là Gmail
         if (!username.includes("@")) {
         showNotification("Tài khoản phải chứa ký tự @");
@@ -144,7 +158,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         const res = await fetch("http://127.0.0.1:5000/api/register", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`  // Gửi token trong header
+        },
             body: JSON.stringify({ username, password, role })
         });
 
@@ -173,9 +190,28 @@ document.addEventListener("DOMContentLoaded", function () {
         const password = document.getElementById("passwordInput").value;
         const role = document.getElementById("departmentSelect").value;
 
+        const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
+
+        if (!token) {
+        showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+        return;
+        }
+
+        // Giải mã token để lấy role (nếu sử dụng JWT)
+        const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
+        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+
+        if (userRole !== "Admin") {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");  // Thông báo nếu không phải admin
+            return;
+        }
+
         const res = await fetch("http://127.0.0.1:5000/api/update", {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`  // Gửi token trong header
+        },
             body: JSON.stringify({
                 old_username: selectedUser,
                 new_username: newUsername,
@@ -207,11 +243,33 @@ document.addEventListener("DOMContentLoaded", function () {
     // Xóa tài khoản
     async function deleteAccount() {
         deleteAccountModal.style.display = "none";
-        const res = await fetch("http://127.0.0.1:5000/api/delete", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: selectedUser })
-        });
+
+    // Lấy token từ localStorage
+    const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
+
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+        return;
+    }
+
+    // Giải mã token để lấy role (nếu sử dụng JWT)
+    const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
+    const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+
+    if (userRole !== "Admin") {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");  // Thông báo nếu không phải admin
+        return;
+    }
+
+    // Gửi yêu cầu DELETE với token trong header
+    const res = await fetch("http://127.0.0.1:5000/api/delete", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`  // Gửi token trong header
+        },
+        body: JSON.stringify({ username: selectedUser })
+    });
 
         if (res.ok) {
             showNotification("Xóa tài khoản thành công.");
