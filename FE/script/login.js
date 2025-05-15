@@ -17,6 +17,9 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     if (response.ok) {
         alert(data.message);
 
+        const token = data.token;  // Lấy token từ phản hồi
+        localStorage.setItem("token", token);
+
         // Kiểm tra role và điều hướng
         if (data.role === 'Admin') {
             localStorage.setItem("admin", username);
