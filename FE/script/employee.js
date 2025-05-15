@@ -119,6 +119,34 @@ document.addEventListener('DOMContentLoaded', () => {
         showNotification("Vui lòng nhập ngày sinh.");
         return;
     }
+
+    const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "hr management"];
+
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
+
+
         const newEmployee = {
             id: idInput.value.trim(),
             name: capitalizeWords(nameInput.value),
@@ -134,7 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch("http://127.0.0.1:5000/api/employees/", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
                 body: JSON.stringify(newEmployee)
             });
             const data = await res.json();
@@ -197,6 +228,33 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+
+    const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "hr management"];
+
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
+
         const updatedEmployee = {
             name: capitalizeWords(nameInput.value),
             gender: genderInput.value,
@@ -210,16 +268,19 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`http://127.0.0.1:5000/api/employees/${selectedEmployee}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
                 body: JSON.stringify(updatedEmployee)
             });
             const data = await res.json();
             if (res.ok) {
                 loadEmployees();
                 hideModal();
-                showNotification("Thông tin nhân viên đã được cập nhật.");
+                showNotification("Cập nhật thông tin nhân viên thành công.");
             } else {
-                showNotification(data.message || "Có lỗi xảy ra khi cập nhật nhân viên.");
+                showNotification(data.message || "Cập nhật thông tin nhân viên thất bại!");
             }
         } catch (error) {
             console.error("Error updating employee:", error);
@@ -228,17 +289,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function deleteEmployee() {
+        const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "hr management"];
+
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
         try {
             const res = await fetch(`http://127.0.0.1:5000/api/employees/${selectedEmployee}`, {
-                method: "DELETE"
+                 method: "DELETE",
+                headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             });
             const data = await res.json();
             if (res.ok) {
                 loadEmployees();
                 hideModal();
-                showNotification("Nhân viên đã được xóa.");
+                showNotification("Xóa nhân viên thành công.");
             } else {
-                showNotification(data.message || "Có lỗi xảy ra khi xóa nhân viên.");
+                showNotification(data.message || "Xóa nhân viên thất bại!!!");
             }
         } catch (error) {
             console.error("Error deleting employee:", error);
@@ -302,10 +392,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateModal(employee) {
+        document.getElementById("idInput").value = employee.id || '';
         document.getElementById("nameInput").value = employee.name || '';
+        document.getElementById("genderInput").value = employee.gender || '';
         document.getElementById("emailInput").value = employee.email || '';
         document.getElementById("workingStatusInput").value = employee.working_status || '';
         document.getElementById("dobInput").value = employee.dob || '';
+        idInput.disabled = selectedEmployee !== null;
 
         // Chọn department và sau đó chọn job title nếu có
         departmentSelect.value = employee.department || '---';
@@ -363,10 +456,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openModalForNew() {
-        selectedEmployee = null;
-        clearModalForm();
-        openModal();
-    }
+    selectedEmployee = null;
+    clearModalForm();
+
+    // Bật lại trường ID khi thêm mới
+    document.getElementById("idInput").disabled = false;
+
+    openModal();
+}
 
     function hideModal() {
         employeeModal.style.display = 'none';
@@ -376,13 +473,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearModalForm() {
-        document.getElementById("nameInput").value = '';
-        document.getElementById("emailInput").value = '';
-        document.getElementById("workingStatusInput").value = '';
-        document.getElementById("dobInput").value = '';
-        departmentSelect.value = '';
-        jobTitleSelect.innerHTML = '<option disabled selected>---</option>';
-    }
+    const idInput = document.getElementById("idInput");
+    idInput.value = '';
+    idInput.disabled = false;
+
+    document.getElementById("nameInput").value = '';
+    document.getElementById("emailInput").value = '';
+    document.getElementById("workingStatusInput").value = '';
+    document.getElementById("dobInput").value = '';
+    departmentSelect.value = '';
+    jobTitleSelect.innerHTML = '<option disabled selected>---</option>';
+}
 
     function updateJobTitles() {
         const selectedDept = departmentSelect.value;
@@ -456,38 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyOverlay.style.display = "none";
     }
 
-    async function loadHistory() {
-        try {
-            const res = await fetch("http://localhost:5000/api/get_history");
-            const data = await res.json();
-            const tbody = document.querySelector("#historyTable tbody");
-            tbody.innerHTML = "";
-
-            data.forEach((item, index) => {
-                const tr = document.createElement("tr");
-                const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
-                    timeZone: "Asia/Ho_Chi_Minh",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                });
-                tr.innerHTML =
-                    `<td>${index + 1}</td>
-                <td>${item.username}</td>
-                <td>${item.action}</td>
-                <td>${item.target_user || "-"}</td>
-                <td>${formattedTime}</td>`
-                    ;
-                tbody.appendChild(tr);
-            });
-        } catch (err) {
-            console.error("Lỗi tải lịch sử:", err);
-        }
-    }
-
+    
     addEmployeeBtn.addEventListener('click', () => {
         employeeModal.style.display = 'block';
         overlay.style.display = 'block';
