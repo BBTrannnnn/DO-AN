@@ -124,6 +124,19 @@ def update_employee(employee_id):
     if data.get('dob'):
         employee.dob = datetime.strptime(data['dob'], '%Y-%m-%d').date()
 
+    # Cập nhật bảng DepartmentJobTitle
+    department_name = data.get('department')
+    job_title_name = data.get('job_title')
+
+    department_id = DEPARTMENT_ID_MAP.get(department_name)
+    job_title_id = JOB_TITLE_ID_MAP.get(job_title_name)
+
+    # Tìm bản ghi liên kết hiện tại trong bảng DepartmentJobTitle
+    dept_job = DepartmentJobTitle.query.filter_by(employee_id=employee.id).first()
+    if dept_job:
+        dept_job.department_id = department_id
+        dept_job.job_title_id = job_title_id
+
     db.session.commit()
     return jsonify({'message': 'Cập nhật thông tin nhân viên thành công!', 'employee': employee.to_dict()})
 
