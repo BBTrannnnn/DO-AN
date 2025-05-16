@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const attendanceTableBody = document.querySelector('.account-table tbody'); // Bảng hiển thị điểm danh
     const notificationModal = document.getElementById('notificationModal');
     const notificationMessage = notificationModal.querySelector('p');
-
+    const searchInput = document.getElementById('searchInput');
+    
     // --- Data variables ---
     let allAttendanceRecords = [];
     let selectedAttendanceId = null; // Lưu ID điểm danh đang được chỉnh sửa hoặc xóa
@@ -492,6 +493,20 @@ document.addEventListener('DOMContentLoaded', () => {
         'department': 'department_jobtitle.html',
         'report': 'report.html',
     };
+
+    searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.trim().toLowerCase();
+    
+    const filtered = allAttendanceRecords.filter(attendance => {
+        const idMatch = String(attendance.employee_id).toLowerCase().includes(keyword);
+        const nameMatch = attendance.employee_name?.toLowerCase().includes(keyword) || false;
+        const jobTitleMatch = attendance.job_title?.toLowerCase().includes(keyword) || false;
+        const departmentMatch = attendance.department?.toLowerCase().includes(keyword) || false;
+        return idMatch || nameMatch || jobTitleMatch || departmentMatch ;
+    });
+    
+    renderAttendanceTable(filtered);
+});
     Object.keys(routes).forEach(id => {
         const el = document.getElementById(id);
         if (el) {
