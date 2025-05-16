@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // ==================== DOM ELEMENTS ====================
     const routes = {
         'account': 'admin.html',
         'employee': 'employee.html',
@@ -8,6 +9,20 @@ document.addEventListener("DOMContentLoaded", function () {
         'report': 'report.html',
     };
 
+    const departmentMap = {
+        "PC01": "IT",
+        "PC02": "HR",
+        "PC03": "Finance"
+    };
+
+    const jobTitleMap = {
+        "JT01": "Developer",
+        "JT02": "Designer",
+        "JT03": "Manager"
+    };
+
+    // ==================== EVENT LISTENERS ====================
+    // Navigation
     Object.keys(routes).forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -18,22 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    loadDepartmentJobTitleData(); // <-- Gọi hàm khi DOM load xong
-});
-
-const departmentMap = {
-    "PC01": "IT",
-    "PC02": "HR",
-    "PC03": "Finance"
-};
-
-const jobTitleMap = {
-    "JT01": "Developer",
-    "JT02": "Designer",
-    "JT03": "Manager"
-};
-
-$(document).ready(function () {
+    // Department/Job Title Modals
     $('#department-label').click(() => {
         $('#department-modal').css('display', 'flex');
     });
@@ -42,6 +42,7 @@ $(document).ready(function () {
         $('#job-title-modal').css('display', 'flex');
     });
 
+    // Dropdown changes
     $('#department-select').change(function () {
         const selected = $(this).val();
         $('#department-name').text(departmentMap[selected] || '');
@@ -52,6 +53,7 @@ $(document).ready(function () {
         $('#job-title-name').text(jobTitleMap[selected] || '');
     });
 
+    // Modal close buttons
     $('#close-department, #ok-department').click(() => {
         $('#department-modal').fadeOut();
     });
@@ -60,50 +62,90 @@ $(document).ready(function () {
         $('#job-title-modal').fadeOut();
     });
 
+    // Overlay click
     $('.modal-overlay').click(function (e) {
         if (e.target === this) {
             $(this).fadeOut();
         }
     });
 
+    // Reset button
+    $('#reset-btn').click(function () {
+        $('#department-select').val('');
+        $('#jobtitle-select').val('');
+        $('#department-name').text('');
+        $('#job-title-name').text('');
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener("input", handleSearch);
+    }
+
+    // Trigger initial changes
     $('#department-select').trigger('change');
     $('#jobtitle-select').trigger('change');
-});
 
-$('#reset-btn').click(function () {
-    $('#department-select').val('');
-    $('#jobtitle-select').val('');
-    $('#department-name').text('');
-    $('#job-title-name').text('');
-});
+    // ==================== INITIAL LOAD ====================
+    loadDepartmentJobTitleData();
 
-// 🔄 Hàm lấy dữ liệu từ API và hiển thị lên bảng
-function loadDepartmentJobTitleData() {
-    fetch('http://127.0.0.1:5000/api/department-job-title') // KHỚP với Flask app.py
-        .then(response => {
-            if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
-            return response.json();
-        })
-        .then(data => {
-            const tbody = document.getElementById('department-job-title-body');
-            tbody.innerHTML = ''; // Xóa dữ liệu cũ
+    // ==================== FUNCTIONS ====================
+    function handleSearch() {
+        const keyword = this.value.trim().toLowerCase();
+        
+        if (!window.departmentJobTitleData) return;
 
-            data.forEach(item => {
-                const tr = document.createElement('tr');
-
-                tr.innerHTML = `
-                    <td>${item.id_department}</td>
-                    <td>${item.id_job_title}</td>
-                    <td>${item.id_employee}</td>
-                    <td>${item.name}</td>
-                    <td>${item.department}</td>
-                    <td>${item.job_title}</td>
-                `;
-
-                tbody.appendChild(tr);
-            });
-        })
-        .catch(error => {
-            console.error("Không thể tải dữ liệu department-job-title:", error);
+        const filteredData = window.departmentJobTitleData.filter(item => {
+            return (
+                String(item.id_department).toLowerCase().includes(keyword) ||
+                String(item.id_job_title).toLowerCase().includes(keyword) ||
+                String(item.id_employee).toLowerCase().includes(keyword) ||
+                String(item.name).toLowerCase().includes(keyword) ||
+                String(item.department).toLowerCase().includes(keyword) ||
+                String(item.job_title).toLowerCase().includes(keyword)
+            );
         });
-}
+
+        renderDepartmentJobTitleTable(filteredData);
+    }
+
+    function loadDepartmentJobTitleData() {
+        fetch('http://127.0.0.1:5000/api/department-job-title')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load data');
+                return response.json();
+            })
+            .then(data => {
+                window.departmentJobTitleData = data; // Store data globally
+                renderDepartmentJobTitleTable(data);
+            })
+            .catch(error => {
+                console.error("Error loading data:", error);
+                alert("Error loading data. Please check console for details.");
+            });
+    }
+
+    function renderDepartmentJobTitleTable(data) {
+        const tbody = document.getElementById('department-job-title-body');
+        tbody.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No data available</td></tr>';
+            return;
+        }
+
+        data.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.id_department}</td>
+                <td>${item.id_job_title}</td>
+                <td>${item.id_employee}</td>
+                <td>${item.name}</td>
+                <td>${item.department}</td>
+                <td>${item.job_title}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+});
