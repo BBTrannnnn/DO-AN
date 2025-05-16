@@ -1,105 +1,120 @@
+/* Reset mặc định */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Nền với hình ảnh gradient và overlay blur */
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #e0c3fc, #8ec5fc); /* Cập nhật nền dịu pastel */
+    position: relative;
+    background: linear-gradient(135deg, #e0e0e0, #3c3c3c);
+    background-image: url('https://images.unsplash.com/photo-1677442130264-888df417b90b?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    overflow: hidden;
 }
 
+/* Lớp phủ mờ làm dịu nền */
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.2));
+    backdrop-filter: blur(8px);
+    z-index: 0;
+}
+
+/* Form chính */
 .container {
-    background-color: white;
+    position: relative;
+    z-index: 1;
+    background-color: #ffffff;
+    padding: 40px 30px;
     border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    padding: 35px 30px;
-    width: 340px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
 }
 
+/* Logo */
 .weblogo-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
 .web-logo {
-    max-width: 90px;
+    max-width: 150px;
+    height: auto;
 }
 
+/* Đường kẻ */
 .solid-line {
-    height: 1px;
-    background-color: #eee; /* đổi màu nhẹ hơn */
+    height: 2px;
+    background-color: #e0e0e0;
     margin-bottom: 20px;
-    opacity: 1;
 }
 
+/* Input */
 .input-container {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     position: relative;
 }
 
-p {
-    margin-bottom: 6px;
+.input-container p {
+    margin-bottom: 8px;
     font-weight: 600;
     color: #333;
 }
 
-input {
+.input-container input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 16px;
     border: 1px solid #ccc;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 14px;
-    background-color: #f9f9f9;
-    transition: border 0.3s, box-shadow 0.3s;
+    background-color: #fdfdfd;
+    transition: 0.3s ease;
 }
 
-input:focus {
-    border: 1px solid #a88ffc;
-    box-shadow: 0 0 0 2px rgba(168, 143, 252, 0.2);
+.input-container input:focus {
+    border-color: #555;
     outline: none;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Toggle mật khẩu giữ nguyên */
+/* Biểu tượng hiện mật khẩu */
 .toggle-password {
     position: absolute;
+    right: 16px;
     top: 70%;
-    right: 10px;
     transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    width: 20px;
-    height: 20px;
-    opacity: 0.88;
-    transition: opacity 0.2s ease;
 }
 
-.toggle-password:hover {
-    opacity: 1;
-}
-
-/* Nút đăng nhập - đổi màu giống đoạn bạn gửi */
-button {
-    background-color: #6FCF97; /* xanh lá dịu */
-    color: white;
-    border: none;
-    padding: 10px;
+/* Nút đăng nhập */
+button[type="submit"] {
     width: 100%;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 14px;
+    background-color: #1f1f1f;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: bold;
+    color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #5bc68d;
-}
-
-input[type="password"]::-ms-reveal,
-input[type="password"]::-webkit-credentials-auto-fill-button {
-    display: none;
+button[type="submit"]:hover {
+    background-color: #333;
 }
