@@ -74,11 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // làm gọn password
     function shortenText(text, maxLength) {
-    if (text.length > maxLength) {
-        return text.substring(0, maxLength) + '...';
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
     }
-    return text;
-}
 
     async function renderAccounts(users) {
         const tableBody = document.querySelector(".account-table tbody");
@@ -107,11 +107,11 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.addEventListener("click", function () {
                 const user = users[index];
                 selectedUser = user.username;
-                
+
                 document.getElementById("passwordInput").value = user.password;
                 document.getElementById("departmentSelect").value = user.role;
 
-                document.getElementById("userInput").value =user.username
+                document.getElementById("userInput").value = user.username
                 document.getElementById("userInput").disabled = true; // Khóa ô input
                 accountModal.style.display = "block";
                 overlay.style.display = "block";
@@ -135,20 +135,32 @@ document.addEventListener("DOMContentLoaded", function () {
         const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
 
         if (!token) {
-            showNotification("Role của bạn ko đủ quyền sử dụng chức năng này !!!!");  // Thông báo nếu không có token
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
             return;
         }
-         const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
-        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin"];
 
-        if (userRole !== "Admin") {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");  // Thông báo nếu không phải admin
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
             return;
         }
         // Kiểm tra username là Gmail
         if (!username.includes("@")) {
-        showNotification("Tài khoản phải chứa ký tự @");
-        return;
+            showNotification("Tài khoản phải chứa ký tự @");
+            return;
         }
 
         // Kiểm tra độ dài mật khẩu
@@ -159,9 +171,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const res = await fetch("http://127.0.0.1:5000/api/register", {
             method: "POST",
             headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`  // Gửi token trong header
-        },
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify({ username, password, role })
         });
 
@@ -193,25 +205,35 @@ document.addEventListener("DOMContentLoaded", function () {
         const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
 
         if (!token) {
-        showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-        return;
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin"];
+
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
         }
 
-        // Giải mã token để lấy role (nếu sử dụng JWT)
-        const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
-        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
-
-        if (userRole !== "Admin") {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");  // Thông báo nếu không phải admin
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
             return;
         }
 
         const res = await fetch("http://127.0.0.1:5000/api/update", {
             method: "PUT",
             headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`  // Gửi token trong header
-        },
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
             body: JSON.stringify({
                 old_username: selectedUser,
                 new_username: newUsername,
@@ -244,32 +266,42 @@ document.addEventListener("DOMContentLoaded", function () {
     async function deleteAccount() {
         deleteAccountModal.style.display = "none";
 
-    // Lấy token từ localStorage
-    const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
+        // Lấy token từ localStorage
+        const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
 
-    if (!token) {
-        showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-        return;
-    }
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin"];
 
-    // Giải mã token để lấy role (nếu sử dụng JWT)
-    const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
-    const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
 
-    if (userRole !== "Admin") {
-        showNotification("Bạn không có quyền sử dụng chức năng này!");  // Thông báo nếu không phải admin
-        return;
-    }
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
 
-    // Gửi yêu cầu DELETE với token trong header
-    const res = await fetch("http://127.0.0.1:5000/api/delete", {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`  // Gửi token trong header
-        },
-        body: JSON.stringify({ username: selectedUser })
-    });
+        // Gửi yêu cầu DELETE với token trong header
+        const res = await fetch("http://127.0.0.1:5000/api/delete", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Gửi token trong header
+            },
+            body: JSON.stringify({ username: selectedUser })
+        });
 
         if (res.ok) {
             showNotification("Xóa tài khoản thành công.");
@@ -353,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const filtered = allUsers.filter(user =>
             user.username.toLowerCase().includes(keyword) ||
-            
+
             user.role.toLowerCase().includes(keyword)
         );
 
@@ -383,6 +415,7 @@ document.addEventListener("DOMContentLoaded", function () {
         'attendance': 'attendance.html',
         'department': 'department_jobtitle.html',
         'report': 'report.html',
+        'notification': 'notification.html',
     };
 
     // Duyệt qua từng phần tử trong menu và thêm sự kiện click
