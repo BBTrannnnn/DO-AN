@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Quản lý Thông báo</title>
   <link rel="stylesheet" href="assets/css/notification.css">
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
 </head>
 <body>
@@ -56,6 +57,17 @@
     <h3>Danh sách Thông báo</h3>
     <ul id="notificationList"></ul>
   </div>
+
+   <!-- Modal thông báo -->
+    <div id="notificationModal" class="modal">
+        <div class="notification-content">
+            <h2>Notification</h2>
+            <p>Information updated successfully!</p>
+            <div class="modal-buttons">
+                <button class="exit-btn">Thoát</button>
+            </div>
+        </div>
+    </div>
 
   <script src="script/notification.js">
     
