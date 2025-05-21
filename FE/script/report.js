@@ -1,5 +1,3 @@
-// report.js
-
 document.addEventListener('DOMContentLoaded', () => {
   fetch('http://127.0.0.1:5000/api/report')
     .then(res => {
@@ -9,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return res.json();
     })
     .then(data => {
-      console.log('API data:', data);  // Kiểm tra dữ liệu lấy được
+      console.log('API data:', data);
 
       if (data.error) {
         console.error('API error:', data.error);
@@ -24,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Phân bố nhân sự theo phòng ban
       const deptDist = document.getElementById('department-distribution');
       deptDist.innerHTML = '';
-      data.payroll_report.forEach(item => {
+      data.department_distribution.forEach(item => {
         const li = document.createElement('li');
-        li.textContent = `${item.department}: ${item.payroll_count} nhân viên, Tổng lương: ${item.total_salary.toLocaleString()} VND`;
+        li.textContent = `${item.department}: ${item.employee_count} nhân viên`;
         deptDist.appendChild(li);
       });
 
@@ -35,29 +33,31 @@ document.addEventListener('DOMContentLoaded', () => {
       salaryBody.innerHTML = '';
       data.payroll_report.forEach(item => {
         const tr = document.createElement('tr');
+
         const deptTd = document.createElement('td');
         deptTd.textContent = item.department;
+
         const avgSalaryTd = document.createElement('td');
         const avgSalary = item.payroll_count > 0 ? item.total_salary / item.payroll_count : 0;
-        avgSalaryTd.textContent = avgSalary.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        avgSalaryTd.textContent = avgSalary.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
         const totalSalaryTd = document.createElement('td');
         totalSalaryTd.textContent = item.total_salary.toLocaleString();
 
         tr.appendChild(deptTd);
         tr.appendChild(avgSalaryTd);
         tr.appendChild(totalSalaryTd);
+
         salaryBody.appendChild(tr);
       });
 
       // Vẽ biểu đồ thống kê theo thời gian
       const ctx = document.getElementById('timeChart').getContext('2d');
 
-      // Khai báo các biến labels, employeeCounts, totalSalaries trước khi dùng
       const labels = data.monthly_report.map(item => item.month);
       const employeeCounts = data.monthly_report.map(item => item.employee_count);
       const totalSalaries = data.monthly_report.map(item => item.total_salary);
 
-      // Gỡ bỏ chart cũ nếu có
       window.timeChart?.destroy?.();
 
       window.timeChart = new Chart(ctx, {

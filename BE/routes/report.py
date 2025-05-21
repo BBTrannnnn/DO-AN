@@ -64,10 +64,22 @@ def get_report():
                 'total_salary': total_salary
             })
 
+        # 4. Phân bố nhân sự theo phòng ban (từ bảng Employee)
+        department_distribution_query = db.session.query(
+            Employee.department,
+            func.count(Employee.id)
+        ).group_by(Employee.department).all()
+
+        department_distribution = [
+            {'department': dept, 'employee_count': count}
+            for dept, count in department_distribution_query
+        ]
+
         return jsonify({
             'employee_overview': employee_overview,
             'payroll_report': payroll_report,
-            'monthly_report': monthly_report
+            'monthly_report': monthly_report,
+            'department_distribution': department_distribution
         })
 
     except Exception as e:
