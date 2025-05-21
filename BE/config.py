@@ -5,7 +5,7 @@ class Config:
 
     params = urllib.parse.quote_plus(
         "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=ANHBAHUNG;"
+        "SERVER=DESKTOP-PJTHQLF;"
         "DATABASE=DO_AN;"
         "UID=sa;"
         "PWD=123456789"
