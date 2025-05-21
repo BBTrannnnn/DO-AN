@@ -358,6 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
         'attendance': 'attendance.html',
         'department': 'department_jobtitle.html',
         'report': 'report.html',
+        'notification': 'notification.html',
     };
 
     // Duyệt qua từng phần tử trong menu và thêm sự kiện click

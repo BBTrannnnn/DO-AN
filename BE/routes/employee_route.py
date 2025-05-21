@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from models.employees import db, Employee
 from datetime import datetime
 from models.department_jobtitle import DepartmentJobTitle
+from routes.decorators import role_required
 employee_bp = Blueprint('employees', __name__)
 
 DEPARTMENT_ID_MAP = {
@@ -54,6 +55,7 @@ def get_employee(employee_id):
     return jsonify(employee.to_dict())
 
 @employee_bp.route('/', methods=['POST'])
+@role_required('Admin', 'Hr management') 
 def add_employee():
     data = request.get_json()
     if not data or 'id' not in data or 'name' not in data or 'gender' not in data or 'department' not in data or 'job_title' not in data or 'working_status' not in data or 'dob' not in data :
@@ -110,6 +112,7 @@ def add_employee():
     return jsonify({'message': 'Thêm nhân viên thành công !', 'employee': new_employee.to_dict()}), 201
 
 @employee_bp.route('/<employee_id>', methods=['PUT'])
+@role_required('Admin', 'Hr management') 
 def update_employee(employee_id):
     employee = Employee.query.get_or_404(employee_id)
     data = request.get_json()
@@ -141,6 +144,7 @@ def update_employee(employee_id):
     return jsonify({'message': 'Cập nhật thông tin nhân viên thành công!', 'employee': employee.to_dict()})
 
 @employee_bp.route('/<employee_id>', methods=['DELETE'])
+@role_required('Admin', 'Hr management') 
 def delete_employee(employee_id):
     employee = Employee.query.get_or_404(employee_id)
     db.session.delete(employee)

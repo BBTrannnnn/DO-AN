@@ -156,3 +156,70 @@ header {
 .content-wrapper ul#notificationList li button.del-btn:hover {
     background: #c0392b;
 }
+#notificationModal {  
+    display: none; /* Ẩn modal mặc định */  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: #ffffff; /* Màu nền trắng */  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 300px; /* Kích thước modal */  
+    border: 1px solid #ddd; /* Viền cho modal */  
+} 
+#notificationModal .notification-content { /* Sử dụng selector cụ thể */  
+    text-align: center; /* Canh giữa nội dung */  
+}  
+
+#notificationModal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+    font-size: 20px; /* Kích thước chữ tiêu đề */  
+}  
+
+#notificationModal p {  
+    margin: 15px 0; /* Khoảng cách cho phần thông báo */  
+}  
+
+#notificationModal .modal-buttons {  
+    display: flex;  
+    justify-content: center; /* Canh giữa nút */  
+    margin-top: 20px; /* Khoảng cách trên nút */  
+}  
+
+#notificationModal .exit-btn {  
+    background-color: #007bff; /* Màu nền nút */  
+    color: white; /* Màu chữ */  
+    padding: 10px 20px; /* Khoảng cách bên trong */  
+    border: none; /* Bỏ viền */  
+    border-radius: 5px; /* Bo tròn viền */  
+    cursor: pointer; /* Chỉ tay khi hover */  
+}  
+
+#notificationModal .exit-btn:hover {  
+    background-color: #0056b3; /* Màu nền khi hover */  
+}
+
+.notification-modal {  
+    display: none;  
+    position: fixed;  
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+    background: white;  
+    padding: 20px;  
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);  
+    border-radius: 8px;  
+    z-index: 100;  
+    width: 300px; /* Kích thước của modal thông báo */  
+}  
+
+.notification-modal h2 {  
+    margin: 0; /* Bỏ khoảng cách trên của tiêu đề */  
+}  
+
+.notificationModal .modal-content p{
+    text-align: center;
+}

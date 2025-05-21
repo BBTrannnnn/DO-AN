@@ -492,6 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'attendance': 'attendance.html',
         'department': 'department_jobtitle.html',
         'report': 'report.html',
+        'notification': 'notification.html',
     };
 
     searchInput.addEventListener("input", () => {

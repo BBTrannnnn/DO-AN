@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
         'attendance': 'attendance.html',
         'department': 'department_jobtitle.html',
         'report': 'report.html',
+        'notification': 'notification.html',
     };
 
     const departmentMap = {
