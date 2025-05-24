@@ -3,6 +3,7 @@ from models import db
 
 
 class Employee(db.Model):
+    __bind_key__ = 'sqlserver'
     __tablename__ = 'employees'
 
     id = db.Column(db.String(10), primary_key=True)  # '0001'

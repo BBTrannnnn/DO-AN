@@ -2,6 +2,7 @@ from models import db
 from models.employees import Employee
 
 class Attendance(db.Model):
+    __bind_key__ = 'sqlserver'  
     __tablename__ = 'attendances'
 
     id = db.Column(db.Integer, primary_key=True)

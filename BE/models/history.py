@@ -2,6 +2,7 @@ from datetime import datetime
 from models import db
 
 class History(db.Model):
+    __bind_key__ = 'sqlserver'
     __tablename__ = 'history'
 
     id = db.Column(db.Integer, primary_key=True)

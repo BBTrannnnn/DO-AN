@@ -18,6 +18,7 @@ from routes.report import report_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
+
 bcrypt = Bcrypt(app)
 app.bcrypt = bcrypt  # để auth.py có thể dùng lại bcrypt
 
@@ -53,7 +54,7 @@ app.register_blueprint(report_bp, url_prefix='/api')
 
 
 with app.app_context():
-    db.create_all()
+    db.create_all('sqlserver')
     # Thêm tài khoản admin mặc định nếu chưa có
     if not User.query.filter_by(username='admin').first():
         admin_user =User(

@@ -28,16 +28,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Load danh sách account từ Flask
     async function loadAccounts() {
-        const res = await fetch("http://127.0.0.1:5000/api/get_users", {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
+    try {
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/get_users/mysql", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }),
+            fetch("http://127.0.0.1:5000/api/get_users/sqlserver", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }),
+        ]);
 
-        });
-        const users = await res.json();
+        if (!resMySQL.ok || !resSQLServer.ok) {
+            throw new Error("Lấy danh sách tài khoản thất bại");
+        }
 
-        allUsers = users;
-        renderAccounts(users);
+        const usersMySQL = await resMySQL.json();
+        const usersSQLServer = await resSQLServer.json();
+
+        // Tạo Set các username của SQL Server để check nhanh
+        const sqlServerUsernames = new Set(usersSQLServer.map(u => u.username));
+
+        // Lọc lấy những user MySQL có username cũng tồn tại trong SQL Server
+        const commonUsers = usersMySQL.filter(u => sqlServerUsernames.has(u.username));
+
+        renderAccounts(commonUsers);
+    } catch (error) {
+        showNotification(error.message || "Lỗi khi tải tài khoản");
     }
+}
+
 
 
     async function loadHistory() {
@@ -129,122 +150,164 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Thêm tài khoản
     async function addAccount() {
-        const username = document.getElementById("userInput").value.trim();
-        const password = document.getElementById("passwordInput").value;
-        const role = document.getElementById("departmentSelect").value || "Employee";  // Mặc định là "Employee"
-        const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
+    const username = document.getElementById("userInput").value.trim();
+    const password = document.getElementById("passwordInput").value;
+    const role = document.getElementById("departmentSelect").value || "Employee";  // Mặc định là "Employee"
+    const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
 
-        if (!token) {
-            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-            return;
-        }
-        const decodedToken = jwt_decode(token);
-        const userRole = decodedToken.role;
-        const allowedRoles = ["admin"];
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");
+        return;
+    }
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin"];
 
-        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
-        let rolesInToken = [];
-        if (Array.isArray(userRole)) {
-            rolesInToken = userRole.map(r => r.toLowerCase());
-        } else if (typeof userRole === "string") {
-            rolesInToken = [userRole.toLowerCase()];
-        } else {
-            rolesInToken = [];
-        }
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    } else {
+        rolesInToken = [];
+    }
 
-        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-        if (!hasRole) {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");
-            return;
-        }
-        // Kiểm tra username là Gmail
-        if (!username.includes("@")) {
-            showNotification("Tài khoản phải chứa ký tự @");
-            return;
-        }
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
 
-        // Kiểm tra độ dài mật khẩu
-        if (password.length < 6) {
-            showNotification("Mật khẩu phải có ít nhất 6 ký tự");
-            return;
-        }
-        const res = await fetch("http://127.0.0.1:5000/api/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Gửi token trong header
-            },
-            body: JSON.stringify({ username, password, role })
-        });
+    if (!username.includes("@")) {
+        showNotification("Tài khoản phải chứa ký tự @");
+        return;
+    }
 
-        if (res.ok) {
+    if (password.length < 6) {
+        showNotification("Mật khẩu phải có ít nhất 6 ký tự");
+        return;
+    }
+
+    try {
+        // Gọi đồng thời 2 API thêm user cho mysql và sqlserver
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/register/mysql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ username, password, role })
+            }),
+            fetch("http://127.0.0.1:5000/api/register/sqlserver", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ username, password, role })
+            }),
+        ]);
+
+        if (resMySQL.ok && resSQLServer.ok) {
             showNotification("Thêm tài khoản thành công.");
-            const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
+
+            const currentTime = new Date().toISOString();
             await fetch("http://127.0.0.1:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "Add",
-                    username: admin,
+                    username: decodedToken.username || "admin",
                     target_user: username,
                     timestamp: currentTime
                 })
             });
             loadAccounts();
         } else {
-            showNotification("Thêm tài khoản không thành công!!!");
+            // Lấy lỗi nếu có
+            const errorMySQL = await resMySQL.text();
+            const errorSQLServer = await resSQLServer.text();
+            showNotification(`Thêm tài khoản thất bại: MySQL(${resMySQL.status}) ${errorMySQL}, SQLServer(${resSQLServer.status}) ${errorSQLServer}`);
         }
+    } catch (error) {
+        showNotification("Lỗi khi thêm tài khoản: " + error.message);
     }
+}
+
 
     // Cập nhật tài khoản
     async function updateAccount() {
-        const newUsername = document.getElementById("userInput").value;  // Lấy username mới
-        const password = document.getElementById("passwordInput").value;
-        const role = document.getElementById("departmentSelect").value;
+    const newUsername = document.getElementById("userInput").value;
+    const password = document.getElementById("passwordInput").value;
+    const role = document.getElementById("departmentSelect").value;
 
-        const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");
+        return;
+    }
 
-        if (!token) {
-            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-            return;
-        }
-        const decodedToken = jwt_decode(token);
-        const userRole = decodedToken.role;
-        const allowedRoles = ["admin"];
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin"];
 
-        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
-        let rolesInToken = [];
-        if (Array.isArray(userRole)) {
-            rolesInToken = userRole.map(r => r.toLowerCase());
-        } else if (typeof userRole === "string") {
-            rolesInToken = [userRole.toLowerCase()];
-        } else {
-            rolesInToken = [];
-        }
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    }
 
-        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-        if (!hasRole) {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");
-            return;
-        }
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
 
-        const res = await fetch("http://127.0.0.1:5000/api/update", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Gửi token trong header
-            },
-            body: JSON.stringify({
-                old_username: selectedUser,
-                new_username: newUsername,
-                password: password,
-                role: role
+    const admin = decodedToken.username;
+
+    if (!selectedUser) {
+        showNotification("Chưa chọn tài khoản để cập nhật.");
+        return;
+    }
+
+    try {
+        // Gửi đồng thời 2 request cập nhật tài khoản MySQL và SQL Server
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/update/mysql", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    old_username: selectedUser,
+                    new_username: newUsername,
+                    password: password,
+                    role: role
+                })
+            }),
+            fetch("http://127.0.0.1:5000/api/update/sqlserver", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    old_username: selectedUser,
+                    new_username: newUsername,
+                    password: password,
+                    role: role
+                })
             })
-        });
+        ]);
 
-        if (res.ok) {
+        if (resMySQL.ok && resSQLServer.ok) {
             showNotification("Cập nhật tài khoản thành công.");
+
             const currentTime = new Date().toISOString();
+
             await fetch("http://127.0.0.1:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -258,54 +321,74 @@ document.addEventListener("DOMContentLoaded", function () {
 
             loadAccounts();
         } else {
-            showNotification("Cập nhật tài khoản thất bại!!!!");
+            showNotification("Cập nhật tài khoản thất bại ở một hoặc cả hai cơ sở dữ liệu.");
         }
+    } catch (error) {
+        showNotification("Lỗi khi cập nhật tài khoản: " + error.message);
     }
+}
+
 
     // Xóa tài khoản
     async function deleteAccount() {
-        deleteAccountModal.style.display = "none";
+    deleteAccountModal.style.display = "none";
 
-        // Lấy token từ localStorage
-        const token = localStorage.getItem("token");  // Kiểm tra token đã được lưu trong localStorage chưa
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");
+        return;
+    }
 
-        if (!token) {
-            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-            return;
-        }
-        const decodedToken = jwt_decode(token);
-        const userRole = decodedToken.role;
-        const allowedRoles = ["admin"];
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin"];
 
-        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
-        let rolesInToken = [];
-        if (Array.isArray(userRole)) {
-            rolesInToken = userRole.map(r => r.toLowerCase());
-        } else if (typeof userRole === "string") {
-            rolesInToken = [userRole.toLowerCase()];
-        } else {
-            rolesInToken = [];
-        }
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    }
 
-        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-        if (!hasRole) {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");
-            return;
-        }
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
 
-        // Gửi yêu cầu DELETE với token trong header
-        const res = await fetch("http://127.0.0.1:5000/api/delete", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Gửi token trong header
-            },
-            body: JSON.stringify({ username: selectedUser })
-        });
+    const admin = decodedToken.username;
 
-        if (res.ok) {
+    if (!selectedUser) {
+        showNotification("Chưa chọn tài khoản để xóa.");
+        return;
+    }
+
+    try {
+        // Gửi đồng thời 2 request xóa tài khoản MySQL và SQL Server
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/delete/mysql", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ username: selectedUser })
+            }),
+            fetch("http://127.0.0.1:5000/api/delete/sqlserver", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ username: selectedUser })
+            }),
+        ]);
+
+        if (resMySQL.ok && resSQLServer.ok) {
             showNotification("Xóa tài khoản thành công.");
-            const currentTime = new Date().toISOString(); // ví dụ: "2025-05-04T08:45:12.345Z"
+
+            const currentTime = new Date().toISOString();
+
             await fetch("http://127.0.0.1:5000/api/log_history", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -316,11 +399,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     timestamp: currentTime
                 })
             });
+
             loadAccounts();
         } else {
-            showNotification("Xóa tài khoản thất bại.");
+            showNotification("Xóa tài khoản thất bại ở một hoặc cả hai cơ sở dữ liệu.");
         }
+    } catch (error) {
+        showNotification("Lỗi khi xóa tài khoản: " + error.message);
     }
+}
+
 
     function showNotification(message) {
         notificationModal.querySelector("p").textContent = message;

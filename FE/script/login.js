@@ -60,7 +60,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     }
 
     // Gửi API login
-    const response = await fetch("http://localhost:5000/api/login", {
+    const response = await fetch("http://localhost:5000/api/login/mysql", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })

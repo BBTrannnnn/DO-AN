@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 
 class Notification(db.Model):
+    __bind_key__ = 'sqlserver'
     __tablename__ = 'notifications'
 
     id = db.Column(db.Integer, primary_key=True)

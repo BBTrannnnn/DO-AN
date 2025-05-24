@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from models.user import User,db
+from models.user import User,db,UserMySQl
 from models.history import History,db
 from models.payrolls import Payroll,db
 from models.employees import Employee,db
@@ -14,23 +14,26 @@ from flask import current_app
 
 auth = Blueprint('auth', __name__)
 
-# Danh sách các tài khoản
-@auth.route('/get_users', methods=['GET']) 
+# Hàm chọn model theo dbtype
+def get_user_model(dbtype):
+    return UserMySQl if dbtype == 'mysql' else User
 
-def get_users():
-    users = User.query.all()
+# ✅ Danh sách tài khoản
+@auth.route('/get_users/<dbtype>', methods=['GET'])
+def get_users(dbtype):
+    UserModel = get_user_model(dbtype)
+    users = UserModel.query.all()
     return jsonify([{
         "id": u.id,
         "username": u.username,
         "password": u.password,
         "role": u.role
-    } for u in users])
-
+    } for u in users]), 200
 
 
 # Danh sách các thao tác trong lịch sử
 @auth.route('/get_history', methods=['GET']) 
-@role_required('Admin')
+
 def get_history():
     histories = History.query.order_by(History.timestamp.desc()).all()
     return jsonify([{
@@ -41,84 +44,84 @@ def get_history():
     } for h in histories]), 200
 
 
-# Đăng nhập
-@auth.route('/login', methods=['POST'])
-def login():
+@auth.route('/login/<dbtype>', methods=['POST'])
+def login(dbtype):
+    UserModel = get_user_model(dbtype)
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
 
-    user = User.query.filter_by(username=username).first()
+    user = UserModel.query.filter_by(username=username).first()
 
-    if user and current_app.bcrypt.check_password_hash(user.password, password):  # So sánh mật khẩu trực tiếp
-        token = user.generate_token()  # Giả sử bạn có phương thức này trong model User
+    if user and current_app.bcrypt.check_password_hash(user.password, password):
+        token = user.generate_token()
         return jsonify({
             'message': 'Đăng nhập thành công!',
             'role': user.role.strip().capitalize(),
-            'token': token  # Trả về token cho người dùng
+            'token': token
         }), 200
     else:
         return jsonify({'message': 'Tên tài khoản hoặc mật khẩu sai!'}), 401
+
     
 
     
 #Thêm tài khoản
-@auth.route('/register', methods=['POST'])
+@auth.route('/register/<dbtype>', methods=['POST'])
 @role_required('Admin')
-def register():
+def register(dbtype):
+    UserModel = get_user_model(dbtype)
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    role = data.get('role', 'employee').strip().capitalize()  # Mặc định là 'employee' nếu không có giá trị
+    role = data.get('role', 'employee').strip().capitalize()
 
-    # Kiểm tra nếu tài khoản đã tồn tại
-    if User.query.filter_by(username=username).first():
+    if UserModel.query.filter_by(username=username).first():
         return jsonify({'message': 'Tài khoản đã tồn tại'}), 400
-    
+
     hashed_password = current_app.bcrypt.generate_password_hash(password).decode('utf-8')
-
-
-    new_user = User(username=username, password=hashed_password, role=role)
+    new_user = UserModel(username=username, password=hashed_password, role=role)
 
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'Thêm tài khoản thành công!!'}), 201
-
+    return jsonify({'message': f'Thêm tài khoản thành công vào {dbtype}!'}), 201
 
 
 # Xóa tài khoản
-@auth.route('/delete', methods=['DELETE'])
+@auth.route('/delete/<dbtype>', methods=['DELETE'])
 @role_required('Admin')
-def delete_user():
+def delete_user(dbtype):
+    UserModel = get_user_model(dbtype)
     data = request.get_json()
     username = data.get('username')
 
-    user = User.query.filter_by(username=username).first()
+    user = UserModel.query.filter_by(username=username).first()
 
     if user:
         db.session.delete(user)
         db.session.commit()
-        return jsonify({'message': 'Xóa tài khoản thành công'}), 200
+        return jsonify({'message': f'Xóa tài khoản khỏi {dbtype} thành công'}), 200
     else:
         return jsonify({'message': 'Tài khoản không tồn tại'}), 404
 
 # Cập nhật tài khoản   
-@auth.route('/update', methods=['PUT'])
+@auth.route('/update/<dbtype>', methods=['PUT'])
 @role_required('Admin')
-def update_user():
+def update_user(dbtype):
+    UserModel = get_user_model(dbtype)
     data = request.get_json()
-    old_username = data.get('old_username')  # tên tài khoản hiện tại
-    new_username = data.get('new_username')  # tên tài khoản mới
+    old_username = data.get('old_username')
+    new_username = data.get('new_username')
     new_password = data.get('password')
     new_role = data.get('role')
 
-    user = User.query.filter_by(username=old_username).first()
+    user = UserModel.query.filter_by(username=old_username).first()
 
     if not user:
         return jsonify({'message': 'Tài khoản không tồn tại'}), 404
 
-    # Cập nhật các thông tin
+
     if new_username:
         user.username = new_username
     if new_password:
@@ -127,8 +130,7 @@ def update_user():
         user.role = new_role
 
     db.session.commit()
-    return jsonify({'message': 'Cập nhật tài khoản thành công'}), 200
-
+    return jsonify({'message': f'Cập nhật tài khoản trong {dbtype} thành công'}), 200
 
 # Ghi nhận lịch sử thao tác
 @auth.route('/log_history', methods=['POST'])

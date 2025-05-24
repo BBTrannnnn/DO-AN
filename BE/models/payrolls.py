@@ -3,6 +3,7 @@ from models import db
 from models.employees import Employee
 
 class Payroll(db.Model):
+    __bind_key__ = 'sqlserver'
     __tablename__ = 'payroll'
 
     id = db.Column(db.Integer, primary_key=True)
