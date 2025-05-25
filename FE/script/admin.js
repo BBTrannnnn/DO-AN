@@ -226,9 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
             loadAccounts();
         } else {
             // Lấy lỗi nếu có
-            const errorMySQL = await resMySQL.text();
-            const errorSQLServer = await resSQLServer.text();
-            showNotification(`Thêm tài khoản thất bại: MySQL(${resMySQL.status}) ${errorMySQL}, SQLServer(${resSQLServer.status}) ${errorSQLServer}`);
+            showNotification(`Thêm tài khoản thất bại!!!`);
         }
     } catch (error) {
         showNotification("Lỗi khi thêm tài khoản: " + error.message);

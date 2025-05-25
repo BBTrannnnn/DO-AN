@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
-from models.employees import Employee
-from models.payrolls import Payroll
+from numpy import dtype
+from models.employees import Employee, EmployeeMySQL
+from models.payrolls import Payroll, PayrollMySQL
 from models import db
 from datetime import datetime
 from routes.decorators import role_required
@@ -9,54 +10,18 @@ from flask import current_app
 
 payroll_bp = Blueprint('payrolls', __name__)
 
-@payroll_bp.route('/', methods=['POST'])
-@role_required('Admin', 'Payroll management') 
+def get_payroll_model(dbtype):
+    return PayrollMySQL if dbtype == 'mysql' else Payroll
 
+def get_employee_model(dbtype):
+    return EmployeeMySQL if dbtype == 'mysql' else Employee
 
-def add_payroll():
-    data = request.get_json()
-    employee_id = data.get('employee_id')
-    salary = data.get('salary')
-    time = data.get('time')  
-
-    if not employee_id or not salary or not time:
-        return jsonify({'message': 'Thiếu thông tin bắt buộc (employee_id, salary, time)'}), 400
-
-    employee = Employee.query.get(employee_id)
-    if not employee:
-        return jsonify({'message': 'Không tìm thấy nhân viên'}), 404
-
-    try:
-        time = datetime.strptime(time, '%Y-%m-%d')
-    except ValueError:
-        return jsonify({'message': 'Định dạng thời gian không hợp lệ.'}), 400
-
-    existing = Payroll.query.filter(
-    Payroll.employee_id == employee_id,
-    db.extract('month', Payroll.time) == time.month,
-    db.extract('year', Payroll.time) == time.year
-).first()
-
-
-    if existing:
-        return jsonify({'message': 'Nhân viên này đã có bản lương trong tháng này'}), 400
-    
-    new_payroll = Payroll(
-        employee_id=employee_id,    
-        salary=salary,
-        time=time
-    )
-
-    db.session.add(new_payroll)
-    db.session.commit()
-
-    return jsonify({'message': 'Thêm bản lương thành công!'}), 201
-
-@payroll_bp.route('/', methods=['GET'])
-
-def get_payrolls():
+@payroll_bp.route('/<dbtype>', methods=['GET'])
+def get_payrolls(dbtype):
+    PayrollModel = get_payroll_model(dbtype)
+    EmployeeModel = get_employee_model(dbtype)
     # Lấy tất cả các bản lương từ cơ sở dữ liệu
-    payrolls = Payroll.query.all()
+    payrolls = PayrollModel.query.all()
 
     # Nếu không có bản lương nào, trả về thông báo
     if not payrolls:
@@ -66,7 +31,7 @@ def get_payrolls():
     payroll_list = []
     for payroll in payrolls:
         # Lấy thông tin nhân viên từ bảng Employee
-        employee = Employee.query.get(payroll.employee_id)
+        employee = EmployeeModel.query.get(payroll.employee_id)
         if employee:
             payroll_list.append({
                 'payroll_id': payroll.id,
@@ -80,16 +45,62 @@ def get_payrolls():
 
     return jsonify(payroll_list), 200
 
-@payroll_bp.route('/update', methods=['PUT'])
+
+@payroll_bp.route('/<dbtype>', methods=['POST'])
+@role_required('Admin', 'Payroll management') 
+def add_payroll(dbtype):
+    PayrollModel = get_payroll_model(dbtype)
+    EmployeeModel = get_employee_model(dbtype)
+    data = request.get_json()
+    employee_id = data.get('employee_id')
+    salary = data.get('salary')
+    time = data.get('time')  
+
+    if not employee_id or not salary or not time:
+        return jsonify({'message': 'Thiếu thông tin bắt buộc (employee_id, salary, time)'}), 400
+
+    employee = EmployeeModel.query.get(employee_id)
+    if not employee:
+        return jsonify({'message': 'Không tìm thấy nhân viên'}), 404
+
+    try:
+        time = datetime.strptime(time, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'message': 'Định dạng thời gian không hợp lệ.'}), 400
+
+    existing = PayrollModel.query.filter(
+    PayrollModel.employee_id == employee_id,
+    db.extract('month', PayrollModel.time) == time.month,
+    db.extract('year', PayrollModel.time) == time.year
+).first()
+
+
+    if existing:
+        return jsonify({'message': 'Nhân viên này đã có bản lương trong tháng này'}), 400
+    
+    new_payroll = PayrollModel(
+        employee_id=employee_id,    
+        salary=salary,
+        time=time
+    )
+
+    db.session.add(new_payroll)
+    db.session.commit()
+
+    return jsonify({'message': 'Thêm bản lương thành công!'}), 201
+
+@payroll_bp.route('/update/<dbtype>', methods=['PUT'])
 @role_required('Admin', 'Payroll management') 
 
-def update_payroll():
+def update_payroll(dbtype):
+    PayrollModel = get_payroll_model(dbtype)
+    EmployeeModel = get_employee_model(dbtype)
     data = request.get_json()
     payroll_id = data.get('payroll_id')  
     new_salary = data.get('salary')
     new_time = data.get('time')
 
-    payroll = Payroll.query.filter_by(id=payroll_id).first()
+    payroll = PayrollModel.query.filter_by(id=payroll_id).first()
 
     if not payroll:
         return jsonify({'message': 'Bản lương không tồn tại'}), 404
@@ -109,17 +120,18 @@ def update_payroll():
     return jsonify({'message': 'Cập nhật bản lương thành công'}), 200
 
 
-@payroll_bp.route('/delete', methods=['DELETE'])
+@payroll_bp.route('/delete/<dbtype>', methods=['DELETE'])
 @role_required('Admin', 'Payroll management') 
 
-def delete_payroll():
+def delete_payroll(dbtype):
+    PayrollModel = get_payroll_model(dbtype)    
     data = request.get_json()
     payroll_id = data.get('payroll_id')
     
     if not payroll_id:
         return jsonify({'error': 'payroll_id không được bỏ trống'}), 400
 
-    payroll = Payroll.query.filter_by(id=payroll_id).first()
+    payroll = PayrollModel.query.filter_by(id=payroll_id).first()
     if not payroll:
          return jsonify({'error': 'Bản lương không tồn tại'}), 404
     db.session.delete(payroll)

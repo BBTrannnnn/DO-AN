@@ -20,20 +20,36 @@ document.addEventListener("DOMContentLoaded", function () {
     // Load dữ liệu payroll từ backend Flask
     async function loadPayrolls() {
         try {
-            const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
+            const [resMySQL, resSQLServer] = await Promise.all([
+                fetch("http://127.0.0.1:5000/api/payrolls/mysql", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                }),
+                fetch("http://127.0.0.1:5000/api/payrolls/sqlserver", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                }),
+            ]);
 
-                },
-            });
-            const payrolls = await res.json();
-            allPayrolls = payrolls;
-            renderPayroll(payrolls);
+            if (!resMySQL.ok || !resSQLServer.ok) {
+                throw new Error("Lấy dữ liệu payroll thất bại");
+            }
+
+            const payrollsMySQL = await resMySQL.json();
+            const payrollsSQLServer = await resSQLServer.json();
+
+            // Dùng Set để lọc ra employee_id trùng khớp giữa 2 DB
+            const sqlServerIDs = new Set(payrollsSQLServer.map(p => p.employee_id));
+            const commonPayrolls = payrollsMySQL.filter(p => sqlServerIDs.has(p.employee_id));
+
+            allPayrolls = commonPayrolls; // nếu bạn dùng biến toàn cục
+            renderPayroll(commonPayrolls);
         } catch (error) {
             console.error("Lỗi tải dữ liệu payroll:", error);
+            showNotification(error.message || "Lỗi khi tải dữ liệu payroll");
         }
     }
+
 
     // Hiển thị bảng Payroll
     async function renderPayroll(payrolls) {
@@ -119,177 +135,220 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     async function addPayroll() {
-        const employee_id = document.getElementById("employeeIdInput").value.trim();
-        const salary = parseFloat(document.getElementById("salaryInput").value);
-        const time = document.getElementById("timeInput").value.trim(); // dạng yyyy-mm-dd
+    const employee_id = document.getElementById("employeeIdInput").value.trim();
+    const salary = parseFloat(document.getElementById("salaryInput").value);
+    const time = document.getElementById("timeInput").value.trim(); // dạng yyyy-mm-dd
 
-        console.log("Time value:", time);
-        const timeRegex = /^\d{4}-\d{2}-\d{2}$/; // Định dạng yyyy-mm-dd
-        if (!time || !timeRegex.test(time)) {
-            showNotification("Vui lòng nhập thời gian hợp lệ (yyyy-mm-dd).");
-            return; // Dừng lại nếu thời gian không hợp lệ
-        }
-        const token = localStorage.getItem("token");  // Lấy token từ localStorage
+    const timeRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!time || !timeRegex.test(time)) {
+        showNotification("Vui lòng nhập thời gian hợp lệ (yyyy-mm-dd).");
+        return;
+    }
 
-        if (!token) {
-            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-            return;
-        }
-        const decodedToken = jwt_decode(token);
-        const userRole = decodedToken.role;
-        const allowedRoles = ["admin", "payroll management"];
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");
+        return;
+    }
 
-        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
-        let rolesInToken = [];
-        if (Array.isArray(userRole)) {
-            rolesInToken = userRole.map(r => r.toLowerCase());
-        } else if (typeof userRole === "string") {
-            rolesInToken = [userRole.toLowerCase()];
-        } else {
-            rolesInToken = [];
-        }
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin", "payroll management"];
+    let rolesInToken = Array.isArray(userRole)
+        ? userRole.map(r => r.toLowerCase())
+        : typeof userRole === "string" ? [userRole.toLowerCase()] : [];
 
-        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-        if (!hasRole) {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");
-            return;
-        }
-        if (!employee_id) {
-            showNotification("Vui lòng nhập mã nhân viên.");
-            return;
-        }
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
 
-        if (isNaN(salary) || salary <= 0) {
-            showNotification("Số tiền lương phải là một số hợp lệ và lớn hơn 0.");
-            return;
-        }
+    if (!employee_id) {
+        showNotification("Vui lòng nhập mã nhân viên.");
+        return;
+    }
 
-        if (!time) {
-            showNotification("Vui lòng nhập thời gian.");
-            return;
-        }
+    if (isNaN(salary) || salary <= 0) {
+        showNotification("Số tiền lương phải là một số hợp lệ và lớn hơn 0.");
+        return;
+    }
 
-        console.log("Time Selected: ", time);
+    if (!time) {
+        showNotification("Vui lòng nhập thời gian.");
+        return;
+    }
 
-        const res = await fetch("http://127.0.0.1:5000/api/payrolls/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Gửi token trong header
-            },
-            body: JSON.stringify({ employee_id, salary, time })
-        });
+    // ✅ Định nghĩa newPayroll trước khi gửi đi
+    const newPayroll = {
+        employee_id: employee_id,
+        salary: salary,
+        time: time
+    };
 
-        if (res.ok) {
+    try {
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/payrolls/mysql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(newPayroll)
+            }),
+            fetch("http://127.0.0.1:5000/api/payrolls/sqlserver", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(newPayroll)
+            }),
+        ]);
+
+        if (resMySQL.ok && resSQLServer.ok) {
             showNotification("Thêm lương thành công.");
             loadPayrolls();
         } else {
-            showNotification("Thêm lương không thành công!!!!! ");
+            showNotification("Thêm lương thất bại!!!");
         }
+    } catch (error) {
+        console.error("Lỗi khi thêm lương:", error);
+        showNotification("Lỗi khi thêm lương: " + error.message);
     }
-
-
-
-
-
+}
     async function updatePayroll() {
-        const salary = document.getElementById("salaryInput").value;
-        const time = document.getElementById("timeInput").value;
-        const token = localStorage.getItem("token");  // Lấy token từ localStorage
-        if (!token) {
-            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-            return;
-        }
-        const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
-        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
+    const salary = document.getElementById("salaryInput").value;
+    const time = document.getElementById("timeInput").value;
+    const token = localStorage.getItem("token");
 
-        const allowedRoles = ["admin", "payroll management"];
-
-        // Chuẩn hóa role trong token thành mảng, không phân biệt hoa thường
-        let rolesInToken = [];
-        if (Array.isArray(userRole)) {
-            rolesInToken = userRole.map(r => r.toLowerCase());
-        } else if (typeof userRole === "string") {
-            rolesInToken = [userRole.toLowerCase()];
-        } else {
-            rolesInToken = [];
-        }
-
-        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-
-        if (!hasRole) {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");
-            return;
-        }
-
-        const res = await fetch("http://127.0.0.1:5000/api/payrolls/update", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Gửi token trong header
-            },
-            body: JSON.stringify({
-                payroll_id: selectedPayroll,
-                salary: salary,
-                time: time
-            })
-        });
-
-        if (res.ok) {
-            showNotification("Cập nhật lương thành công.");
-            loadPayrolls(); // Cập nhật lại bảng
-        } else {
-            showNotification("Cập nhật lương thất bại!!!!");
-        }
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");
+        return;
     }
 
-    async function deletePayroll() {
-        deletePayrollModal.style.display = "none";
-        const token = localStorage.getItem("token");  // Lấy token từ localStorage
-        if (!token) {
-            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
-            return;
-        }
-        const decodedToken = jwt_decode(token);  // Giải mã token để lấy thông tin user
-        const userRole = decodedToken.role;  // Giả sử role được lưu trong token
-        const allowedRoles = ["admin", "payroll management"];
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin", "payroll management"];
 
-        // Chuẩn hóa role trong token thành mảng, không phân biệt hoa thường
-        let rolesInToken = [];
-        if (Array.isArray(userRole)) {
-            rolesInToken = userRole.map(r => r.toLowerCase());
-        } else if (typeof userRole === "string") {
-            rolesInToken = [userRole.toLowerCase()];
-        } else {
-            rolesInToken = [];
-        }
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    }
 
-        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
 
-        if (!hasRole) {
-            showNotification("Bạn không có quyền sử dụng chức năng này!");
-            return;
-        }
+    if (!selectedPayroll) {
+        showNotification("Chưa chọn bản lương để cập nhật.");
+        return;
+    }
 
-        const res = await fetch("http://127.0.0.1:5000/api/payrolls/delete", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`  // Gửi token trong header
-            },
-            body: JSON.stringify({ payroll_id: selectedPayroll })
-        });
+    try {
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/payrolls/update/mysql", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    payroll_id: selectedPayroll,
+                    salary: salary,
+                    time: time
+                })
+            }),
+            fetch("http://127.0.0.1:5000/api/payrolls/update/sqlserver", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    payroll_id: selectedPayroll,
+                    salary: salary,
+                    time: time
+                })
+            })
+        ]);
 
-        if (res.ok) {
-            showNotification("Xóa lương thành công.");
-            selectedPayroll = null; // Reset selectedPayroll
+        if (resMySQL.ok && resSQLServer.ok) {
+            showNotification("Cập nhật bản lương thành công.");
+            selectedPayroll = null;
             await loadPayrolls();
         } else {
-            showNotification("Xóa lương thất bại.");
+            showNotification("Cập nhật lương thất bại ở một hoặc cả hai cơ sở dữ liệu.");
         }
-        deletePayrollModal.style.display = "none";
-        overlay.style.display = "none";
+    } catch (error) {
+        showNotification("Lỗi khi cập nhật bản lương: " + error.message);
     }
+}
+
+
+    async function deletePayroll() {
+    deletePayrollModal.style.display = "none";
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showNotification("Bạn chưa đăng nhập!");
+        return;
+    }
+
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    const allowedRoles = ["admin", "payroll management"];
+
+    let rolesInToken = [];
+    if (Array.isArray(userRole)) {
+        rolesInToken = userRole.map(r => r.toLowerCase());
+    } else if (typeof userRole === "string") {
+        rolesInToken = [userRole.toLowerCase()];
+    } else {
+        rolesInToken = [];
+    }
+
+    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+
+    if (!hasRole) {
+        showNotification("Bạn không có quyền sử dụng chức năng này!");
+        return;
+    }
+    try {
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch(`http://127.0.0.1:5000/api/payrolls/delete/mysql`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ payroll_id: selectedPayroll })
+            }),
+            fetch(`http://127.0.0.1:5000/api/payrolls/delete/sqlserver`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ payroll_id: selectedPayroll })
+            })
+        ]);
+
+        if (resMySQL.ok && resSQLServer.ok) {
+            showNotification("Xóa bản lương thành công.");
+            selectedPayroll = null;
+            await loadPayrolls();
+        } else {
+            showNotification("Xóa bản lương thất bại!!!");
+        }
+    } catch (error) {
+        showNotification("Lỗi khi xóa bản lương: " + error.message);
+    }
+}
+
 
     confirmBtn.addEventListener("click", deletePayroll);
 

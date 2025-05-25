@@ -1,11 +1,18 @@
 
 from flask import Blueprint, jsonify, request
-from models.employees import db, Employee
+from models.employees import db, Employee, EmployeeMySQL
 from datetime import datetime
-from models.department_jobtitle import DepartmentJobTitle
+from models.department_jobtitle import DepartmentJobTitle, DepartmentJobTitleMySQL
 from routes.decorators import role_required
 employee_bp = Blueprint('employees', __name__)
 
+
+
+def get_employee_model(dbtype):
+    return EmployeeMySQL if dbtype == 'mysql' else Employee
+
+def get_dept_job_model(dbtype):
+    return DepartmentJobTitleMySQL if dbtype == 'mysql' else DepartmentJobTitle
 DEPARTMENT_ID_MAP = {
     'IT': '1',
     'HR': '2',
@@ -43,78 +50,72 @@ JOB_TITLE_ID_MAP = {
     'Data Entry Clerk':'6.4',
 }
 
-@employee_bp.route('/', methods=['GET'])
-def get_employees():
-    employees = Employee.query.all()
-    employee_list = [emp.to_dict() for emp in employees]
-    return jsonify(employee_list)
+@employee_bp.route('/<dbtype>', methods=['GET'])
+def get_employees(dbtype):
+    EmployeeModel = get_employee_model(dbtype)
+    employees = EmployeeModel.query.all()
+    return jsonify([emp.to_dict() for emp in employees]), 200
 
-@employee_bp.route('//<employee_id>', methods=['GET'])
-def get_employee(employee_id):
-    employee = Employee.query.get_or_404(employee_id)
-    return jsonify(employee.to_dict())
+@employee_bp.route('/<dbtype>/<employee_id>', methods=['GET'])
+def get_employee(dbtype, employee_id):
+    EmployeeModel = get_employee_model(dbtype)
+    employee = EmployeeModel.query.get_or_404(employee_id)
+    return jsonify(employee.to_dict()), 200
 
-@employee_bp.route('/', methods=['POST'])
-@role_required('Admin', 'Hr management') 
-def add_employee():
+@employee_bp.route('/<dbtype>', methods=['POST'])
+@role_required('Admin', 'Hr management')
+def add_employee(dbtype):
+    EmployeeModel = get_employee_model(dbtype)
+    DeptJobModel = get_dept_job_model(dbtype)
+
     data = request.get_json()
-    if not data or 'id' not in data or 'name' not in data or 'gender' not in data or 'department' not in data or 'job_title' not in data or 'working_status' not in data or 'dob' not in data :
-        return jsonify({'message': 'Thiếu thông tin bắt buộc  (id, name)'}), 400
-    employee_id = data['id']
-    email = data.get('email')
-    gender = data.get('gender')
-    department = data.get('department')
-    job_title = data.get('job_title')
-    working_status = data.get('working_status')
-    dob = data.get('dob')
+    required_fields = ['id', 'name', 'gender', 'department', 'job_title', 'working_status', 'dob']
+    if not all(field in data for field in required_fields):
+        return jsonify({'message': 'Thiếu thông tin bắt buộc!'}), 400
 
-    existing_employee_id = Employee.query.filter_by(id=employee_id).first()
-    if existing_employee_id:
-        return jsonify({'message': f'ID "{employee_id}" đã tồn tại!'}), 400
+    if EmployeeModel.query.filter_by(id=data['id']).first():
+        return jsonify({'message': f'ID "{data["id"]}" đã tồn tại!'}), 400
 
-    if email:
-        existing_employee_email = Employee.query.filter_by(email=email).first()
-        if existing_employee_email:
-            return jsonify({'message': f'Email "{email}" đã tồn tại!'}), 400
+    if data.get('email') and EmployeeModel.query.filter_by(email=data['email']).first():
+        return jsonify({'message': f'Email "{data["email"]}" đã tồn tại!'}), 400
 
-    department_name = data.get('department')
-    job_title_name = data.get('job_title')
-
-    # Lấy id tương ứng
-    department_id = DEPARTMENT_ID_MAP.get(department_name)
-    job_title_id = JOB_TITLE_ID_MAP.get(job_title_name)
+    department_id = DEPARTMENT_ID_MAP.get(data['department'])
+    job_title_id = JOB_TITLE_ID_MAP.get(data['job_title'])
 
     if not department_id or not job_title_id:
         return jsonify({'message': 'Phòng ban hoặc chức vụ không hợp lệ!'}), 400
 
-    
-
-    new_employee = Employee(
+    new_employee = EmployeeModel(
         id=data['id'],
         name=data['name'],
-        gender=data.get('gender'),
-        department=data.get('department'),
-        job_title=data.get('job_title'),
+        gender=data['gender'],
+        department=data['department'],
+        job_title=data['job_title'],
         email=data.get('email'),
-        working_status=datetime.strptime(data['working_status'], '%Y-%m-%d').date() if data.get('working_status') else None,
-        dob=datetime.strptime(data['dob'], '%Y-%m-%d').date() if data.get('dob') else None
+        working_status=datetime.strptime(data['working_status'], '%Y-%m-%d').date(),
+        dob=datetime.strptime(data['dob'], '%Y-%m-%d').date()
     )
 
     db.session.add(new_employee)
     db.session.flush()
-    new_dept_job = DepartmentJobTitle(
+
+    new_dept_job = DeptJobModel(
+        employee_id=new_employee.id,
         department_id=department_id,
-        job_title_id=job_title_id,
-        employee_id=new_employee.id
+        job_title_id=job_title_id
     )
     db.session.add(new_dept_job)
     db.session.commit()
-    return jsonify({'message': 'Thêm nhân viên thành công !', 'employee': new_employee.to_dict()}), 201
 
-@employee_bp.route('/<employee_id>', methods=['PUT'])
-@role_required('Admin', 'Hr management') 
-def update_employee(employee_id):
-    employee = Employee.query.get_or_404(employee_id)
+    return jsonify({'message': 'Thêm nhân viên thành công!', 'employee': new_employee.to_dict()}), 201
+
+@employee_bp.route('/<dbtype>/<employee_id>', methods=['PUT'])
+@role_required('Admin', 'Hr management')
+def update_employee(dbtype, employee_id):
+    EmployeeModel = get_employee_model(dbtype)
+    DeptJobModel = get_dept_job_model(dbtype)
+
+    employee = EmployeeModel.query.get_or_404(employee_id)
     data = request.get_json()
 
     employee.name = data.get('name', employee.name)
@@ -122,31 +123,33 @@ def update_employee(employee_id):
     employee.department = data.get('department', employee.department)
     employee.job_title = data.get('job_title', employee.job_title)
     employee.email = data.get('email', employee.email)
+
     if data.get('working_status'):
         employee.working_status = datetime.strptime(data['working_status'], '%Y-%m-%d').date()
     if data.get('dob'):
         employee.dob = datetime.strptime(data['dob'], '%Y-%m-%d').date()
 
-    # Cập nhật bảng DepartmentJobTitle
+    
     department_name = data.get('department')
     job_title_name = data.get('job_title')
 
     department_id = DEPARTMENT_ID_MAP.get(department_name)
     job_title_id = JOB_TITLE_ID_MAP.get(job_title_name)
 
-    # Tìm bản ghi liên kết hiện tại trong bảng DepartmentJobTitle
-    dept_job = DepartmentJobTitle.query.filter_by(employee_id=employee.id).first()
+    dept_job = DeptJobModel.query.filter_by(employee_id=employee.id).first()
     if dept_job:
         dept_job.department_id = department_id
         dept_job.job_title_id = job_title_id
 
     db.session.commit()
-    return jsonify({'message': 'Cập nhật thông tin nhân viên thành công!', 'employee': employee.to_dict()})
+    return jsonify({'message': 'Cập nhật thông tin nhân viên thành công!', 'employee': employee.to_dict()}), 200
 
-@employee_bp.route('/<employee_id>', methods=['DELETE'])
-@role_required('Admin', 'Hr management') 
-def delete_employee(employee_id):
-    employee = Employee.query.get_or_404(employee_id)
+@employee_bp.route('/<dbtype>/<employee_id>', methods=['DELETE'])
+@role_required('Admin', 'Hr management')
+def delete_employee(dbtype, employee_id):
+    EmployeeModel = get_employee_model(dbtype)
+    employee = EmployeeModel.query.get_or_404(employee_id)
+
     db.session.delete(employee)
     db.session.commit()
-    return jsonify({'message': 'Xóa nhân viên thành công!'})
+    return jsonify({'message': 'Xóa nhân viên thành công!'}), 200
