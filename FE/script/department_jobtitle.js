@@ -11,15 +11,40 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const departmentMap = {
-        "PC01": "IT",
-        "PC02": "HR",
-        "PC03": "Finance"
+        "1": "IT",
+        "2": "HR",
+        "3": "Sales",
+        "4": "Marketing",
+        "5": "Finance",
+        "6": "Administration"
     };
 
     const jobTitleMap = {
-        "JT01": "Developer",
-        "JT02": "Designer",
-        "JT03": "Manager"
+    '1.1':'Software Engineer',
+    '1.2' :'Backend Developer',
+    '1.3':'Frontend Developer',
+    '1.4':'QA Tester' ,
+    '1.5':'DevOps Engineer',
+    '2.1':'HR Assistant',
+    '2.2':'HR Manager',
+    '2.3':'Recruiter' ,
+    '2.4':'Payroll Specialist',
+    '3.1':'Sales Executive',
+    '3.2':'Sales Representative',
+    '3.3':'Account Manager' ,
+    '3.4':'Business Development Executive',
+    '4.1':'Marketing Specialist',
+    '4.2':'Content Creator',
+    '4.3':'SEO Specialist',
+    '4.4':'Social Media Manager',
+    '5.1':'Accountant',
+    '5.2':'Financial Analyst',
+    '5.3':'Auditor',
+    '5.4':'Bookkeeper',
+    '6.1':'Office Administrator',
+    '6.2':'Receptionist',
+    '6.3':'Administrative Assistant',
+    '6.4':'Data Entry Clerk',
     };
 
     // ==================== EVENT LISTENERS ====================
@@ -149,4 +174,67 @@ document.addEventListener("DOMContentLoaded", function () {
             tbody.appendChild(tr);
         });
     }
+    // =============== FILTER FUNCTIONALITY ===============
+const deptSelect = document.getElementById('department-select');
+const jobSelect = document.getElementById('jobtitle-select');
+const deptName = document.getElementById('department-name');
+const jobName = document.getElementById('job-title-name');
+const resetBtn = document.getElementById('reset-btn');
+
+if (deptSelect && jobSelect) {
+    deptSelect.addEventListener('change', function () {
+        const selectedDept = this.value;
+        deptName.textContent = departmentMap[selectedDept] || '';
+
+        // Cập nhật job titles theo department
+        jobSelect.innerHTML = '<option value="">----</option>';
+        for (const key in jobTitleMap) {
+            if (selectedDept === '' || key.startsWith(selectedDept + '.')) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = jobTitleMap[key];
+                jobSelect.appendChild(option);
+            }
+        }
+
+        // Trigger lọc sau khi cập nhật job title
+        filterTable();
+    });
+
+    jobSelect.addEventListener('change', function () {
+        jobName.textContent = jobTitleMap[this.value] || '';
+        filterTable();
+    });
+
+    resetBtn.addEventListener('click', function () {
+        deptSelect.value = '';
+        deptName.textContent = '';
+        jobName.textContent = '';
+
+        // Reset job title dropdown
+        jobSelect.innerHTML = '<option value="">----</option>';
+        for (const key in jobTitleMap) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = jobTitleMap[key];
+            jobSelect.appendChild(option);
+        }
+
+        renderDepartmentJobTitleTable(window.departmentJobTitleData);
+    });
+}
+
+// ==================== FILTER FUNCTION ====================
+function filterTable() {
+    const selectedDept = deptSelect.value;
+    const selectedJob = jobSelect.value;
+
+    const filtered = window.departmentJobTitleData.filter(item => {
+        const matchDept = !selectedDept || item.id_department === selectedDept;
+        const matchJob = !selectedJob || item.id_job_title === selectedJob;
+        return matchDept && matchJob;
+    });
+
+    renderDepartmentJobTitleTable(filtered);
+}
 });
