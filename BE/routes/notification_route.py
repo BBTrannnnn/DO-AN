@@ -1,93 +1,93 @@
 from flask import Blueprint, jsonify, request
 from datetime import datetime
 from models import db
-from models.employees import Employee
+from models.employees import Employee, EmployeeMySQL
 from models.attendances import Attendance
-from models.notification import Notification
-from models.payrolls import Payroll
+from models.notification import Notification, NotificationMySQL
+from models.payrolls import Payroll, PayrollMySQL
 from routes.decorators import role_required
-# -*- coding: utf-8 -*-
+
 
 notification_bp = Blueprint('notifications', __name__)
 
-@notification_bp.route('/generate', methods=['POST'])
+def get_employee_model(dbtype):
+    return EmployeeMySQL if dbtype == 'mysql' else Employee
+
+def get_notification_model(dbtype):
+    return NotificationMySQL if dbtype == 'mysql' else Notification
+
+def get_payroll_model(dbtype):
+    return PayrollMySQL if dbtype == 'mysql' else Payroll
+
+@notification_bp.route('/generate/<dbtype>', methods=['POST'])
 @role_required('Admin')
-def generate_notifications():
+def generate_notifications(dbtype):
+    EmployeeModel = get_employee_model(dbtype)
+    NotificationModel = get_notification_model(dbtype)
+    PayrollModel = get_payroll_model(dbtype)
+
     today = datetime.today().date()
     count = 0
 
-    employees = Employee.query.all()
+    employees = EmployeeModel.query.all()
 
     for emp in employees:
-        # --- THÔNG BÁO KỶ NIỆM LÀM VIỆC ---
+        # --- Thông báo kỷ niệm làm việc ---
         if emp.working_status:
             working_years = (today - emp.working_status).days // 365
             if working_years in [1, 5, 10]:
                 message = f"🎉✨ Chúc mừng {emp.name} đã làm việc {working_years} năm tại công ty! 🥳👏"
-                notification = Notification(employee_id=emp.id, message=message)
-                db.session.add(notification)
+                db.session.add(NotificationModel(employee_id=emp.id, message=message))
                 count += 1
 
-        # --- THÔNG BÁO CẢNH BÁO NGHỈ PHÉP ---
+        # --- Thông báo nghỉ không phép ---
         latest_attendance = Attendance.query.filter_by(employee_id=emp.id)\
                                             .order_by(Attendance.time.desc())\
                                             .first()
         if latest_attendance and latest_attendance.absence > 2:
-            # Kiểm tra nếu time là string và có định dạng "MM/YYYY"
-            if isinstance(latest_attendance.time, str):
-                try:
-                    # Chuyển đổi từ "MM/YYYY" sang kiểu datetime
-                    latest_time = datetime.strptime(latest_attendance.time, '%m/%Y')
-                except ValueError:
-                    # Nếu không khớp với định dạng, hãy xử lý lỗi hoặc bỏ qua
-                    continue
-            else:
-                latest_time = latest_attendance.time
+            try:
+                latest_time = (
+                    datetime.strptime(latest_attendance.time, '%m/%Y')
+                    if isinstance(latest_attendance.time, str)
+                    else latest_attendance.time
+                )
+                month_str = latest_time.strftime('%m/%Y')
+                message = f"!!! Warning: {emp.name} đã nghỉ không phép {latest_attendance.absence} ngày trong tháng {month_str}!"
+                db.session.add(NotificationModel(employee_id=emp.id, message=message))
+                count += 1
+            except ValueError:
+                continue
 
-            # Chuyển đổi sang chuỗi tháng/năm
-            month_str = latest_time.strftime('%m/%Y')
-            message = f"!!! Warning : {emp.name} đã nghỉ không phép {latest_attendance.absence} ngày trong tháng {month_str}!"
-
-            notification = Notification(employee_id=emp.id, message=message)
-            db.session.add(notification)
-            count += 1
-
-
-
-        # --- THÔNG BÁO CHÊNH LỆCH LƯƠNG LỚN GIỮA CÁC KỲ ---
-        payrolls = Payroll.query.filter_by(employee_id=emp.id)\
-                                .order_by(Payroll.time.desc())\
-                                .limit(2).all()
-
+        # --- Thông báo chênh lệch lương ---
+        payrolls = PayrollModel.query.filter_by(employee_id=emp.id)\
+                                     .order_by(PayrollModel.time.desc())\
+                                     .limit(2).all()
         if len(payrolls) == 2:
-            current = payrolls[0]
-            previous = payrolls[1]
-
+            current, previous = payrolls[0], payrolls[1]
             if previous.salary and previous.salary > 0:
                 diff_percent = abs(current.salary - previous.salary) / previous.salary * 100
-                threshold = 40  # Ngưỡng %
-
-                if diff_percent > threshold:
-                    message = (f"⚠️ Warning: Lương tháng hiện tại ({current.time.strftime('%m/%Y')}) của {emp.name} "
+                if diff_percent > 40:
+                    message = (f"⚠️ Warning: Lương tháng {current.time.strftime('%m/%Y')} của {emp.name} "
                                f"chênh lệch {diff_percent:.2f}% so với tháng trước ({previous.time.strftime('%m/%Y')}).")
-                    notification = Notification(employee_id=emp.id, message=message)
-                    db.session.add(notification)
+                    db.session.add(NotificationModel(employee_id=emp.id, message=message))
                     count += 1
 
     db.session.commit()
     return jsonify({'message': f'Đã tạo {count} thông báo.'}), 201
 
 
-@notification_bp.route('/', methods=['GET'])
-def get_notifications():
-    all_notifications = Notification.query.order_by(Notification.created_at.desc()).all()
-    return jsonify([n.to_dict() for n in all_notifications]), 200
+@notification_bp.route('/<dbtype>', methods=['GET'])
+def get_notifications(dbtype):
+    NotificationModel = get_notification_model(dbtype)
+    notifications = NotificationModel.query.order_by(NotificationModel.created_at.desc()).all()
+    return jsonify([n.to_dict() for n in notifications]), 200
 
 
-@notification_bp.route('/<int:notification_id>', methods=['DELETE'])
+@notification_bp.route('/<int:notification_id>/<dbtype>', methods=['DELETE'])
 @role_required('Admin')
-def delete_notification(notification_id):
-    notification = Notification.query.get(notification_id)
+def delete_notification(notification_id, dbtype):
+    NotificationModel = get_notification_model(dbtype)
+    notification = NotificationModel.query.get(notification_id)
     if not notification:
         return jsonify({'message': 'Không tìm thấy thông báo'}), 404
 

@@ -173,18 +173,40 @@ async function addEmployee() {
 }
 
     async function updateEmployee() {
-     const nameInput = document.getElementById("nameInput");
-    const jobTitleSelectModal = document.getElementById("jobTitleSelect");
-    const departmentSelectModal = document.getElementById("departmentSelect");
-    const emailInput = document.getElementById("emailInput");
-    const workingStatusInput = document.getElementById("workingStatusInput");
-    const dobInput = document.getElementById("dobInput");
+     const token = localStorage.getItem("token");  // Lấy token từ localStorage
+
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
+            return;
+        }
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "hr management"];
+
+        // Chuẩn hóa role thành mảng, không phân biệt hoa thường
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        } else {
+            rolesInToken = [];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
+
+        const nameInput = document.getElementById("nameInput");
+        const jobTitleSelectModal = document.getElementById("jobTitleSelect");
+        const departmentSelectModal = document.getElementById("departmentSelect");
+        const emailInput = document.getElementById("emailInput");
+        const workingStatusInput = document.getElementById("workingStatusInput");
+        const dobInput = document.getElementById("dobInput");
 
 
-    if (!isAtLeast18YearsOld(dobInput.value.trim(), workingStatusInput.value.trim())) {
-        showNotification("Nhân viên phải đủ 18 tuổi trở lên!");
-        return;
-    }
 
     if (!idInput.value.trim()) {
         showNotification("Vui lòng nhập mã nhân viên.");
@@ -219,42 +241,20 @@ async function addEmployee() {
         return;
     }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-        showNotification("Bạn chưa đăng nhập!");
-        return;
-    }
-    const decodedToken = jwt_decode(token);
-    const userRole = decodedToken.role;
-    const allowedRoles = ["admin", "hr management"];
+   const updatedEmployee = {
+            name: capitalizeWords(nameInput.value),
+            gender: genderInput.value,
+            job_title: jobTitleSelectModal.value,
+            department: departmentSelectModal.value,
+            email: emailInput.value,
+            working_status: workingStatusInput.value,
+            dob: dobInput.value
+        };
 
-    let rolesInToken = [];
-    if (Array.isArray(userRole)) {
-        rolesInToken = userRole.map(r => r.toLowerCase());
-    } else if (typeof userRole === "string") {
-        rolesInToken = [userRole.toLowerCase()];
-    }
-
-    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-    if (!hasRole) {
-        showNotification("Bạn không có quyền sử dụng chức năng này!");
-        return;
-    }
-
-    const updatedEmployee = {
-        name: capitalizeWords(nameInput.value),
-        gender: genderInput.value,
-        job_title: jobTitleSelectModal.value,
-        department: departmentSelectModal.value,
-        email: emailInput.value,
-        working_status: workingStatusInput.value,
-        dob: dobInput.value
-    };
 
     try {
-        // Gửi song song 2 request PUT cập nhật lên MySQL và SQL Server
-        const [resMySQL, resSQLServer] = await Promise.all([
-            fetch(`http://127.0.0.1:5000/api/employees/mysql/${selectedEmployee}`, {
+        const [resMySQL, resSQLServer] = await Promise.all(
+            [fetch(`http://127.0.0.1:5000/api/employees/mysql/${selectedEmployee}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -269,21 +269,25 @@ async function addEmployee() {
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(updatedEmployee)
-            }),
+            })
         ]);
+        const data = await res.json();
 
         if (resMySQL.ok && resSQLServer.ok) {
             showNotification("Cập nhật thông tin nhân viên thành công.");
             loadEmployees();
-            hideModal();
+            
+                hideModal();
+            
         } else {
-            showNotification(`Cập nhật nhân viên thất bại`);
+            showNotification("Cập nhật nhân viên thất bại ở một hoặc cả hai cơ sở dữ liệu.");
         }
     } catch (error) {
-        console.error("Error updating employee:", error);
-        showNotification("Có lỗi xảy ra khi cập nhật nhân viên.");
+        console.error("Lỗi khi cập nhật nhân viên:", error);
+        showNotification("Lỗi khi cập nhật nhân viên: " + error.message);
     }
 }
+
 
 
     async function deleteEmployee() {
