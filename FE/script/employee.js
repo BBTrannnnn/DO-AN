@@ -271,7 +271,6 @@ async function addEmployee() {
                 body: JSON.stringify(updatedEmployee)
             })
         ]);
-        const data = await res.json();
 
         if (resMySQL.ok && resSQLServer.ok) {
             showNotification("Cập nhật thông tin nhân viên thành công.");
@@ -359,17 +358,33 @@ async function addEmployee() {
 
     async function fetchEmployeeDetails(id) {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/api/employees/${id}`);
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            const employee = await res.json();
-            populateModal(employee);
-            openModal();
-        } catch (error) {
-            console.error("Error fetching employee details:", error);
-            showNotification("Không thể tải thông tin nhân viên.");
+        // Gọi cả 2 API song song
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch(`http://127.0.0.1:5000/api/employees/mysql/${id}`),
+            fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${id}`)
+        ]);
+
+        if (!resMySQL.ok || !resSQLServer.ok) {
+            throw new Error('Không thể tải thông tin nhân viên');
         }
+
+        const [employeeMySQL, employeeSQLServer] = await Promise.all([
+            resMySQL.json(),
+            resSQLServer.json()
+        ]);
+
+        // Kết hợp dữ liệu từ 2 nguồn
+        const combinedEmployee = {
+            ...employeeMySQL,
+            ...employeeSQLServer
+        };
+
+        populateModal(combinedEmployee);
+        openModal();
+    } catch (error) {
+        console.error("Error fetching employee details:", error);
+        showNotification("Không thể tải thông tin nhân viên: " + error.message);
+    }
     }
 
     // --- Functions to render data on the UI ---
