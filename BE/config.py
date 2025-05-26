@@ -7,7 +7,7 @@ class Config:
 
     params = urllib.parse.quote_plus(
         "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=ANHBAHUNG;"
+        "SERVER=DESKTOP-PJTHQLF;"
         "DATABASE=DO_AN;"
         "UID=sa;"
         "PWD=123456789"
@@ -20,7 +20,7 @@ class Config:
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = '123456'
     MYSQL_HOST = 'localhost'
-    MYSQL_DB = 'do_an'
+    MYSQL_DB = 'dat'
     MYSQL_URI = f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DB}"
 
     # Khai báo bind 2 DB cho SQLAlchemy

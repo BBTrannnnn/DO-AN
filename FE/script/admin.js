@@ -515,6 +515,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+     // Sự kiện nút Đăng xuất
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", function () {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+
+        // Hiển thị thông báo hoặc chuyển hướng
+        alert("Bạn đã đăng xuất!");
+        window.location.href = "login.html"; // hoặc trang login bạn sử dụng
+    });
+
     // Tải dữ liệu ban đầu
     loadAccounts();
 });

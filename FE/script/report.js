@@ -15,6 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Sự kiện nút Đăng xuất
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", function () {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+
+        // Hiển thị thông báo hoặc chuyển hướng
+        alert("Bạn đã đăng xuất!");
+        window.location.href = "login.html"; // hoặc trang login bạn sử dụng
+    });
+
       // Hiển thị tổng quan nhân sự
       const overview = data.employee_overview;
       document.getElementById('total-employees').textContent = `Tổng số nhân viên: ${overview.total}`;

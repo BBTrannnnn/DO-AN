@@ -202,6 +202,17 @@ const deptName = document.getElementById('department-name');
 const jobName = document.getElementById('job-title-name');
 const resetBtn = document.getElementById('reset-btn');
 
+// Sự kiện nút Đăng xuất
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", function () {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+
+        // Hiển thị thông báo hoặc chuyển hướng
+        alert("Bạn đã đăng xuất!");
+        window.location.href = "login.html"; // hoặc trang login bạn sử dụng
+    });
+
 if (deptSelect && jobSelect) {
     deptSelect.addEventListener('change', function () {
         const selectedDept = this.value;
@@ -255,6 +266,8 @@ function filterTable() {
         const matchJob = !selectedJob || item.id_job_title === selectedJob;
         return matchDept && matchJob;
     });
+
+
 
     renderDepartmentJobTitleTable(filtered);
 }
