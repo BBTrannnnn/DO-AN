@@ -518,55 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
-
-    // nút xem history
-    // showHistoryBtn.addEventListener("click", () => {
-    //     loadHistory();
-    //     historyModal.style.display = "block";
-    //     historyOverlay.style.display = "block";
-    // });
-
-    // historyCloseBtn.addEventListener("click", closeHistoryModal);
-    // historyOverlay.addEventListener("click", closeHistoryModal);
-
-    // function closeHistoryModal() {
-    //     historyModal.style.display = "none";
-    //     historyOverlay.style.display = "none";
-    // }
-
-    // async function loadHistory() {
-    //     try {
-    //         const res = await fetch("http://localhost:5000/api/get_history");
-    //         const data = await res.json();
-    //         const tbody = document.querySelector("#historyTable tbody");
-    //         tbody.innerHTML = "";
-
-    //         data.forEach((item, index) => {
-    //             const tr = document.createElement("tr");
-    //             const formattedTime = new Date(item.timestamp).toLocaleString("vi-VN", {
-    //                 timeZone: "Asia/Ho_Chi_Minh",
-    //                 year: "numeric",
-    //                 month: "2-digit",
-    //                 day: "2-digit",
-    //                 hour: "2-digit",
-    //                 minute: "2-digit",
-    //                 second: "2-digit"
-    //             });
-    //             tr.innerHTML =
-    //                 `<td>${index + 1}</td>
-    //             <td>${item.username}</td>
-    //             <td>${item.action}</td>
-    //             <td>${item.target_user || "-"}</td>
-    //             <td>${formattedTime}</td>`
-    //                 ;
-    //             tbody.appendChild(tr);
-    //         });
-    //     } catch (err) {
-    //         console.error("Lỗi tải lịch sử:", err);
-    //     }
-    // }
-
     // --- Initial Data Load ---
     loadAttendance();
 });
