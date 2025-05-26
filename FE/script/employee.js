@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById("searchInput");
     const notificationModal = document.getElementById('notificationModal');
     const notificationMessage = notificationModal.querySelector('p');
-    
+
 
     // --- Data variables ---
     let allEmployees = [];
@@ -28,152 +28,152 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Functions to interact with the backend ---
 
     async function loadEmployees() {
-    try {
-        const [resMySQL, resSQLServer] = await Promise.all([
-            fetch("http://127.0.0.1:5000/api/employees/mysql", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            }),
-            fetch("http://127.0.0.1:5000/api/employees/sqlserver", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            }),
-        ]);
+        try {
+            const [resMySQL, resSQLServer] = await Promise.all([
+                fetch("http://127.0.0.1:5000/api/employees/mysql", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                }),
+                fetch("http://127.0.0.1:5000/api/employees/sqlserver", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                }),
+            ]);
 
-        if (!resMySQL.ok || !resSQLServer.ok) {
-            throw new Error("Lấy danh sách nhân viên thất bại");
+            if (!resMySQL.ok || !resSQLServer.ok) {
+                throw new Error("Lấy danh sách nhân viên thất bại");
+            }
+
+            const employeesMySQL = await resMySQL.json();
+            const employeesSQLServer = await resSQLServer.json();
+
+            // Gộp danh sách có chung employee_id giữa 2 hệ
+            const sqlServerIDs = new Set(employeesSQLServer.map(e => e.employee_id));
+            const commonEmployees = employeesMySQL.filter(e => sqlServerIDs.has(e.employee_id));
+
+            allEmployees = commonEmployees;
+            renderEmployeeTable(commonEmployees);
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách nhân viên:", error);
+            showNotification(error.message || "Không thể tải danh sách nhân viên.");
         }
-
-        const employeesMySQL = await resMySQL.json();
-        const employeesSQLServer = await resSQLServer.json();
-
-        // Gộp danh sách có chung employee_id giữa 2 hệ
-        const sqlServerIDs = new Set(employeesSQLServer.map(e => e.employee_id));
-        const commonEmployees = employeesMySQL.filter(e => sqlServerIDs.has(e.employee_id));
-
-        allEmployees = commonEmployees;
-        renderEmployeeTable(commonEmployees);
-    } catch (error) {
-        console.error("Lỗi khi tải danh sách nhân viên:", error);
-        showNotification(error.message || "Không thể tải danh sách nhân viên.");
     }
-}
 
 
     function isAtLeast18YearsOld(dob, workingDate) {
-    const dobDate = new Date(dob);
-    const workDate = new Date(workingDate);
+        const dobDate = new Date(dob);
+        const workDate = new Date(workingDate);
 
-    const age = workDate.getFullYear() - dobDate.getFullYear();
-    const monthDiff = workDate.getMonth() - dobDate.getMonth();
-    const dayDiff = workDate.getDate() - dobDate.getDate();
+        const age = workDate.getFullYear() - dobDate.getFullYear();
+        const monthDiff = workDate.getMonth() - dobDate.getMonth();
+        const dayDiff = workDate.getDate() - dobDate.getDate();
 
-    if (age > 18) return true;
-    if (age === 18) {
-        if (monthDiff > 0) return true;
-        if (monthDiff === 0 && dayDiff >= 0) return true;
-    }
-    return false;
+        if (age > 18) return true;
+        if (age === 18) {
+            if (monthDiff > 0) return true;
+            if (monthDiff === 0 && dayDiff >= 0) return true;
+        }
+        return false;
     }
 
     function capitalizeWords(str) {
-    return str
-        .toLowerCase()
-        .trim()
-        .split(" ")
-        .filter(word => word.length > 0)
-        .map(word => word[0].toUpperCase() + word.slice(1))
-        .join(" ");
+        return str
+            .toLowerCase()
+            .trim()
+            .split(" ")
+            .filter(word => word.length > 0)
+            .map(word => word[0].toUpperCase() + word.slice(1))
+            .join(" ");
     }
 
 
-async function addEmployee() {
-    const id = document.getElementById("idInput").value.trim();
-    const name = capitalizeWords(document.getElementById("nameInput").value.trim());
-    const gender = document.getElementById("genderInput").value;
-    const job_title = document.getElementById("jobTitleSelect").value;
-    const department = document.getElementById("departmentSelect").value;
-    const email = document.getElementById("emailInput").value.trim();
-    const working_status = document.getElementById("workingStatusInput").value;
-    const dob = document.getElementById("dobInput").value;
+    async function addEmployee() {
+        const id = document.getElementById("idInput").value.trim();
+        const name = capitalizeWords(document.getElementById("nameInput").value.trim());
+        const gender = document.getElementById("genderInput").value;
+        const job_title = document.getElementById("jobTitleSelect").value;
+        const department = document.getElementById("departmentSelect").value;
+        const email = document.getElementById("emailInput").value.trim();
+        const working_status = document.getElementById("workingStatusInput").value;
+        const dob = document.getElementById("dobInput").value;
 
-    if (!isAtLeast18YearsOld(dob, working_status)) {
-        showNotification("Nhân viên phải đủ 18 tuổi trở lên!");
-        return;
-    }
-
-    if (!id || !name || !gender || !job_title || !department || !email || !working_status || !dob) {
-        showNotification("Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-        showNotification("Bạn chưa đăng nhập!");
-        return;
-    }
-
-    const decodedToken = jwt_decode(token);
-    const userRole = decodedToken.role;
-    const allowedRoles = ["admin", "hr management"];
-
-    let rolesInToken = Array.isArray(userRole)
-        ? userRole.map(r => r.toLowerCase())
-        : typeof userRole === "string" ? [userRole.toLowerCase()] : [];
-
-    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-    if (!hasRole) {
-        showNotification("Bạn không có quyền sử dụng chức năng này!");
-        return;
-    }
-
-    // Sửa phần tạo object gửi đi
-    const newEmployee = {
-        id: id,
-        name: name,
-        gender: gender,
-        job_title: job_title,
-        department: department,
-        email: email,
-        working_status: working_status,
-        dob: dob
-    };
-
-    try {
-        const [resMySQL, resSQLServer] = await Promise.all([
-            fetch("http://127.0.0.1:5000/api/employees/mysql", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(newEmployee)
-            }),
-            fetch("http://127.0.0.1:5000/api/employees/sqlserver", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(newEmployee)
-            }),
-        ]);
-
-        if (resMySQL.ok && resSQLServer.ok) {
-            showNotification("Thêm nhân viên thành công.");
-            loadEmployees();
-            hideModal();
-        } else {
-            showNotification(`Thêm nhân viên thất bại:`);
+        if (!isAtLeast18YearsOld(dob, working_status)) {
+            showNotification("Nhân viên phải đủ 18 tuổi trở lên!");
+            return;
         }
-    } catch (error) {
-        console.error("Error adding employee:", error);
-        showNotification("Lỗi khi thêm nhân viên: " + error.message);
+
+        if (!id || !name || !gender || !job_title || !department || !email || !working_status || !dob) {
+            showNotification("Vui lòng nhập đầy đủ thông tin!");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");
+            return;
+        }
+
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "hr management"];
+
+        let rolesInToken = Array.isArray(userRole)
+            ? userRole.map(r => r.toLowerCase())
+            : typeof userRole === "string" ? [userRole.toLowerCase()] : [];
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
+
+        // Sửa phần tạo object gửi đi
+        const newEmployee = {
+            id: id,
+            name: name,
+            gender: gender,
+            job_title: job_title,
+            department: department,
+            email: email,
+            working_status: working_status,
+            dob: dob
+        };
+
+        try {
+            const [resMySQL, resSQLServer] = await Promise.all([
+                fetch("http://127.0.0.1:5000/api/employees/mysql", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(newEmployee)
+                }),
+                fetch("http://127.0.0.1:5000/api/employees/sqlserver", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(newEmployee)
+                }),
+            ]);
+
+            if (resMySQL.ok && resSQLServer.ok) {
+                showNotification("Thêm nhân viên thành công.");
+                loadEmployees();
+                hideModal();
+            } else {
+                showNotification(`Thêm nhân viên thất bại:`);
+            }
+        } catch (error) {
+            console.error("Error adding employee:", error);
+            showNotification("Lỗi khi thêm nhân viên: " + error.message);
+        }
     }
-}
 
     async function updateEmployee() {
-     const token = localStorage.getItem("token");  // Lấy token từ localStorage
+        const token = localStorage.getItem("token");  // Lấy token từ localStorage
 
         if (!token) {
             showNotification("Bạn chưa đăng nhập!");  // Thông báo nếu không có token
@@ -208,40 +208,40 @@ async function addEmployee() {
 
 
 
-    if (!idInput.value.trim()) {
-        showNotification("Vui lòng nhập mã nhân viên.");
-        return;
-    }
-    if (!nameInput.value.trim()) {
-        showNotification("Vui lòng nhập tên nhân viên.");
-        return;
-    }
-    if (!genderInput.value) {
-        showNotification("Vui lòng chọn giới tính.");
-        return;
-    }
-    if (!jobTitleSelectModal.value) {
-        showNotification("Vui lòng chọn chức vụ.");
-        return;
-    }
-    if (!departmentSelectModal.value) {
-        showNotification("Vui lòng chọn phòng ban.");
-        return;
-    }
-    if (!emailInput.value.trim()) {
-        showNotification("Vui lòng nhập email.");
-        return;
-    }
-    if (!workingStatusInput.value) {
-        showNotification("Vui lòng chọn tình trạng làm việc.");
-        return;
-    }
-    if (!dobInput.value) {
-        showNotification("Vui lòng nhập ngày sinh.");
-        return;
-    }
+        if (!idInput.value.trim()) {
+            showNotification("Vui lòng nhập mã nhân viên.");
+            return;
+        }
+        if (!nameInput.value.trim()) {
+            showNotification("Vui lòng nhập tên nhân viên.");
+            return;
+        }
+        if (!genderInput.value) {
+            showNotification("Vui lòng chọn giới tính.");
+            return;
+        }
+        if (!jobTitleSelectModal.value) {
+            showNotification("Vui lòng chọn chức vụ.");
+            return;
+        }
+        if (!departmentSelectModal.value) {
+            showNotification("Vui lòng chọn phòng ban.");
+            return;
+        }
+        if (!emailInput.value.trim()) {
+            showNotification("Vui lòng nhập email.");
+            return;
+        }
+        if (!workingStatusInput.value) {
+            showNotification("Vui lòng chọn tình trạng làm việc.");
+            return;
+        }
+        if (!dobInput.value) {
+            showNotification("Vui lòng nhập ngày sinh.");
+            return;
+        }
 
-   const updatedEmployee = {
+        const updatedEmployee = {
             name: capitalizeWords(nameInput.value),
             gender: genderInput.value,
             job_title: jobTitleSelectModal.value,
@@ -252,139 +252,139 @@ async function addEmployee() {
         };
 
 
-    try {
-        const [resMySQL, resSQLServer] = await Promise.all(
-            [fetch(`http://127.0.0.1:5000/api/employees/mysql/${selectedEmployee}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(updatedEmployee)
-            }),
-            fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${selectedEmployee}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(updatedEmployee)
-            })
-        ]);
+        try {
+            const [resMySQL, resSQLServer] = await Promise.all(
+                [fetch(`http://127.0.0.1:5000/api/employees/mysql/${selectedEmployee}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updatedEmployee)
+                }),
+                fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${selectedEmployee}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updatedEmployee)
+                })
+                ]);
 
-        if (resMySQL.ok && resSQLServer.ok) {
-            showNotification("Cập nhật thông tin nhân viên thành công.");
-            loadEmployees();
-            
+            if (resMySQL.ok && resSQLServer.ok) {
+                showNotification("Cập nhật thông tin nhân viên thành công.");
+                loadEmployees();
+
                 hideModal();
-            
-        } else {
-            showNotification("Cập nhật nhân viên thất bại ở một hoặc cả hai cơ sở dữ liệu.");
+
+            } else {
+                showNotification("Cập nhật nhân viên thất bại ở một hoặc cả hai cơ sở dữ liệu.");
+            }
+        } catch (error) {
+            console.error("Lỗi khi cập nhật nhân viên:", error);
+            showNotification("Lỗi khi cập nhật nhân viên: " + error.message);
         }
-    } catch (error) {
-        console.error("Lỗi khi cập nhật nhân viên:", error);
-        showNotification("Lỗi khi cập nhật nhân viên: " + error.message);
     }
-}
 
 
 
     async function deleteEmployee() {
-    if (typeof deleteEmployeeModal !== "undefined") {
-        deleteEmployeeModal.style.display = "none";
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-        showNotification("Bạn chưa đăng nhập!");
-        return;
-    }
-
-    const decodedToken = jwt_decode(token);
-    const userRole = decodedToken.role;
-    const allowedRoles = ["admin", "hr management"];
-
-    let rolesInToken = [];
-    if (Array.isArray(userRole)) {
-        rolesInToken = userRole.map(r => r.toLowerCase());
-    } else if (typeof userRole === "string") {
-        rolesInToken = [userRole.toLowerCase()];
-    }
-
-    const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
-    if (!hasRole) {
-        showNotification("Bạn không có quyền sử dụng chức năng này!");
-        return;
-    }
-
-    if (!selectedEmployee) {
-        showNotification("Chưa chọn nhân viên để xóa.");
-        return;
-    }
-
-    try {
-        // Gửi đồng thời 2 request xóa nhân viên MySQL và SQL Server
-        const [resMySQL, resSQLServer] = await Promise.all([
-            fetch(`http://127.0.0.1:5000/api/employees/mysql/${selectedEmployee}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            }),
-            fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${selectedEmployee}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-        ]);
-
-        if (resMySQL.ok && resSQLServer.ok) {
-            showNotification("Xóa nhân viên thành công.");
-            loadEmployees();
-            if (typeof hideModal === "function") {
-                hideModal();
-            }
-        } else {
-            showNotification("Xóa nhân viên thất bại ở một hoặc cả hai cơ sở dữ liệu.");
+        if (typeof deleteEmployeeModal !== "undefined") {
+            deleteEmployeeModal.style.display = "none";
         }
-    } catch (error) {
-        showNotification("Lỗi khi xóa nhân viên: " + error.message);
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            showNotification("Bạn chưa đăng nhập!");
+            return;
+        }
+
+        const decodedToken = jwt_decode(token);
+        const userRole = decodedToken.role;
+        const allowedRoles = ["admin", "hr management"];
+
+        let rolesInToken = [];
+        if (Array.isArray(userRole)) {
+            rolesInToken = userRole.map(r => r.toLowerCase());
+        } else if (typeof userRole === "string") {
+            rolesInToken = [userRole.toLowerCase()];
+        }
+
+        const hasRole = rolesInToken.some(r => allowedRoles.includes(r));
+        if (!hasRole) {
+            showNotification("Bạn không có quyền sử dụng chức năng này!");
+            return;
+        }
+
+        if (!selectedEmployee) {
+            showNotification("Chưa chọn nhân viên để xóa.");
+            return;
+        }
+
+        try {
+            // Gửi đồng thời 2 request xóa nhân viên MySQL và SQL Server
+            const [resMySQL, resSQLServer] = await Promise.all([
+                fetch(`http://127.0.0.1:5000/api/employees/mysql/${selectedEmployee}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }),
+                fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${selectedEmployee}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+            ]);
+
+            if (resMySQL.ok && resSQLServer.ok) {
+                showNotification("Xóa nhân viên thành công.");
+                loadEmployees();
+                if (typeof hideModal === "function") {
+                    hideModal();
+                }
+            } else {
+                showNotification("Xóa nhân viên thất bại ở một hoặc cả hai cơ sở dữ liệu.");
+            }
+        } catch (error) {
+            showNotification("Lỗi khi xóa nhân viên: " + error.message);
+        }
     }
-}
 
 
     async function fetchEmployeeDetails(id) {
         try {
-        // Gọi cả 2 API song song
-        const [resMySQL, resSQLServer] = await Promise.all([
-            fetch(`http://127.0.0.1:5000/api/employees/mysql/${id}`),
-            fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${id}`)
-        ]);
+            // Gọi cả 2 API song song
+            const [resMySQL, resSQLServer] = await Promise.all([
+                fetch(`http://127.0.0.1:5000/api/employees/mysql/${id}`),
+                fetch(`http://127.0.0.1:5000/api/employees/sqlserver/${id}`)
+            ]);
 
-        if (!resMySQL.ok || !resSQLServer.ok) {
-            throw new Error('Không thể tải thông tin nhân viên');
+            if (!resMySQL.ok || !resSQLServer.ok) {
+                throw new Error('Không thể tải thông tin nhân viên');
+            }
+
+            const [employeeMySQL, employeeSQLServer] = await Promise.all([
+                resMySQL.json(),
+                resSQLServer.json()
+            ]);
+
+            // Kết hợp dữ liệu từ 2 nguồn
+            const combinedEmployee = {
+                ...employeeMySQL,
+                ...employeeSQLServer
+            };
+
+            populateModal(combinedEmployee);
+            openModal();
+        } catch (error) {
+            console.error("Error fetching employee details:", error);
+            showNotification("Không thể tải thông tin nhân viên: " + error.message);
         }
-
-        const [employeeMySQL, employeeSQLServer] = await Promise.all([
-            resMySQL.json(),
-            resSQLServer.json()
-        ]);
-
-        // Kết hợp dữ liệu từ 2 nguồn
-        const combinedEmployee = {
-            ...employeeMySQL,
-            ...employeeSQLServer
-        };
-
-        populateModal(combinedEmployee);
-        openModal();
-    } catch (error) {
-        console.error("Error fetching employee details:", error);
-        showNotification("Không thể tải thông tin nhân viên: " + error.message);
-    }
     }
 
     // --- Functions to render data on the UI ---
@@ -492,14 +492,14 @@ async function addEmployee() {
     }
 
     function openModalForNew() {
-    selectedEmployee = null;
-    clearModalForm();
+        selectedEmployee = null;
+        clearModalForm();
 
-    // Bật lại trường ID khi thêm mới
-    document.getElementById("idInput").disabled = false;
+        // Bật lại trường ID khi thêm mới
+        document.getElementById("idInput").disabled = false;
 
-    openModal();
-}
+        openModal();
+    }
 
     function hideModal() {
         employeeModal.style.display = 'none';
@@ -509,17 +509,17 @@ async function addEmployee() {
     }
 
     function clearModalForm() {
-    const idInput = document.getElementById("idInput");
-    idInput.value = '';
-    idInput.disabled = false;
+        const idInput = document.getElementById("idInput");
+        idInput.value = '';
+        idInput.disabled = false;
 
-    document.getElementById("nameInput").value = '';
-    document.getElementById("emailInput").value = '';
-    document.getElementById("workingStatusInput").value = '';
-    document.getElementById("dobInput").value = '';
-    departmentSelect.value = '';
-    jobTitleSelect.innerHTML = '<option disabled selected>---</option>';
-}
+        document.getElementById("nameInput").value = '';
+        document.getElementById("emailInput").value = '';
+        document.getElementById("workingStatusInput").value = '';
+        document.getElementById("dobInput").value = '';
+        departmentSelect.value = '';
+        jobTitleSelect.innerHTML = '<option disabled selected>---</option>';
+    }
 
     function updateJobTitles() {
         const selectedDept = departmentSelect.value;
@@ -596,7 +596,7 @@ async function addEmployee() {
     //     historyOverlay.style.display = "none";
     // }
 
-    
+
     addEmployeeBtn.addEventListener('click', () => {
         employeeModal.style.display = 'block';
         overlay.style.display = 'block';
@@ -613,6 +613,16 @@ async function addEmployee() {
     });
 
 
+    // Sự kiện nút Đăng xuất
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", function () {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+
+        // Hiển thị thông báo hoặc chuyển hướng
+        alert("Bạn đã đăng xuất!");
+        window.location.href = "login.html"; // hoặc trang login bạn sử dụng
+    });
 
     // --- Initial Data Load ---
     loadEmployees();

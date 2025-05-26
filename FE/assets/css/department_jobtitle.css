@@ -317,3 +317,26 @@ select {
   transform: scale(2); /* phóng to nhẹ */
   filter: brightness(1.2); /* sáng hơn một chút */
 }
+
+.settings {
+    display: flex;
+    align-items: center;
+    /* Giúp các phần tử căn giữa theo chiều dọc */
+    gap: 10px;
+    /* Khoảng cách giữa các icon/nút */
+}
+
+.logout-btn {
+    padding: 6px 12px;
+    background-color: #df4d3d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
