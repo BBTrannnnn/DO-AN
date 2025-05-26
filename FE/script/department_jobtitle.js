@@ -136,21 +136,42 @@ document.addEventListener("DOMContentLoaded", function () {
         renderDepartmentJobTitleTable(filteredData);
     }
 
-    function loadDepartmentJobTitleData() {
-        fetch('http://127.0.0.1:5000/api/department-job-title')
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to load data');
-                return response.json();
-            })
-            .then(data => {
-                window.departmentJobTitleData = data; // Store data globally
-                renderDepartmentJobTitleTable(data);
-            })
-            .catch(error => {
-                console.error("Error loading data:", error);
-                alert("Error loading data. Please check console for details.");
-            });
+    async function loadDepartmentJobTitleData() {
+    try {
+        const [resMySQL, resSQLServer] = await Promise.all([
+            fetch("http://127.0.0.1:5000/api/department-job-title/mysql", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }),
+            fetch("http://127.0.0.1:5000/api/department-job-title/sqlserver", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }),
+        ]);
+
+        if (!resMySQL.ok || !resSQLServer.ok) {
+            throw new Error("Lỗi khi tải dữ liệu department-job-title");
+        }
+
+        const dataMySQL = await resMySQL.json();
+        const dataSQLServer = await resSQLServer.json();
+
+        // Lọc các bản ghi có employee_id trùng nhau
+        const sqlServerIDs = new Set(dataSQLServer.map(item => item.id_employee));
+        const commonData = dataMySQL.filter(item => sqlServerIDs.has(item.id_employee));
+
+        // Gán dữ liệu toàn cục nếu cần
+        window.departmentJobTitleData = commonData;
+
+        // Hiển thị dữ liệu
+        renderDepartmentJobTitleTable(commonData);
+
+    } catch (error) {
+        console.error("Lỗi tải dữ liệu department-job-title:", error);
+        alert("Lỗi khi tải dữ liệu department-job-title. Vui lòng kiểm tra console.");
     }
+}
+
 
     function renderDepartmentJobTitleTable(data) {
         const tbody = document.getElementById('department-job-title-body');

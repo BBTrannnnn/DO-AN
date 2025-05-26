@@ -17,6 +17,7 @@ class Employee(db.Model):
 
     #payrolls = db.relationship('Payroll', backref='employee', lazy=True, )
     
+    
     def __repr__(self):
         return f"<Employee {self.id} - {self.name}>"
     
